@@ -208,7 +208,6 @@
       const st = Object.assign({}, DEFAULTS);
       let dir = 1;            // sweep direction while playing a rocking input
       let snapMsg = '';       // set when the last requested θ₂ was out of range
-      let dragging = false;
 
       ui.note(api.root, 'Pick a preset or set the four lengths, then press Play or drag the pin A: watch the Grashof test, the motion, the transmission angle μ and the velocity ratio.');
       const sp = ui.split(api.root, { ratio: 1.5 });
@@ -274,6 +273,30 @@
       const sV = ui.slider(gP, { label: '<i>v</i> (offset, left +)', min: -5, max: 5, step: 0.1, value: st.v, key: 'v',
         onInput: function (v) { st.v = v; update(); } });
 
+      // Core quirk workaround: after a track drag the number box ignores a typed value equal to the last typed text
+      // (its "unchanged" check compares with the last committed text). Re-apply such a value here. The core's own
+      // handler runs first; when it did commit, the box already shows the (possibly snapped) current value rounded
+      // to the step, so a value within half a step of the current one is left alone (otherwise a snapped θ₂ would be
+      // replaced by its rounded display text and the snap message lost).
+      function numBoxFix(sl, apply, step) {
+        const box = sl.el.querySelector('input.sim-num');
+        function chk() {
+          const v = parseFloat(box.value);
+          if (!isFinite(v)) return;
+          const c = M.clamp(v, Number(box.min), Number(box.max));
+          if (Math.abs(c - sl.get()) > step / 2 + 1e-9) { sl.set(c); apply(sl.get()); }
+        }
+        box.addEventListener('change', chk);
+        box.addEventListener('keydown', function (e) { if (e.key === 'Enter') chk(); });
+      }
+      [[sA, 'a'], [sB, 'b'], [sC, 'c'], [sD, 'd']].forEach(function (q) {
+        numBoxFix(q[0], function (v) { st[q[1]] = v; snapTheta(st.theta2); update(); }, 0.1);
+      });
+      numBoxFix(sT, function (v) { snapTheta(v); update(); }, 0.5);
+      numBoxFix(sSpeed, function (v) { st.speed = v; }, 5);
+      numBoxFix(sU, function (v) { st.u = v; update(); }, 0.05);
+      numBoxFix(sV, function (v) { st.v = v; update(); }, 0.1);
+
       const gS = ui.group(sp.side, 'Show');
       const rowS = ui.row(gS);
       function chk(label, key) {
@@ -287,11 +310,11 @@
       const stats = ui.stats(sp.side);
       const tRange = ui.stat(stats, { label: lab('input range of θ₂'), key: 'range' });
       tRange.el.style.gridColumn = '1 / -1';
+      const tMuR = ui.stat(stats, { label: lab('μ min … max'), key: 'muRange', title: 'over all valid θ₂' });
+      tMuR.el.style.gridColumn = 'span 2';
       const tT3 = ui.stat(stats, { label: lab('θ₃'), key: 'theta3' });
       const tT4 = ui.stat(stats, { label: lab('θ₄'), key: 'theta4' });
       const tMu = ui.stat(stats, { label: lab('μ (transmission)'), key: 'mu' });
-      const tMuR = ui.stat(stats, { label: lab('μ min … max'), key: 'muRange', title: 'over all valid θ₂' });
-      tMuR.el.style.gridColumn = 'span 2';
       const tW4 = ui.stat(stats, { label: lab('ω₄/ω₂'), key: 'w4' });
       const tW3 = ui.stat(stats, { label: lab('ω₃/ω₂'), key: 'w3' });
       const tMA = ui.stat(stats, { label: lab('MA = T₄/T₂'), key: 'MA', title: 'ideal mechanical advantage = ω₂/ω₄' });
@@ -379,8 +402,10 @@
           g.ir.rangesDeg.forEach(function (r) {
             [r[0], r[1]].forEach(function (e) { const dd = circDist(th, e); if (dd < bd) { bd = dd; best = e; } });
           });
+          // name the snapped angle also as it appears in the allowed ranges (e.g. 230.2° = −129.8°)
+          const alias = Math.abs(norm360(best) - best) > 1e-9 ? ' (= ' + fmtDeg(best, 1) + ')' : '';
           snapMsg = 'θ₂ = ' + fmt(Math.round(req * 10) / 10, 6) + '° cannot be reached; snapped to the nearest valid angle ' +
-            fmtDeg(norm360(best), 1) + '.';
+            fmtDeg(norm360(best), 1) + alias + '.';
           th = norm360(best);
         }
         st.theta2 = th;
@@ -426,7 +451,7 @@
               const s = segs[i];
               if (segHitsRect(s[0], s[1], s[2], s[3], bx.l - s[4], bx.t - s[4], bx.r + s[4], bx.b + s[4])) n++;
             }
-            boxes.forEach(function (o) { if (bx.l < o.r + 2 && bx.r > o.l - 2 && bx.t < o.b + 2 && bx.b > o.t - 2) n += 3; });
+            boxes.forEach(function (o) { if (bx.l < o.r + 2 && bx.r > o.l - 2 && bx.t < o.b + 2 && bx.b > o.t - 2) n += 12; });   // text on text is unreadable: far worse than text on a line
             return n;
           },
           place: function (text, font, color, cands) {
@@ -436,7 +461,7 @@
             cands.forEach(function (c) {
               const bx = { l: c.x - a, r: c.x + a, t: c.y - b, b: c.y + b };
               let cost = c.cost;
-              if (bx.l < frame.x + 1 || bx.r > frame.x + frame.w - 1 || bx.t < frame.y + 1 || bx.b > frame.y + frame.h - 1) cost += 5000;
+              if (bx.l < frame.x + 1 || bx.r > frame.x + frame.w - 1 || bx.t < frame.y + 1 || bx.b > frame.y + frame.h - 1) cost += 8000;
               if (best && cost >= best.cost) return;
               cost += 1000 * L.hits(bx);
               if (!best || cost < best.cost) best = { cost: cost, c: c, bx: bx };
@@ -452,7 +477,7 @@
               [i, -i].forEach(function (j, s) {
                 if (i === 0 && s) return;
                 const u = mid + j * step, ux = Math.cos(u), uy = Math.sin(u);
-                [0, 10, 22].forEach(function (extra, ring) {
+                [0, 10, 22, 36, 52].forEach(function (extra, ring) {
                   const dd = r + 3 + a * Math.abs(ux) + b * Math.abs(uy) + extra;
                   out.push({ x: cx + dd * ux, y: cy - dd * uy, cost: 5 * i + 9 * ring });
                 });
@@ -479,11 +504,19 @@
         return lines;
       }
 
-      let icFar = { I24: 0, I13: 0 };   // view-widths, when an IC is too far to draw (filled during draw)
-      function icDistances(g, s) {
-        const W = g.box.x1 - g.box.x0, cx = (g.box.x0 + g.box.x1) / 2, cy = (g.box.y0 + g.box.y1) / 2;
-        function far(P) { return P ? Math.hypot(P[0] - cx, P[1] - cy) / W : Infinity; }
-        return { I24: far(s.I24), I13: far(s.I13) };
+      // where each IC is relative to the visible view p: 'none' (at infinity), 'far' (> FAR_VIEWS view-widths from the
+      // view centre: not drawn), 'out' (outside the canvas: an edge arrow points to it) or 'in'
+      function icInfo(s, p) {
+        const W = p.xmax - p.xmin, cx = (p.xmin + p.xmax) / 2, cy = (p.ymin + p.ymax) / 2;
+        function one(P) {
+          if (!P) return { state: 'none' };
+          const dist = Math.hypot(P[0] - cx, P[1] - cy) / W;
+          if (dist > FAR_VIEWS) return { state: 'far', dist: dist };
+          const x = p.X(P[0]), y = p.Y(P[1]), r = p.rect;
+          const inside = x >= r.x + 8 && x <= r.x + r.w - 8 && y >= r.y + 8 && y <= r.y + r.h - 8;
+          return { state: inside ? 'in' : 'out', dist: dist, px: [x, y] };
+        }
+        return { I24: one(s.I24), I13: one(s.I13) };
       }
 
       // ---- mechanism canvas ----
@@ -536,8 +569,7 @@
           });
         }
         // 4. instantaneous centres: construction lines
-        const far = icDistances(g, s);
-        icFar = { I24: far.I24 > FAR_VIEWS ? far.I24 : 0, I13: far.I13 > FAR_VIEWS ? far.I13 : 0 };
+        const ici = icInfo(s, p);
         let I24p = null, I13p = null;
         if (st.showIC) {
           ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
@@ -546,13 +578,13 @@
             ctx.strokeStyle = RASim.alpha(col, 0.75);
             ctx.beginPath(); ctx.moveTo(P1[0], P1[1]); ctx.lineTo(P2[0], P2[1]); ctx.stroke();
           }
-          if (s.I24 && !icFar.I24) {
-            I24p = X(s.I24);
+          if (ici.I24.state === 'in' || ici.I24.state === 'out') {
+            I24p = ici.I24.px;
             cline(A, I24p, C.blue); cline(B, I24p, C.blue);
             cline(O2, I24p, C.muted); cline(O4, I24p, C.muted);
           }
-          if (s.I13 && !icFar.I13) {
-            I13p = X(s.I13);
+          if (ici.I13.state === 'in' || ici.I13.state === 'out') {
+            I13p = ici.I13.px;
             cline(O2, I13p, C.maroon); cline(A, I13p, C.maroon);
             cline(O4, I13p, C.green); cline(B, I13p, C.green);
           }
@@ -625,8 +657,18 @@
           ctx.fillStyle = C.purple; ctx.beginPath(); ctx.arc(q[0], q[1], 2, 0, 2 * Math.PI); ctx.fill();
           lay.dot(q[0], q[1], 7);
         }
-        if (I24p) icDot(I24p);
-        if (I13p) icDot(I13p);
+        // an IC outside the canvas: an arrow at the edge, pointing towards it
+        function icEdge(q) {
+          const cx = r.x + r.w / 2, cy = r.y + r.h / 2, dx = q[0] - cx, dy = q[1] - cy;
+          const t = Math.min((r.w / 2 - 10) / Math.max(1e-9, Math.abs(dx)), (r.h / 2 - 10) / Math.max(1e-9, Math.abs(dy)));
+          const L = Math.hypot(dx, dy), ex = cx + dx * t, ey = cy + dy * t;
+          D.arrow(ctx, ex - 26 * dx / L, ey - 26 * dy / L, ex, ey, { color: C.purple, width: 2, head: 8 });
+          lay.seg(ex - 26 * dx / L, ey - 26 * dy / L, ex, ey, 4);
+          return [ex - 26 * dx / L, ey - 26 * dy / L, Math.atan2(-dy, dx) + Math.PI];   // label behind the arrow tail
+        }
+        let I24lab = null, I13lab = null;
+        if (I24p) I24lab = ici.I24.state === 'in' ? (icDot(I24p), [I24p[0], I24p[1], -Math.PI / 2]) : icEdge(I24p);
+        if (I13p) I13lab = ici.I13.state === 'in' ? (icDot(I13p), [I13p[0], I13p[1], Math.PI / 2]) : icEdge(I13p);
         if (st.showCoupler) g.curve.forEach(function (line) { lay.poly(line.map(X), 1.5); });
 
         // 11. labels (most important first)
@@ -637,7 +679,7 @@
           const tx = (P2[0] - P1[0]) / L, ty = (P2[1] - P1[1]) / L;
           const cands = [];
           [0, 0.18, -0.18, 0.32, -0.32].forEach(function (al, i) {
-            [12, 20, 30].forEach(function (off, j) {
+            [12, 20, 30, 42, 56].forEach(function (off, j) {
               [1, -1].forEach(function (sg, kk) {
                 cands.push({ x: mx + al * L * tx + sg * off * nx, y: my + al * L * ty + sg * off * ny, cost: 4 * i + 6 * j + kk });
               });
@@ -648,13 +690,24 @@
         function pointLabel(q, text, color, mid, font) {
           labels.push(lay.place(text, font || B12, color, lay.around(q[0], q[1], 7, mid, Math.PI / 8, 8, text, font || B12)));
         }
+        // a label that ended up away from its arc gets a thin leader line to the middle of the arc
+        const leaders = [];
+        function leader(lb, ax, ay) {
+          const b = lb.box, nx = M.clamp(ax, b.l, b.r), ny = M.clamp(ay, b.t, b.b);
+          if (Math.hypot(nx - ax, ny - ay) > 10) leaders.push([ax, ay, nx, ny, lb.color]);
+        }
         const muTxt = 'μ = ' + fmtDeg(s.mu * R2D, 1);
         if (st.showMu) {
           const midm = phA + dph / 2;
-          labels.push(lay.place(muTxt, B12, muCol, lay.around(B[0], B[1], rm, midm, Math.PI / 14, 10, muTxt, B12)));
+          const lm = lay.place(muTxt, B12, muCol, lay.around(B[0], B[1], rm, midm, Math.PI / 14, 10, muTxt, B12));
+          labels.push(lm);
+          leader(lm, B[0] + rm * Math.cos(midm), B[1] - rm * Math.sin(midm));
         }
         const t2Txt = 'θ₂ = ' + fmtDeg(st.theta2, 1);
-        labels.push(lay.place(t2Txt, F12, C.maroon, lay.around(O2[0], O2[1], r2, st.theta2 > 0.05 ? t2 / 2 : -Math.PI / 4, Math.PI / 12, 12, t2Txt, F12)));
+        const mid2 = st.theta2 > 0.05 ? t2 / 2 : -Math.PI / 4;
+        const l2 = lay.place(t2Txt, F12, C.maroon, lay.around(O2[0], O2[1], r2, mid2, Math.PI / 12, 12, t2Txt, F12));
+        labels.push(l2);
+        if (st.theta2 > 0.05) leader(l2, O2[0] + r2 * Math.cos(mid2), O2[1] - r2 * Math.sin(mid2));
         pointLabel(O2, 'O₂', C.ink, -Math.PI * 0.75);
         pointLabel(O4, 'O₄', C.ink, -Math.PI * 0.25);
         pointLabel(A, 'A', C.ink, Math.atan2(s.A[1], s.A[0]));
@@ -664,8 +717,13 @@
         linkLabel(A, B, 'b', C.blue);
         linkLabel(O4, B, 'c', C.green);
         linkLabel(O2, O4, 'd', C.muted);
-        if (I24p) pointLabel(I24p, 'I₂₄', C.purple, -Math.PI / 2);
-        if (I13p) pointLabel(I13p, 'I₁₃', C.purple, Math.PI / 2);
+        if (I24lab) pointLabel(I24lab, ici.I24.state === 'in' ? 'I₂₄' : 'to I₂₄', C.purple, I24lab[2]);
+        if (I13lab) pointLabel(I13lab, ici.I13.state === 'in' ? 'I₁₃' : 'to I₁₃', C.purple, I13lab[2]);
+        ctx.lineWidth = 1; ctx.setLineDash([]);
+        leaders.forEach(function (q) {
+          ctx.strokeStyle = RASim.alpha(q[4], 0.7);
+          ctx.beginPath(); ctx.moveTo(q[0], q[1]); ctx.lineTo(q[2], q[3]); ctx.stroke();
+        });
         labels.forEach(function (lb) { D.text(ctx, lb.text, lb.x, lb.y, { align: 'center', color: lb.color, font: lb.font, bg: LBG }); });
       };
 
@@ -685,11 +743,10 @@
           const wx = p.invX(x), wy = p.invY(y);
           if (Math.hypot(wx, wy) < 1e-9) return;
           if (anim.running) setPlaying(false);
-          dragging = true;
           snapTheta(Math.atan2(wy, wx) * R2D);
           update(true);
         },
-        end: function () { dragging = false; update(); },
+        end: function () { update(); },
         cursor: function (x, y) { return hitA(x, y) ? 'grab' : null; }
       });
 
@@ -698,7 +755,8 @@
         const g = geom();
         const narrow = w < 380;
         const ymin = g.ok ? g.plot.ymin : 0;
-        const p = RASim.plot(ctx, { box: { x: 0, y: 0, w: w, h: h }, xmin: 0, xmax: 360, ymin: ymin, ymax: 180,
+        const pad = ymin < 0 ? 14 : 8;     // a little headroom so curves at ±180° / 0° stay off the frame
+        const p = RASim.plot(ctx, { box: { x: 0, y: 0, w: w, h: h }, xmin: 0, xmax: 360, ymin: ymin - pad, ymax: 180 + pad,
           margin: { left: 46, right: 12, top: 10, bottom: 36 }, xlabel: 'θ₂ (°)', ylabel: 'angle (°)' });
         p.axes({ xTicks: narrow ? [0, 90, 180, 270, 360] : [0, 45, 90, 135, 180, 225, 270, 315, 360],
           yTicks: ymin < 0 ? [-180, -90, 0, 90, 180] : [0, 45, 90, 135, 180] });
@@ -831,10 +889,12 @@
           else if (Math.abs(s.w4) < 1e-6) status.push('Crank and coupler are collinear: the output is at a limit (dead centre, MA → ∞).');
           if (cl.type === 'change-point') status.push('Change-point linkage: where all links become collinear the motion is indeterminate (open and crossed meet).');
           if (st.showIC) {
-            const far = icDistances(g, s);
-            if (s.I24 && far.I24 > FAR_VIEWS) status.push('I₂₄ lies ' + fmt(far.I24, 2) + ' view-widths away (not drawn).');
+            const ici = icInfo(s, viewPlot(cv.ctx, cv.width, cv.height, g));
+            [['I₂₄', ici.I24], ['I₁₃', ici.I13]].forEach(function (q) {
+              if (q[1].state === 'far') status.push(q[0] + ' lies ' + fmt(q[1].dist, 2) + ' view-widths away (not drawn).');
+              if (q[1].state === 'out') status.push(q[0] + ' is just outside the view: the purple arrow points to it.');
+            });
             if (!s.I24) status.push('I₂₄ is at infinity (AB ∥ O₂O₄): ω₄/ω₂ = 1.');
-            if (s.I13 && far.I13 > FAR_VIEWS) status.push('I₁₃ lies ' + fmt(far.I13, 2) + ' view-widths away (not drawn).');
             if (!s.I13) status.push('I₁₃ is at infinity (O₂A ∥ O₄B).');
             // live Kennedy formula, printed so that the arithmetic redone from the printed numbers gives the result
             if (s.I24 && !toggleOut) {
@@ -876,7 +936,7 @@
         if (s.showIC != null) { st.showIC = !!s.showIC; cIC.set(st.showIC); }
         if (s.showMu != null) { st.showMu = !!s.showMu; cMu.set(st.showMu); }
         const lengths = num(s.a) || num(s.b) || num(s.c) || num(s.d);
-        if (num(s.theta2)) { sT.set(M.clamp(Number(s.theta2), 0, 360)); snapTheta(sT.get()); }
+        if (num(s.theta2)) snapTheta(Number(s.theta2));   // any angle in degrees, taken modulo 360°
         else if (lengths) snapTheta(st.theta2);
         if (s.playing != null) { if (s.playing) dir = 1; setPlaying(!!s.playing); }
         update();
