@@ -218,6 +218,7 @@
 <li>Underdamped step specs: damped frequency ω<sub>d</sub> = ωₙ√(1 − ζ²); peak time t<sub>p</sub> = π/ω<sub>d</sub>; percent overshoot M<sub>p</sub> = e<sup>−πζ/√(1−ζ²)</sup> × 100%; settling time t<sub>s</sub> = 4/(ζωₙ) (2%) or 3/(ζωₙ) (5%); rise time t<sub>r</sub> = (π − θ)/ω<sub>d</sub>, θ = cos⁻¹ζ. Number of oscillations ≈ t<sub>s</sub>/(2π/ω<sub>d</sub>).</li>
 <li>Dominant poles: poles closest to the jω-axis dominate; poles &gt; 5× further left can be neglected.</li>
 </ul>
+<div class="sim" data-sim="second-order-step"></div>
 <h3>Steady-state error</h3>
 <ul>
 <li>Unity feedback: e<sub>ss</sub> = lim<sub>s→0</sub> sR(s)/(1 + G(s)). Type = number of poles of G(s)H(s) at the origin.</li>
@@ -252,6 +253,7 @@
 <li>Initial slope reveals the system type (−20 × type dB/dec). Final slope = −20 × (poles − zeros). Non-minimum phase (RHP zero) shows extra phase lag for the same magnitude. Transport delay e<sup>−sT</sup>: magnitude 1, phase −ωT.</li>
 <li>Bandwidth of a second-order system: ω<sub>b</sub> = ωₙ√[(1 − 2ζ²) + √(4ζ⁴ − 4ζ² + 2)].</li>
 </ul>
+<div class="sim" data-sim="bode-plot"></div>
 <h3>Root locus</h3>
 <ul>
 <li>Locus of closed-loop poles as K varies 0 → ∞, from 1 + KG(s)H(s) = 0. Angle condition: ∠GH = ±180°(2q + 1); magnitude condition: |KGH| = 1 (gives K at a point).</li>
@@ -260,6 +262,7 @@
 <li>Break-away/break-in points: dK/ds = 0. jω-axis crossings: Routh array. Angle of departure from a complex pole: 180° − Σ(angles from other poles) + Σ(angles from zeros); arrival at a complex zero analogously.</li>
 <li>Adding a pole pushes the locus right (less stable); adding a zero pulls it left (more stable).</li>
 </ul>
+<div class="sim" data-sim="root-locus"></div>
 <h3>Compensators</h3>
 <ul>
 <li><b>Lead</b> G<sub>c</sub> = (1 + aTs)/(1 + Ts), a &gt; 1 (zero closer to origin than the pole). Adds phase lead: φ<sub>max</sub> = sin⁻¹[(a − 1)/(a + 1)] at ω<sub>m</sub> = 1/(T√a). Improves PM, transient response and bandwidth (high-pass, amplifies noise). Approximates PD.</li>
@@ -274,3 +277,4 @@
 <li><b>D (PD):</b> adds a zero → anticipates error, adds damping, reduces overshoot and settling time, improves stability; amplifies noise (use a filtered derivative); no effect on steady-state error.</li>
 <li><b>PID:</b> combines all three. Ziegler–Nichols (ultimate-gain method): K<sub>p</sub> = 0.6K<sub>u</sub>, T<sub>i</sub> = P<sub>u</sub>/2, T<sub>d</sub> = P<sub>u</sub>/8; P only: 0.5K<sub>u</sub>; PI: 0.45K<sub>u</sub>, T<sub>i</sub> = P<sub>u</sub>/1.2.</li>
 </ul>
+<div class="sim" data-sim="pid-tuning"></div>

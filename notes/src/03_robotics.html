@@ -59,6 +59,7 @@
 <li>Free vectors (directions) use a 0 as the fourth component, so translation does not affect them.</li>
 </ul>
 
+<div class="sim" data-sim="rotation-transforms"></div>
 <h2>5. Forward Kinematics</h2>
 <ul>
 <li>Given joint variables, find end-effector position and orientation: <sup>0</sup>T<sub>n</sub>(q).</li>
@@ -76,6 +77,7 @@
 <li><b>Jacobian:</b> ẋ = J(q) q̇ relates joint velocities to end-effector velocity; τ = Jᵀ F relates end-effector force to joint torques. For the 2-link arm: J = [[−L₁s₁ − L₂s₁₂, −L₂s₁₂], [L₁c₁ + L₂c₁₂, L₂c₁₂]], det J = L₁L₂ sin θ₂ (singular at θ₂ = 0, π).</li>
 </ul>
 
+<div class="sim" data-sim="two-link-arm"></div>
 <h2>6. Robot Applications and Performance</h2>
 <ul>
 <li><b>Point-to-point (PTP) control:</b> only the end points matter, path between them is not controlled (spot welding, pick-and-place, machine loading, drilling). Often joint-interpolated motion.</li>
