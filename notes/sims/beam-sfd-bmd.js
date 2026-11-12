@@ -628,10 +628,11 @@
         return RASim.plot(ctx, { box: { x: 0, y: 0, w: w, h: h }, margin: { left: ML, right: MR, top: top, bottom: bottom },
           xmin: 0, xmax: st.L, ymin: ymin, ymax: ymax, xlabel: xlabel || '' });
       }
-      function yRange(lo, hi, padTop, padBot) {
+      // y-range [lo, hi] widened so that padTop / padBot PIXELS stay free above / below the data (room for labels)
+      function yRange(lo, hi, H, padTop, padBot) {
         if (hi - lo < 1e-12) { lo = -1; hi = 1; }
-        const span = hi - lo;
-        return [lo < 0 ? lo - padBot * span : lo - 0.08 * span, hi > 0 ? hi + padTop * span : hi + 0.08 * span];
+        const k = Math.max(10, H - padTop - padBot) / (hi - lo);
+        return [lo - padBot / k, hi + padTop / k];
       }
       // greedy label placement without overlaps
       function Placer(ctx, bounds) {
@@ -641,16 +642,32 @@
           const x0 = align === 'left' ? x : align === 'right' ? x - tw : x - tw / 2;
           return { x0: x0 - 3, x1: x0 + tw + 3, y0: y - 8, y1: y + 8 };
         }
+        const pts = [];                       // pixel points of plotted curves that labels must not cover
         function free(bx) {
           if (bounds && (bx.x0 < bounds.x0 || bx.x1 > bounds.x1 || bx.y0 < bounds.y0 || bx.y1 > bounds.y1)) return false;
           for (let i = 0; i < boxes.length; i++) {
             const q = boxes[i];
             if (bx.x0 < q.x1 && bx.x1 > q.x0 && bx.y0 < q.y1 && bx.y1 > q.y0) return false;
           }
+          for (let i = 0; i < pts.length; i += 2) {
+            if (pts[i] > bx.x0 && pts[i] < bx.x1 && pts[i + 1] > bx.y0 + 1 && pts[i + 1] < bx.y1 - 1) return false;
+          }
           return true;
         }
         return {
           block: function (x0, y0, x1, y1) { boxes.push({ x0: x0, y0: y0, x1: x1, y1: y1 }); },
+          // a plotted polyline (data arrays through the plot p) that labels must avoid; long segments are subdivided
+          avoid: function (p, xs, ys) {
+            for (let i = 0; i < xs.length; i++) {
+              const X = p.X(xs[i]), Y = M.clamp(p.Y(ys[i]), -1e4, 1e4);
+              if (i > 0) {
+                const X0 = p.X(xs[i - 1]), Y0 = M.clamp(p.Y(ys[i - 1]), -1e4, 1e4);
+                const n = Math.min(400, Math.ceil(Math.max(Math.abs(X - X0), Math.abs(Y - Y0)) / 3));
+                for (let k = 1; k < n; k++) pts.push(X0 + (X - X0) * k / n, Y0 + (Y - Y0) * k / n);
+              }
+              pts.push(X, Y);
+            }
+          },
           // tries each candidate { x, y, align }; draws the first free one (or, with force, the first)
           place: function (t, cands, o) {
             o = o || {};
@@ -778,8 +795,6 @@
               if (val > 0) D.arrow(ctx, X, yB, X, yA, { color: C.green, width: 2.5, head: 9 });
               else D.arrow(ctx, X, yA, X, yB, { color: C.green, width: 2.5, head: 9 });
             }
-            const t = 'R' + (s[2] === 'A' ? 'ₐ' : 'ᵦ');
-            void t;
             const txt = n4(Math.abs(val)) + ' kN';
             const right = X + 6 + 70 < w;
             pl.place(txt, [{ x: right ? X + 6 : X - 6, y: BEAM_Y + 50, align: right ? 'left' : 'right' },
@@ -871,7 +886,7 @@
 
       // ---------------------------------------------------------------- SFD
       function sfdPlot(ctx, w, h) {
-        const yr = yRange(derived.vmin, derived.vmax, 0.28, 0.28);
+        const d = derived, yr = yRange(d.vmin, d.vmax, h - 40, d.vmax > d.tolV ? 24 : 10, d.vmin < -d.tolV ? 24 : 10);
         return xPlot(ctx, w, h, yr[0], yr[1], 20, 20);
       }
       cvV.draw = function (ctx, w, h) {
@@ -884,17 +899,33 @@
         title(ctx, p, 'SFD — V (kN)');
         const r = p.rect;
         const pl = Placer(ctx, { x0: r.x + 1, y0: r.y + 1, x1: r.x + r.w - 1, y1: r.y + r.h - 1 });
+        pl.avoid(p, S.x, S.V);
         derived.vCross.forEach(function (x) { p.ring(x, 0, { color: C.blue, r: 4, width: 1.5 }); pl.block(p.X(x) - 5, p.Y(0) - 5, p.X(x) + 5, p.Y(0) + 5); });
-        // labels: values at the ends of each piece (one label for a constant piece), largest first
+        // labels: one per run of constant V (merged across continuous joints), otherwise the values at both
+        // sides of each joint (one label where V is continuous); largest first, skipped when there is no room
+        const tv = derived.tolV, sg = derived.segs;
+        const isConst = function (q) { return Math.abs(q.v0 - q.v1) <= tv; };
         const cands = [];
-        derived.segs.forEach(function (s) {
-          if (Math.abs(s.v0 - s.v1) <= derived.tolV) {
-            if (Math.abs(s.v0) > derived.tolV) cands.push({ v: s.v0, x: (s.x0 + s.x1) / 2, align: 'center', dx: 0 });
+        for (let i = 0; i < sg.length;) {
+          if (isConst(sg[i])) {
+            let j = i;
+            while (j + 1 < sg.length && isConst(sg[j + 1]) && Math.abs(sg[j + 1].v0 - sg[j].v1) <= tv) j++;
+            if (Math.abs(sg[i].v0) > tv) cands.push({ v: sg[i].v0, x: (sg[i].x0 + sg[j].x1) / 2, align: 'center', dx: 0 });
+            i = j + 1;
+          } else i++;
+        }
+        for (let i = 0; i <= sg.length; i++) {
+          const left = i > 0 ? sg[i - 1] : null, right = i < sg.length ? sg[i] : null;
+          const x = right ? right.x0 : left.x1;
+          const vl = left ? left.v1 : 0, vr = right ? right.v0 : 0;
+          const lc = left && isConst(left), rc = right && isConst(right);
+          if (left && right && Math.abs(vl - vr) <= tv) {
+            if (!lc && !rc && Math.abs(vl) > tv) cands.push({ v: vl, x: x, align: 'center', dx: 0 });
           } else {
-            if (Math.abs(s.v0) > derived.tolV) cands.push({ v: s.v0, x: s.x0, align: 'left', dx: 3 });
-            if (Math.abs(s.v1) > derived.tolV) cands.push({ v: s.v1, x: s.x1, align: 'right', dx: -3 });
+            if (left && !lc && Math.abs(vl) > tv) cands.push({ v: vl, x: x, align: 'right', dx: -3 });
+            if (right && !rc && Math.abs(vr) > tv) cands.push({ v: vr, x: x, align: 'left', dx: 3 });
           }
-        });
+        }
         cands.sort(function (u, v) { return Math.abs(v.v) - Math.abs(u.v); });
         const done = [];
         cands.forEach(function (c) {
@@ -909,8 +940,9 @@
 
       // ---------------------------------------------------------------- BMD
       function bmdPlot(ctx, w, h) {
-        const yr = yRange(derived.mmin, derived.mmax, 0.3, 0.3);
-        return xPlot(ctx, w, h, yr[0], yr[1], 20, st.showDeflection ? 20 : 34, st.showDeflection ? '' : 'x (m)');
+        const d = derived, bot = st.showDeflection ? 20 : 34;
+        const yr = yRange(d.mmin, d.mmax, h - 20 - bot, d.mmax > d.tolM ? 28 : 10, d.mmin < -d.tolM ? 28 : 10);
+        return xPlot(ctx, w, h, yr[0], yr[1], 20, bot, st.showDeflection ? '' : 'x (m)');
       }
       cvM.draw = function (ctx, w, h) {
         if (!R) return;
@@ -922,10 +954,11 @@
         title(ctx, p, 'BMD — M (kN·m), sagging +');
         const r = p.rect;
         const pl = Placer(ctx, { x0: r.x + 1, y0: r.y + 1, x1: r.x + r.w - 1, y1: r.y + r.h - 1 });
+        pl.avoid(p, S.x, S.M);
         R.contraflexure.forEach(function (c) { pl.block(p.X(c.x) - 5, p.Y(0) - 5, p.X(c.x) + 5, p.Y(0) + 5); });
         const ext = [];
-        if (R.maxSag) ext.push({ e: R.maxSag, dy: -10, color: C.maroon });
-        if (R.maxHog) ext.push({ e: R.maxHog, dy: 10, color: C.ink });
+        if (R.maxSag) ext.push({ e: R.maxSag, dy: -13, color: C.maroon });
+        if (R.maxHog) ext.push({ e: R.maxHog, dy: 13, color: C.ink });
         ext.forEach(function (q) {
           p.point(q.e.x, q.e.value, { color: q.color, r: 3.5 });
           pl.block(p.X(q.e.x) - 4, p.Y(q.e.value) - 4, p.X(q.e.x) + 4, p.Y(q.e.value) + 4);
@@ -953,13 +986,17 @@
           const turn = (vl > derived.tolV && vr < -derived.tolV) || (vl < -derived.tolV && vr > derived.tolV) || Math.abs(vr) <= derived.tolV || Math.abs(vl) <= derived.tolV;
           return jump || turn;
         };
+        const shown = ext.map(function (q) { return n4(q.e.value); });
         cands.filter(function (c) { return c.x > 1e-9 && c.x < st.L - 1e-9 && isExt(c); })
           .sort(function (u, v) { return Math.abs(v.v) - Math.abs(u.v); })
           .forEach(function (c) {
             if ((R.maxSag && Math.abs(c.v - R.maxSag.value) < derived.tolM && Math.abs(c.x - R.maxSag.x) < 1e-9) ||
                 (R.maxHog && Math.abs(c.v - R.maxHog.value) < derived.tolM && Math.abs(c.x - R.maxHog.x) < 1e-9)) return;
+            const t = n4(c.v);
+            if (shown.indexOf(t) >= 0) return;                    // e.g. the far end of a constant-M stretch
             const dy = c.v > 0 ? -9 : 9;
-            pl.place(n4(c.v), [{ x: p.X(c.x) + c.dx, y: p.Y(c.v) + dy, align: c.align }], { color: C.muted, font: FONT_S, clampX: true });
+            if (pl.place(t, [{ x: p.X(c.x) + c.dx, y: p.Y(c.v) + dy, align: c.align }, { x: p.X(c.x) + c.dx, y: p.Y(c.v) + 2 * dy, align: c.align },
+              { x: p.X(c.x) - c.dx, y: p.Y(c.v) + dy, align: c.align === 'left' ? 'right' : 'left' }], { color: C.muted, font: FONT_S, clampX: true })) shown.push(t);
           });
         cursorLine(ctx, p, r.y, r.y + r.h);
         if (hoverX != null) p.point(hoverX, R.M(hoverX), { color: C.maroon, r: 3.5 });
@@ -967,7 +1004,9 @@
 
       // ---------------------------------------------------------------- deflection
       function deflPlot(ctx, w, h) {
-        const yr = yRange(derived.ymin * 1000, derived.ymax * 1000, 0.3, 0.3);
+        // the label of the maximum deflection goes beyond the extreme: 30 px there, 14 px on the other side
+        const lo = derived.ymin * 1000, hi = derived.ymax * 1000, down = -lo >= hi;
+        const yr = yRange(lo, hi, h - 54, down ? (hi > 0 ? 14 : 10) : 30, down ? 30 : (lo < 0 ? 14 : 10));
         return xPlot(ctx, w, h, yr[0], yr[1], 20, 34, 'x (m)');
       }
       cvY.draw = function (ctx, w, h) {
@@ -981,6 +1020,7 @@
         title(ctx, p, 'Deflection — y (mm), upward +');
         const r = p.rect;
         const pl = Placer(ctx, { x0: r.x + 1, y0: r.y + 1, x1: r.x + r.w - 1, y1: r.y + r.h - 1 });
+        pl.avoid(p, S.x, ymm);
         if (st.type === 'ss') {
           [st.a, st.b].forEach(function (s) {
             const px = p.X(s), py = p.Y(0);
@@ -995,7 +1035,7 @@
           p.point(md.x, v, { color: C.teal, r: 3.5 });
           pl.block(p.X(md.x) - 4, p.Y(v) - 4, p.X(md.x) + 4, p.Y(v) + 4);
           const t = 'max ' + n4(Math.abs(v)) + ' mm ' + (v < 0 ? '↓' : '↑') + ' at x = ' + n4(md.x);
-          const dy = v < 0 ? 11 : -11, px = p.X(md.x), py = p.Y(v);
+          const dy = v < 0 ? 13 : -13, px = p.X(md.x), py = p.Y(v);
           pl.place(t, [{ x: px, y: py + dy, align: 'center' }, { x: px - 7, y: py + dy, align: 'right' }, { x: px + 7, y: py + dy, align: 'left' },
             { x: px - 8, y: py, align: 'right' }, { x: px + 8, y: py, align: 'left' }], { color: C.teal, font: FONT, clampX: true, force: true });
         }
@@ -1007,15 +1047,21 @@
       function setHover(px, cv) {
         const p = xPlot(cv.ctx, cv.width, cv.height, 0, 1, 0, 0);
         const x = p.invX(px);
-        const nx = (x < -0.02 * st.L || x > st.L * 1.02) ? null : M.clamp(x, 0, st.L);
+        // snapped to the 0.01 m shown in the read-out, so that the values printed belong to the x printed
+        const nx = (x < -0.02 * st.L || x > st.L * 1.02) ? null : M.clamp(Math.round(x * 100) / 100, 0, st.L);
         if (nx === hoverX) return;
         hoverX = nx;
         showCursor(); redrawAll();
       }
       function showCursor() {
         if (hoverX == null || !R) { readout.innerHTML = 'Hover over the diagrams to read V, M and y at any section.'; return; }
-        const x = hoverX;
-        readout.innerHTML = 'x = ' + fmtFixed(x, 2) + ' m: &nbsp;V = <b>' + n4(R.V(x)) + '</b> kN, &nbsp;M = <b>' + n4(R.M(x)) +
+        const x = hoverX, inside = x > 1e-9 && x < st.L - 1e-9;
+        // at a discontinuity show the values just left → just right of the section
+        function two(f, tol) {
+          const l = f(x, -1), r = f(x, 1);
+          return inside && Math.abs(l - r) > tol ? n4(l) + ' → ' + n4(r) : n4(f(x));
+        }
+        readout.innerHTML = 'x = ' + fmtFixed(x, 2) + ' m: &nbsp;V = <b>' + two(R.V, derived.tolV) + '</b> kN, &nbsp;M = <b>' + two(R.M, derived.tolM) +
           '</b> kN·m, &nbsp;y = <b>' + n4(R.y(x) * 1000) + '</b> mm';
       }
       [cvB, cvV, cvM, cvY].forEach(function (cv) {
