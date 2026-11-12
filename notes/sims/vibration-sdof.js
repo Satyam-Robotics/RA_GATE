@@ -196,6 +196,10 @@
         SC + ' .vs-box { display: flex; flex-direction: column; gap: 10px; min-width: 0; }\n' +
         SC + ' .vs-tabs { margin: 2px 0 10px; }\n' +
         SC + ' .vs-tabs .sim-seg > button { font-weight: bold; }\n' +
+        // narrow panel: the two tab buttons share one row in equal halves (their text wraps inside) instead of
+        // wrapping onto two lines as two blocks of different widths
+        SC + '.sim-narrow .vs-tabs .sim-seg { display: flex; flex-wrap: nowrap; }\n' +
+        SC + '.sim-narrow .vs-tabs .sim-seg > button { flex: 1 1 0; min-width: 0; }\n' +
         SC + ' .vs-pre { gap: 6px 6px; }\n' +
         SC + ' .vs-pre .sim-btn { min-width: 0; padding-left: 9px; padding-right: 9px; }\n' +
         SC + ' .vs-tagrow { gap: 8px 10px; }\n' +
@@ -881,8 +885,8 @@
         if (free) {
           tWd.set(unit(d.wd, 'rad/s'));
           tTd.set(unit(d.Td, 's'));
-          tDelta.set(fmt(d.delta, 4));
-          tRatio.set(fmt(d.ratio, 4));
+          tDelta.set(sig4(d.delta));
+          tRatio.set(sig4(d.ratio));
           tHalf.set(isFinite(d.halfCycles) ? fmt(d.halfCycles, 4) + ' cycles' : d.kind === 'undamped' ? '∞ (no decay)' : '—');
           const fd = freeData();
           const items = [{ color: COL.x, label: 'x(t)' }];
@@ -924,6 +928,12 @@
         }
       }
 
+      // δ and x₁/x₂ side by side with the same 4 significant digits, trailing zeros kept (1.880 next to 0.6315)
+      function sig4(v) {
+        if (!isFinite(v) || v === 0) return fmt(v, 4);
+        const s = Math.abs(v) >= 1e-4 && Math.abs(v) < 1e7 ? Number(v).toPrecision(4) : '';
+        return s && s.indexOf('e') < 0 ? s.replace('-', '−') : fmt(v, 4);
+      }
       function getState() {
         return { tab: st.tab, m: st.m, k: st.k, zeta: st.zeta, x0: st.x0, v0: st.v0, speed: st.speed, r: st.r, F0: st.F0,
           curve: st.curve, playing: anim.running, time: st.time };

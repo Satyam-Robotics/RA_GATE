@@ -394,22 +394,9 @@
       function lab(html) { return '<span class="bp-nt">' + html + '</span>'; }
 
       const st = JSON.parse(JSON.stringify(DEFAULTS));
-      // ui.slider with a work-around: the core's number box ignores a typed value equal to the last TYPED text
-      // even when the track has moved since (the track's input handler does not update that text), e.g. type 1,
-      // drag to 0.01, type 1 again -> nothing happens. After the core's own handler, re-check the box against get().
-      function slider(parent, opts) {
-        const sl = ui.slider(parent, opts);
-        const num = sl.el.querySelector('.sim-num');
-        const check = function () {
-          const v = parseFloat(num.value);
-          if (!isFinite(v)) return;
-          const c = M.clamp(v, opts.min, opts.max);
-          if (Math.abs(c - sl.get()) > 1e-12 * Math.max(1, Math.abs(c))) { sl.set(c); opts.onInput(sl.get()); }
-        };
-        num.addEventListener('change', check);
-        num.addEventListener('keydown', function (e) { if (e.key === 'Enter') check(); });
-        return sl;
-      }
+      // (A local work-around for the number box ignoring a re-typed value after a track move was removed once
+      // the core fixed ui.slider; the core's regression test covers it.)
+      function slider(parent, opts) { return ui.slider(parent, opts); }
       let D = null;            // cached curves and results for the current state
       let hoverW = null;       // ω under the mouse
 

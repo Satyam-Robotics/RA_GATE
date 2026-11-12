@@ -272,6 +272,11 @@
       function fmtOhm(R, sig) { return Number(R.toPrecision(sig || 4)) >= 1000 ? fmt(R / 1000, sig || 4) + ' kΩ' : fmt(R, sig || 4) + ' Ω'; }
       function fmtHenry(L) { return L >= 1 ? fmt(L, 4) + ' H' : fmt(L * 1e3, 4) + ' mH'; }
       // v_C,max with enough digits that a small overshoot stays visible (10.00081 V, not "10 V")
+      // overshoot in %: below RASim.fmt's 1e-12 cut-off (R just under R_crit, e.g. R = 63 Ω) fmt would print "0 %"
+      // next to the UNDERDAMPED tag; say instead that it is positive but negligible. peak() exists only when
+      // under-damped, so the true overshoot is always > 0 here, even when e^(−απ/ω_d) underflows to exactly 0
+      // (e.g. a typed R = 63.245 Ω)
+      function fmtOvershoot(pct) { return !(pct >= 1e-12) ? '< 10⁻¹² %: negligible' : fmt(pct, 4) + ' %'; }
       function fmtPeakV(pk) { return fmt(pk.vCmax, Math.min(7, 4 + Math.max(0, Math.ceil(-Math.log10(pk.overshootPct / 100)) - 1))); }
       function fmtFarad(Cf) { return fmt(Cf * 1e6, 4) + ' µF'; }
       const QN = { vC: 'v<sub>C</sub>', vR: 'v<sub>R</sub>', vL: 'v<sub>L</sub>', i: 'i' };
@@ -789,7 +794,7 @@
           else if (r.kind === 'critical') tPo.set(fmt(r.s1.re, 5) + ' (double)');
           else tPo.set(fmt(r.s1.re, 5) + ',  ' + fmt(r.s2.re, 5));
           const pk = st.mode === 'charge' ? model.peak(p) : null;
-          tPk.set(pk ? fmtPeakV(pk) + ' V at ' + fmtTime(pk.tp) + ' (' + fmt(pk.overshootPct, 4) + ' %)' : '—');
+          tPk.set(pk ? fmtPeakV(pk) + ' V at ' + fmtTime(pk.tp) + ' (' + fmtOvershoot(pk.overshootPct) + ')' : '—');
         }
 
         // legend

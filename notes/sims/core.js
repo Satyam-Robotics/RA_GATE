@@ -951,6 +951,7 @@
       var p = Number(range.value);
       cur = log ? fromPos(p) : M.clamp(p, min, max);
       num.value = fmtNum(cur);
+      lastText = num.value;   // the box now shows the track value: a later typed value is compared with this text
       if (onInput) onInput(cur);
     });
     var lastText = num.value;
@@ -1303,9 +1304,10 @@
       return { x: e.clientX - r.left - (canvas.clientLeft || 0), y: e.clientY - r.top - (canvas.clientTop || 0) };
     }
     var pointerReady = false, drag = null, touchHit = false;
-    function tryHit(x, y) {
+    // info = { pointerType: 'mouse' | 'pen' | 'touch' }: lets a handler refuse touches (so they scroll the page)
+    function tryHit(x, y, info) {
       for (var i = 0; i < dragHandlers.length; i++) {
-        var tok = dragHandlers[i].hit ? dragHandlers[i].hit(x, y) : null;
+        var tok = dragHandlers[i].hit ? dragHandlers[i].hit(x, y, info) : null;
         if (tok) return { h: dragHandlers[i], token: tok };
       }
       return null;
@@ -1317,7 +1319,7 @@
         if (e.pointerType === 'mouse' && e.button !== 0) return;
         if (!dragHandlers.length) return;
         var p = pos(e);
-        var hit = tryHit(p.x, p.y);
+        var hit = tryHit(p.x, p.y, { pointerType: e.pointerType || 'mouse' });
         touchHit = !!hit;
         if (!hit) return;
         e.preventDefault();
@@ -1353,7 +1355,7 @@
         if (!dragHandlers.length || !e.touches.length) return;
         var t = e.touches[0];
         var p = pos(t);
-        if (tryHit(p.x, p.y)) e.preventDefault();
+        if (tryHit(p.x, p.y, { pointerType: 'touch' })) e.preventDefault();
       }, { passive: false });
       canvas.addEventListener('touchmove', function (e) { if (drag) e.preventDefault(); }, { passive: false });
       canvas.addEventListener('pointermove', function (e) {

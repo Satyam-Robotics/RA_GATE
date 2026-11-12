@@ -39,7 +39,8 @@
 // DATA-KEY:    formula (the multiplication-order line), Rcaption, animNote (what the animation is doing)
 // CANVAS KEY:  scene
 // CONTROL KEYS: mode, axis1, angle1, axis2, angle2, axis3, angle3, preset, dx, dy, dz, px, py, pz,
-//               showGhost, showAxis, showBox, play, reset
+//               showGhost, showAxis, showBox, play, reset, touchOrbit (touch screens only; not part of the state:
+//               a device preference. Off: a one-finger touch on the picture scrolls the page; on: it orbits)
 (function () {
   'use strict';
   const RASim = globalThis.RASim;
@@ -206,6 +207,16 @@
 
       // ---- main column ----
       const cv = RASim.canvas(sp.main, { aspect: 1.55, minHeight: 250, maxHeight: 560, key: 'scene' });
+      // Touch screens: the whole picture is an orbit surface, so a finger on it would never scroll the page. Orbit by
+      // touch only when this box is ticked (shown only on devices with a touch screen); mouse and pen always orbit.
+      const hasTouch = (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0) ||
+        (typeof window.matchMedia === 'function' && window.matchMedia('(any-pointer: coarse)').matches);
+      let touchOrbit = false;
+      const rowTouch = ui.row(sp.main);
+      rowTouch.classList.add('rt-touch');
+      ui.checkbox(rowTouch, { label: 'Orbit by touch (off: a finger on the picture scrolls the page)', checked: false, key: 'touchOrbit',
+        onChange: function (v) { touchOrbit = v; update(); } });
+      if (!hasTouch) rowTouch.style.display = 'none';
       const animNote = ui.note(sp.main, '');
       animNote.setAttribute('data-key', 'animNote');
       ui.legend(sp.main, [
@@ -431,7 +442,8 @@
           animNote.innerHTML = '<b>Step ' + t.step + '</b>: R' + 'xyz'.charAt(t.idx) + '(' + fmtDeg(t.angle) + ') about ' + axisName(t) +
             ' — now at ' + fmtDeg(t.now) + '.';
         } else {
-          animNote.innerHTML = 'Drag the picture to orbit the view. <b>Play steps</b> shows each step turning frame B.';
+          animNote.innerHTML = (hasTouch && !touchOrbit ? 'Drag the picture with the mouse (or tick <b>Orbit by touch</b>) to orbit the view. ' :
+            'Drag the picture to orbit the view. ') + '<b>Play steps</b> shows each step turning frame B.';
         }
         cv.redraw();
       }
@@ -717,7 +729,10 @@
       };
 
       cv.onDrag({
-        hit: function (x, y) { return { x0: x, y0: y, az0: st.az, el0: st.el }; },
+        hit: function (x, y, info) {
+          if (info && info.pointerType === 'touch' && !touchOrbit) return null;   // let the finger scroll the page
+          return { x0: x, y0: y, az0: st.az, el0: st.el };
+        },
         move: function (x, y, t) {
           st.az = M.wrapDeg(t.az0 - (x - t.x0) * 0.5);
           st.el = M.clamp(t.el0 + (y - t.y0) * 0.5, -85, 85);

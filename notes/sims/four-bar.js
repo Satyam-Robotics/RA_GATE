@@ -273,30 +273,6 @@
       const sV = ui.slider(gP, { label: '<i>v</i> (offset, left +)', min: -5, max: 5, step: 0.1, value: st.v, key: 'v',
         onInput: function (v) { st.v = v; update(); } });
 
-      // Core quirk workaround: after a track drag the number box ignores a typed value equal to the last typed text
-      // (its "unchanged" check compares with the last committed text). Re-apply such a value here. The core's own
-      // handler runs first; when it did commit, the box already shows the (possibly snapped) current value rounded
-      // to the step, so a value within half a step of the current one is left alone (otherwise a snapped θ₂ would be
-      // replaced by its rounded display text and the snap message lost).
-      function numBoxFix(sl, apply, step) {
-        const box = sl.el.querySelector('input.sim-num');
-        function chk() {
-          const v = parseFloat(box.value);
-          if (!isFinite(v)) return;
-          const c = M.clamp(v, Number(box.min), Number(box.max));
-          if (Math.abs(c - sl.get()) > step / 2 + 1e-9) { sl.set(c); apply(sl.get()); }
-        }
-        box.addEventListener('change', chk);
-        box.addEventListener('keydown', function (e) { if (e.key === 'Enter') chk(); });
-      }
-      [[sA, 'a'], [sB, 'b'], [sC, 'c'], [sD, 'd']].forEach(function (q) {
-        numBoxFix(q[0], function (v) { st[q[1]] = v; snapTheta(st.theta2); update(); }, 0.1);
-      });
-      numBoxFix(sT, function (v) { snapTheta(v); update(); }, 0.5);
-      numBoxFix(sSpeed, function (v) { st.speed = v; }, 5);
-      numBoxFix(sU, function (v) { st.u = v; update(); }, 0.05);
-      numBoxFix(sV, function (v) { st.v = v; update(); }, 0.1);
-
       const gS = ui.group(sp.side, 'Show');
       const rowS = ui.row(gS);
       function chk(label, key) {

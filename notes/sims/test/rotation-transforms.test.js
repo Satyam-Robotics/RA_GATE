@@ -322,7 +322,76 @@ async function browserTests() {
   } finally { await s.browser.close(); }
 }
 
+// Integration fix: on a touch screen a one-finger touch on the picture must scroll the page unless "Orbit by touch" is
+// ticked; the mouse always orbits. Real CDP touch events at 390 px.
+async function touchTests() {
+  let ok = true;
+  try { require.resolve('playwright'); } catch (e) { ok = false; }
+  if (!ok || process.argv.indexOf('--no-browser') >= 0) return;
+  const path = require('path'), os = require('os');
+  const { openSim } = require('./harness.js');
+  const outDir = path.join(os.tmpdir(), 'rasim-rotation-transforms-test');
+  const s = await openSim('rotation-transforms', { width: 390, height: 640, touch: true, outDir: outDir });
+  const page = s.page;
+  const getS = () => page.evaluate(() => RASim.instances['rotation-transforms'].getState());
+  const cdp = await s.context.newCDPSession(page);
+  async function swipe(x0, y0, dx, dy) {
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: x0, y: y0 }] });
+    for (let i = 1; i <= 10; i++) {
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x0 + dx * i / 10, y: y0 + dy * i / 10 }] });
+      await page.waitForTimeout(16);
+    }
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await page.waitForTimeout(400);
+  }
+  async function canvasCentre() {
+    return page.evaluate(() => {
+      const c = document.querySelector('[data-canvas="scene"]');
+      window.scrollTo({ top: c.getBoundingClientRect().top + window.scrollY - 40, behavior: 'instant' });
+      const r = c.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2, scrollY: window.scrollY };
+    });
+  }
+  try {
+    await agroup('browser (touch, 390 px): one finger on the picture scrolls the page and does not orbit (integration regression)', async function () {
+      assert.ok(await page.isVisible('[data-control="touchOrbit"]'), 'Orbit by touch box is shown on a touch screen');
+      const before = await getS();
+      const c = await canvasCentre();
+      await swipe(c.x, c.y + 60, 0, -150);
+      const sy = await page.evaluate(() => window.scrollY), after = await getS();
+      assert.ok(sy - c.scrollY > 60, 'page scrolled: ' + c.scrollY + ' → ' + sy);
+      assert.strictEqual(after.az, before.az, 'az unchanged'); assert.strictEqual(after.el, before.el, 'el unchanged');
+    });
+    await agroup('browser (touch, 390 px): with Orbit by touch ticked one finger orbits and the page stays put', async function () {
+      await page.tap('[data-control="touchOrbit"]');
+      assert.ok(await page.isChecked('[data-control="touchOrbit"]'));
+      const before = await getS();
+      const c = await canvasCentre();
+      await swipe(c.x - 60, c.y, 120, 40);
+      const sy = await page.evaluate(() => window.scrollY), after = await getS();
+      assert.ok(Math.abs(sy - c.scrollY) <= 1, 'page did not scroll: ' + c.scrollY + ' → ' + sy);
+      assert.ok(Math.abs(after.az - before.az) > 20, 'az changed: ' + before.az + ' → ' + after.az);
+      assert.ok(after.el > before.el, 'el changed: ' + before.el + ' → ' + after.el);
+    });
+    assert.ok(s.errors.length === 0 && s.warnings.length === 0, 'console: ' + s.errors.concat(s.warnings).join('; '));
+  } finally { await s.browser.close(); }
+  const d = await openSim('rotation-transforms', { width: 1100, outDir: outDir });
+  try {
+    await agroup('browser (mouse, 1100 px): dragging the picture orbits; the touch box is hidden without a touch screen', async function () {
+      assert.ok(!(await d.page.isVisible('[data-control="touchOrbit"]')), 'touch box hidden');
+      const before = await d.page.evaluate(() => RASim.instances['rotation-transforms'].getState());
+      const r = await d.page.evaluate(() => { const b = document.querySelector('[data-canvas="scene"]').getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; });
+      await d.page.mouse.move(r.x, r.y); await d.page.mouse.down(); await d.page.mouse.move(r.x + 80, r.y + 30, { steps: 8 }); await d.page.mouse.up();
+      const after = await d.page.evaluate(() => RASim.instances['rotation-transforms'].getState());
+      assert.ok(Math.abs(RASim.math.wrapDeg(after.az - (before.az - 40))) < 1e-9, 'az decreased by 0.5°/px: ' + after.az);
+      assert.ok(Math.abs(after.el - (before.el + 15)) < 1e-9, 'el increased by 0.5°/px: ' + after.el);
+    });
+    assert.ok(d.errors.length === 0 && d.warnings.length === 0, 'console: ' + d.errors.concat(d.warnings).join('; '));
+  } finally { await d.browser.close(); }
+}
+
 (async function () {
+  try { await touchTests(); } catch (e) { failures++; console.log('FAIL browser touch: ' + (e && e.message || e)); }
   try { await browserTests(); } catch (e) { failures++; console.log('FAIL browser: ' + (e && e.message || e)); }
   if (failures) { console.log(failures + ' group(s) FAILED'); process.exit(1); }
   console.log('all groups passed');

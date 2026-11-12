@@ -401,7 +401,8 @@ async function browserTests() {
       let r = await stats();
       assert.strictEqual(r.wn, '10 rad/s'); assert.strictEqual(r.fn, '1.592 Hz'); assert.strictEqual(r.cc, '20 N·s/m'); assert.strictEqual(r.c, '2 N·s/m');
       assert.strictEqual(r.dst, '98.1 mm'); assert.strictEqual(r.wd, '9.95 rad/s'); assert.strictEqual(r.Td, '0.6315 s'); assert.strictEqual(r.delta, '0.6315');
-      assert.strictEqual(r.ratio, f(1.88040, 4)); assert.strictEqual(r.half, '1.098 cycles');
+      // integration fix: x₁/x₂ keeps its 4th significant digit next to δ = 0.6315 (was '1.88')
+      assert.strictEqual(r.ratio, '1.880'); assert.strictEqual(r.half, '1.098 cycles');
       const labels = await page.evaluate(() => document.querySelector('[data-canvas="freePlot"]').vsLabels.map(l => l.text));
       assert.ok(labels.indexOf('ln(x₁/x₂) = δ = 0.631') >= 0, 'δ label: ' + labels.join(' | '));
       await setS({ tab: 'forced' });
@@ -417,6 +418,24 @@ async function browserTests() {
       assert.strictEqual(r.MF, '∞ (resonance)'); assert.strictEqual(r.TR, '∞ (resonance)'); assert.strictEqual(r.X, '∞');
       await setS({ zeta: 0.8 });
       assert.strictEqual((await stats()).peak, 'no peak (ζ ≥ 0.707)');
+    });
+    await agroup('browser: setState round-trips m, k and r exactly in the forced tab (integration check)', async function () {
+      // the forced-tab m/k sliders keep ω fixed and move r when the USER moves them; setState must apply keys literally
+      const want = { tab: 'forced', m: 2.5, k: 640, r: 2.37, zeta: 0.15 };
+      await setS(want);
+      let g = await getS();
+      ['tab', 'm', 'k', 'r', 'zeta'].forEach(k2 => assert.strictEqual(g[k2], want[k2], k2));
+      await setS({ m: 4 });
+      g = await getS();
+      assert.strictEqual(g.m, 4); assert.strictEqual(g.r, 2.37, 'setState({m}) leaves r alone');
+      await setS({ k: 300 });
+      g = await getS();
+      assert.strictEqual(g.k, 300); assert.strictEqual(g.r, 2.37, 'setState({k}) leaves r alone');
+      const snap = await getS();
+      await setS(DEF);
+      await setS(snap);
+      assert.deepStrictEqual(await getS(), snap, 'getState → setState round trip');
+      await setS(DEF);
     });
     await agroup('browser: Reset restores every default from a dirty state', async function () {
       await setS({ tab: 'forced', m: 7, k: 1500, zeta: 1.7, x0: -40, v0: 0.6, speed: '1', r: 3.3, F0: 77, curve: 'unbalance', playing: true, time: 1.2 });

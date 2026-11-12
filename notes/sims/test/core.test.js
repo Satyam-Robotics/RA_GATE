@@ -375,5 +375,93 @@ group('register', () => {
   RASim.mountAll();   // no-op in Node
 });
 
-if (failed) { console.log(`\n${failed} test group(s) FAILED`); process.exit(1); }
-console.log('\nAll core tests passed');
+// ---------------------------------------------------------------------------
+// Browser regression tests (Playwright; skipped when it is missing or with --no-browser).
+// ui.slider: after the track moved, typing the text that was last typed (or set) into the number box must apply.
+// Old bug: the track's input handler updated the box but not the remembered text, so the typed value was ignored
+// (Reset with K box '1', drag K to 0.01, type 1 + Enter: nothing happened).
+async function browserTests() {
+  let playwrightOk = true;
+  try { require.resolve('playwright'); } catch (e) { playwrightOk = false; }
+  if (!playwrightOk || process.argv.indexOf('--no-browser') >= 0) { console.log('skip browser regression tests'); return; }
+  const fs = require('fs'), path = require('path'), os = require('os');
+  const outDir = path.join(os.tmpdir(), 'rasim-core-test');
+  fs.mkdirSync(outDir, { recursive: true });
+  const coreJs = fs.readFileSync(path.join(__dirname, '..', 'core.js'), 'utf8');
+  const coreCss = fs.readFileSync(path.join(__dirname, '..', 'core.css'), 'utf8');
+  const html = '<!doctype html><html><head><meta charset="utf-8"><style>' + coreCss + '</style><script>window.RASIM_EAGER = true;</script></head><body>' +
+    '<div class="sim" data-sim="slider-test"></div><script>' + coreJs.replace(/<\/script/gi, '<\\/script') + '</script><script>' +
+    'window.calls = [];' +
+    'RASim.register("slider-test", { title: "t", mount: function (api) {' +
+    '  window.sLin = RASim.ui.slider(api.root, { label: "lin", min: 0, max: 10, step: 0.5, value: 1, key: "lin", onInput: function (v) { calls.push(["lin", v]); } });' +
+    '  window.sLog = RASim.ui.slider(api.root, { label: "K", min: 0.01, max: 100, scale: "log", value: 1, key: "K", onInput: function (v) { calls.push(["K", v]); } });' +
+    '  RASim.ui.stat(RASim.ui.stats(api.root), { label: "φ = θ<sub>1</sub> + θ<sub>2</sub>, x (m)", key: "casing" });' +
+    '  window.hits = []; var cv = RASim.canvas(api.root, { aspect: 4, key: "dragtest" });' +
+    '  cv.onDrag({ hit: function (x, y, info) { hits.push(info && info.pointerType); return null; }, move: function () {} });' +
+    '  return {}; } });</script></body></html>';
+  const file = path.join(outDir, 'slider.html');
+  fs.writeFileSync(file, html);
+  const { chromium } = require('playwright');
+  const browser = await chromium.launch();
+  try {
+    const page = await browser.newPage();
+    const errors = [];
+    page.on('pageerror', e => errors.push(String(e)));
+    await page.goto('file://' + file);
+    await page.waitForFunction(() => window.sLog && window.sLin);
+    async function track(key, value) {   // what a drag does: set the range value and fire 'input'
+      await page.evaluate(([k, v]) => {
+        const r = document.querySelector('input[type=range][data-control="' + k + '"]');
+        r.value = v; r.dispatchEvent(new Event('input', { bubbles: true }));
+      }, [key, value]);
+    }
+    async function type(key, text) {
+      await page.fill('[data-control-num="' + key + '"]', text);
+      await page.press('[data-control-num="' + key + '"]', 'Enter');
+      await page.evaluate(k => document.querySelector('[data-control-num="' + k + '"]').blur(), key);   // also fires 'change'
+    }
+    const calls = () => page.evaluate(() => window.calls.splice(0));
+    const get = k => page.evaluate(k => (k === 'K' ? sLog : sLin).get(), k);
+    let failedB = 0;
+    async function bgroup(name, fn) {
+      try { await fn(); console.log('ok   ' + name); } catch (e) { failedB++; console.log('FAIL ' + name + '\n     ' + (e && e.stack || e)); }
+    }
+    await bgroup('browser: slider box accepts the last set text after a track move (log, regression)', async () => {
+      await track('K', 0);                      // drag K to 0.01 (box showed the set value '1')
+      assert.strictEqual(await get('K'), 0.01);
+      await calls();
+      await type('K', '1');
+      assert.deepStrictEqual(await calls(), [['K', 1]], 'typing 1 after the drag applies once');
+      assert.strictEqual(await get('K'), 1);
+    });
+    await bgroup('browser: slider box accepts the last typed text after a track move (linear, regression)', async () => {
+      await type('lin', '2.25');
+      assert.deepStrictEqual(await calls(), [['lin', 2.25]]);
+      await track('lin', 7);
+      assert.strictEqual(await get('lin'), 7);
+      await calls();
+      await type('lin', '2.25');
+      assert.deepStrictEqual(await calls(), [['lin', 2.25]], 'typing 2.25 again after the drag applies once');
+      await type('lin', '2.25');
+      assert.deepStrictEqual(await calls(), [], 'unchanged text does not fire again');
+      assert.strictEqual(await get('lin'), 2.25);
+    });
+    await bgroup('browser: stat labels keep the case they are written in (φ, θ, x are not upper-cased; integration regression)', async () => {
+      const r = await page.evaluate(() => { const l = document.querySelector('[data-stat="casing"] .sim-stat-label'); return [getComputedStyle(l).textTransform, l.innerText]; });
+      assert.deepStrictEqual(r, ['none', 'φ = θ1 + θ2, x (m)']);
+    });
+    await bgroup('browser: cv.onDrag hit() receives the pointer type (lets a handler leave touches to page scrolling)', async () => {
+      const r = await page.evaluate(() => { const b = document.querySelector('[data-canvas="dragtest"]').getBoundingClientRect(); return { x: b.left + 20, y: b.top + 10 }; });
+      await page.mouse.click(r.x, r.y);
+      assert.deepStrictEqual(await page.evaluate(() => window.hits), ['mouse']);
+    });
+    assert.deepStrictEqual(errors, []);
+    failed += failedB;
+  } finally { await browser.close(); }
+}
+
+(async function () {
+  try { await browserTests(); } catch (e) { failed++; console.log('FAIL browser: ' + (e && e.stack || e)); }
+  if (failed) { console.log(`\n${failed} test group(s) FAILED`); process.exit(1); }
+  console.log('\nAll core tests passed');
+})();

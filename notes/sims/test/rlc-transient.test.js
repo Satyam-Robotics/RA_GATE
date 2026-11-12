@@ -386,6 +386,24 @@ async function browserTests() {
       await setS({ R: 20 });
       assert.strictEqual(await stat('peak'), '13.51 V at 10.47 ms (35.09 %)');
     });
+    await agroup('browser: an overshoot below the formatter cut-off reads as negligible, not 0 % (integration regression)', async function () {
+      // R = 63 Ω (just under R_crit = 63.246 Ω): the true overshoot ≈ 4e-14 % printed as "(0 %)" next to UNDERDAMPED.
+      await setS({ circuit: 'RLC', mode: 'charge', V: 10, R: 63, LmH: 100, CuF: 100 });
+      const pk = m.peak({ V: 10, R: 63, L: 0.1, C: 100e-6 });
+      assert.ok(pk.overshootPct > 0 && pk.overshootPct < 1e-12, 'precondition: tiny positive overshoot ' + pk.overshootPct);
+      const t = await stat('peak');
+      assert.ok(t.indexOf('(< 10⁻¹² %: negligible)') > 0 && t.indexOf('(0 %)') < 0, 'peak read-out: ' + t);
+      assert.strictEqual(await page.textContent('[data-tag="kind"]'), 'UNDERDAMPED');
+      // review regression: closer still (typed R = 63.245 Ω) e^(−απ/ω_d) underflows to exactly 0 while still under-damped
+      await setS({ R: 63.245 });
+      const pk0 = m.peak({ V: 10, R: 63.245, L: 0.1, C: 100e-6 });
+      assert.ok(pk0 && pk0.overshootPct === 0, 'precondition: under-damped with an overshoot that underflows to 0');
+      const t0 = await stat('peak');
+      assert.ok(t0.indexOf('(< 10⁻¹² %: negligible)') > 0 && t0.indexOf('(0 %)') < 0, 'peak read-out at 63.245 Ω: ' + t0);
+      assert.strictEqual(await page.textContent('[data-tag="kind"]'), 'UNDERDAMPED');
+      await setS({ R: 60 });
+      assert.ok((await stat('peak')).indexOf('(' + RASim.fmt(m.peak({ V: 10, R: 60, L: 0.1, C: 100e-6 }).overshootPct, 4) + ' %)') > 0, 'normal overshoot unchanged');
+    });
     await agroup('browser: read-outs show the check values', async function () {
       await setS({ circuit: 'RLC', mode: 'charge', V: 10, R: 20, LmH: 100, CuF: 100 });
       assert.strictEqual(await stat('w0'), '316.23 rad/s'); assert.strictEqual(await stat('alpha'), '100 s⁻¹');

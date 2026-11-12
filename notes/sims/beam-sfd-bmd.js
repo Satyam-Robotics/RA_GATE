@@ -406,17 +406,17 @@
       ui.button(rowD, { label: 'Reset', key: 'reset', title: 'Restore every default', onClick: function () { hoverX = null; setState(cloneState(DEFAULTS)); } });
 
       const stats = ui.stats(sp.side);
-      const tR = ui.stat(stats, { label: lab('Reactions (upward +)'), key: 'reactions' });
+      const tR = ui.stat(stats, { label: lab('reactions (upward +)'), key: 'reactions' });
       tR.el.classList.add('bm-wide');
       const tV = ui.stat(stats, { label: lab('max |V|'), key: 'maxV' });
       const tDf = ui.stat(stats, { label: lab('max deflection |y|'), key: 'maxDefl' });
       const tSag = ui.stat(stats, { label: lab('max sagging M'), key: 'maxSag' });
       const tHog = ui.stat(stats, { label: lab('max hogging M'), key: 'maxHog' });
-      const tCf = ui.stat(stats, { label: lab('Contraflexure (M changes sign)'), key: 'contra' });
+      const tCf = ui.stat(stats, { label: lab('contraflexure (M changes sign)'), key: 'contra' });
       tCf.el.classList.add('bm-wide');
-      const tSl = ui.stat(stats, { label: lab('Slopes θ = dy/dx'), key: 'slopes' });
+      const tSl = ui.stat(stats, { label: lab('slopes θ = dy/dx'), key: 'slopes' });
       tSl.el.classList.add('bm-wide');
-      const tCk = ui.stat(stats, { label: lab('Equilibrium of the whole beam'), key: 'check' });
+      const tCk = ui.stat(stats, { label: lab('equilibrium of the whole beam'), key: 'check' });
       tCk.el.classList.add('bm-wide');
 
       ui.hints(api.root, [

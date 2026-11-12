@@ -4,7 +4,8 @@ This folder holds the shared core (`core.js`, `core.css`) and one file per simul
 `node notes/build.js` inlines everything into the single offline page `notes/RA_GATE2027_Notes.html`.
 Simulations are **screen-only**: `@media print` hides them, so the PDF never changes.
 
-The 12 simulations and where their placeholders sit:
+**Status: all 12 simulations are built, independently verified and integrated** (they mount together in the real
+page; see "Run all checks" below). The 12 simulations and where their placeholders sit:
 
 | id | title | placeholder in |
 |---|---|---|
@@ -20,6 +21,26 @@ The 12 simulations and where their placeholders sit:
 | `beam-sfd-bmd` | Beam: shear force, bending moment and deflection | `src/05_mechanical.html` |
 | `four-bar` | Four-bar linkage and Grashof's law | `src/05_mechanical.html` |
 | `vibration-sdof` | Single-DOF vibration: free, forced and isolation | `src/05_mechanical.html` |
+
+## Run all checks
+
+From the repository root (every command must exit 0; the browser parts need Playwright and are skipped with
+`--no-browser`):
+
+```
+node notes/sims/test/core.test.js
+for id in eigen-2x2 rlc-transient rotation-transforms two-link-arm second-order-step bode-plot root-locus \
+          pid-tuning mohr-circle beam-sfd-bmd four-bar vibration-sdof; do
+  node notes/sims/test/$id.test.js || echo "FAILED: $id.test.js"
+  node notes/sims/test/harness.js $id --out /tmp/rasim-check/$id > /tmp/rasim-check-$id.json \
+    || echo "FAILED: harness $id"          # also open /tmp/rasim-check/$id/*.png and read the JSON warnings
+done
+node notes/build.js --html-only            # rebuild notes/RA_GATE2027_Notes.html (the PDF is not touched)
+```
+
+The tests and the harness write their temporary pages under `os.tmpdir()` (set `TMPDIR` to keep them elsewhere).
+`node notes/build.js` without `--html-only` also re-prints the PDF: simulations are hidden in print, so its text and
+pages must stay identical (compare `pdftotext -layout` and `pdftoppm` renders with the committed file before keeping it).
 
 ## Rules for authors
 
@@ -247,7 +268,7 @@ KEY = `opts.key` or a slug of the label text (lower-case letters/digits, other r
 | `checkbox(parent, { label, checked = false, key, onChange })` → `{ el, get(), set(flag) }` | `input[type=checkbox][data-control=KEY]` |
 | `button(parent, { label, onClick, title, primary = false, key })` → `<button type="button" class="sim-btn">` | `data-control=KEY`; `primary` adds class `primary` (filled blue) |
 | `stats(parent)` → el | grid of tiles, `repeat(auto-fill, minmax(112px, 1fr))` |
-| `stat(container, { label, key, title })` → `{ el, set(html), setState(state) }` | `el[data-stat=KEY]`, value element `.sim-stat-value`; state `''`/`'ok'`/`'warn'`/`'bad'` → class `sim-ok`/`sim-warn`/`sim-bad`. `set` only touches the DOM when the HTML changes. |
+| `stat(container, { label, key, title })` → `{ el, set(html), setState(state) }` | `el[data-stat=KEY]`, value element `.sim-stat-value`; the label is shown as written (normal case, 11.5px: write labels in lower case, e.g. `overshoot M<sub>p</sub>`); state `''`/`'ok'`/`'warn'`/`'bad'` → class `sim-ok`/`sim-warn`/`sim-bad`. `set` only touches the DOM when the HTML changes. |
 | `tag(parent, { text = '', state = '', key })` → `{ el, set(text, state) }` | pill `span.sim-tag[data-tag=KEY]` (text, upper-cased by CSS); hidden when empty |
 | `matrix(parent, { label, key })` → `{ el, set(rows, { decimals = 3, colColors, rowColors } = {}) }` | `el[data-matrix=KEY]` with an optional label and a bracketed `<table>`; numbers via `fmtFixed(decimals)`, strings as is; `colColors` wins over `rowColors`; cells are reused while the shape is unchanged (safe every frame) |
 | `legend(parent, items)` → `{ el, set(items) }` | `items = [{ color, label, dash = false }]` |
@@ -269,7 +290,7 @@ with a ResizeObserver, window resize and a `matchMedia('(resolution: …dppx)')`
 | `cv.redraw()` | schedules one draw on the next animation frame (coalesced) |
 | `cv.drawNow()` | draws synchronously (use inside `api.animate`) |
 | `cv.setAspect(a)` | changes the aspect ratio, resizes and redraws |
-| `cv.onDrag({ hit(x, y), move(x, y, token), end(token), cursor(x, y) })` | pointerdown → `hit`; a truthy return is the drag token: the pointer is captured and `move` gets every pointermove (coordinates may leave the canvas) until pointerup/pointercancel, then `end` (optional). `cursor` (optional) on hover returns a CSS cursor or null. Touch: a touch starting on a handle does not scroll the page (non-passive `touchstart` with `preventDefault` only when `hit` succeeds); a touch elsewhere scrolls normally. `hit` can be called twice for one touch (pointerdown and touchstart), so keep it free of side effects. Several `onDrag` calls are allowed: the first handler whose `hit` succeeds wins. |
+| `cv.onDrag({ hit(x, y, info), move(x, y, token), end(token), cursor(x, y) })` | pointerdown → `hit`; `info = { pointerType }` (`'mouse'`, `'pen'` or `'touch'`), so a handler can return null for touches it wants to leave to page scrolling (e.g. a drag-anywhere orbit); a truthy return is the drag token: the pointer is captured and `move` gets every pointermove (coordinates may leave the canvas) until pointerup/pointercancel, then `end` (optional). `cursor` (optional) on hover returns a CSS cursor or null. Touch: a touch starting on a handle does not scroll the page (non-passive `touchstart` with `preventDefault` only when `hit` succeeds); a touch elsewhere scrolls normally. `hit` can be called twice for one touch (pointerdown and touchstart), so keep it free of side effects. Several `onDrag` calls are allowed: the first handler whose `hit` succeeds wins. |
 | `cv.onHover({ move(x, y), leave() })` | mouse/pen hover tracking for read-out cursors (not touch) |
 
 When the canvas has zero width (collapsed or `display: none`) drawing is skipped and done when it becomes visible again.
@@ -321,7 +342,8 @@ Drawing methods, all clipped to `p.rect` unless the style has `clip: false`; com
 
 ## Files
 
-- `core.js`, `core.css`: the core (do not edit).
+- `core.js`, `core.css`: the core (do not edit; integration changes: `ui.slider`'s number box accepts a re-typed value
+  after a track move, `onDrag` `hit` receives the pointer type, stat labels are no longer upper-cased).
 - `test/load.js`: Node loader. `test/harness.js`: browser harness. `test/core.test.js`: core tests.
 - `test/demo-sim.js`: id `demo`, a working example of every builder, plot method and draw helper, canvas drag, hover and animation. Read it for idioms. Run it with
   `node notes/sims/test/harness.js demo --file notes/sims/test/demo-sim.js --out <dir>`.
