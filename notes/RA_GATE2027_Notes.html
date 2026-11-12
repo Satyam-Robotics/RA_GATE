@@ -1,0 +1,1203 @@
+<!doctype html><html><head><meta charset="utf-8"><title>GATE 2027 RA Notes</title>
+<style>
+@page { size: A4; margin: 16mm 14mm 16mm 14mm; }
+body { font-family: "DejaVu Serif", Georgia, serif; font-size: 10.2pt; line-height: 1.42; color: #1a1a1a; }
+h1 { font-family: "DejaVu Sans", Arial, sans-serif; color: #6b1d1d; border-bottom: 2px solid #6b1d1d; padding-bottom: 4px; page-break-before: always; font-size: 19pt; }
+h2 { font-family: "DejaVu Sans", Arial, sans-serif; color: #1f4e79; font-size: 14pt; margin-top: 18px; border-left: 4px solid #1f4e79; padding-left: 7px; page-break-after: avoid; }
+h3 { font-family: "DejaVu Sans", Arial, sans-serif; color: #2e6b30; font-size: 11pt; margin: 12px 0 4px; page-break-after: avoid; }
+ul { margin: 3px 0 6px 0; padding-left: 20px; }
+li { margin: 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 10px; font-size: 9.4pt; page-break-inside: avoid; }
+th, td { border: 1px solid #999; padding: 3px 6px; vertical-align: top; text-align: left; }
+th { background: #f3ead2; }
+b { color: #222; }
+.cover { text-align: center; padding-top: 70mm; }
+.cover h1 { page-break-before: avoid; border: none; font-size: 30pt; }
+.cover p { font-size: 13pt; color: #444; }
+.toc h1 { page-break-before: always; }
+.toc ul { list-style: none; padding-left: 0; columns: 2; column-gap: 24px; }
+.toc li.h1 { font-weight: bold; margin-top: 8px; color: #6b1d1d; }
+.toc li.h2 { padding-left: 12px; font-size: 9.5pt; }
+.toc a { color: inherit; text-decoration: none; }
+</style></head><body><div class="cover"><h1>GATE 2027<br>Robotics and Automation (RA)</h1>
+<p>Complete topic-wise study notes</p>
+<p>Part A: Engineering Mathematics · Mechatronics · Robotics &amp; Automation<br>
+Part B1: Electrical Engineering · Part B2: Mechanical Engineering</p>
+<p style="font-size:10pt;margin-top:40mm">Organized exactly by the official GATE 2027 RA syllabus (IIT Madras).<br>
+Concise exam notes: definitions, key results, formulas and standard cases.</p></div><nav class="toc"><h1>Contents</h1><ul><li class="h1"><a href="#a1">Part A.1 — Engineering Mathematics</a></li><li class="h2"><a href="#s1">1. Linear Algebra</a></li><li class="h2"><a href="#s2">2. Calculus</a></li><li class="h2"><a href="#s3">3. Differential Equations</a></li><li class="h2"><a href="#s4">4. Probability and Statistics</a></li><li class="h2"><a href="#s5">5. Numerical Methods</a></li><li class="h1"><a href="#a2">Part A.2 — Basics of Mechatronics</a></li><li class="h2"><a href="#s6">1. Network Elements and Analysis</a></li><li class="h2"><a href="#s7">2. Digital Circuits</a></li><li class="h2"><a href="#s8">3. Sensors and Signal Conditioning</a></li><li class="h2"><a href="#s9">4. Actuators</a></li><li class="h2"><a href="#s10">5. Engineering Mechanics</a></li><li class="h2"><a href="#s11">6. Programming (Python)</a></li><li class="h2"><a href="#s12">7. Data Structures</a></li><li class="h1"><a href="#a3">Part A.3 — Principles of Robotics and Automation</a></li><li class="h2"><a href="#s13">1. Robot Classification</a></li><li class="h2"><a href="#s14">2. Links, Joints, Coordinate Systems and DOF</a></li><li class="h2"><a href="#s15">3. Rotation Matrices</a></li><li class="h2"><a href="#s16">4. Homogeneous Transformations</a></li><li class="h2"><a href="#s17">5. Forward Kinematics</a></li><li class="h2"><a href="#s18">6. Robot Applications and Performance</a></li><li class="h2"><a href="#s19">7. Computer Integrated Manufacturing (CIM)</a></li><li class="h1"><a href="#b1">Part B1 — Electrical Engineering</a></li><li class="h2"><a href="#s20">B1.1 Analog Circuits and Embedded Systems</a></li><li class="h2"><a href="#s21">B1.2 Signals and Systems</a></li><li class="h2"><a href="#s22">B1.3 Control Systems</a></li><li class="h1"><a href="#b2">Part B2 — Mechanical Engineering</a></li><li class="h2"><a href="#s23">B2.1 Mechanics of Materials</a></li><li class="h2"><a href="#s24">B2.2 Kinematics and Dynamics of Machines</a></li><li class="h2"><a href="#s25">B2.3 Machine Design and Computer Integrated Manufacturing</a></li></ul></nav><section><h1 id="a1">Part A.1 — Engineering Mathematics</h1>
+
+<h2 id="s1">1. Linear Algebra</h2>
+<h3>Matrix basics</h3>
+<ul>
+<li><b>Transpose:</b> (Aᵀ)ᵢⱼ = Aⱼᵢ; (AB)ᵀ = BᵀAᵀ; (A⁻¹)ᵀ = (Aᵀ)⁻¹.</li>
+<li><b>Symmetric:</b> Aᵀ = A. <b>Skew-symmetric:</b> Aᵀ = −A (diagonal = 0; odd order ⇒ det = 0). Any A = ½(A+Aᵀ) + ½(A−Aᵀ).</li>
+<li><b>Orthogonal:</b> AᵀA = I ⇒ A⁻¹ = Aᵀ, det = ±1, columns orthonormal. Rotation matrices are orthogonal with det = +1.</li>
+<li><b>Trace:</b> sum of diagonal = sum of eigenvalues; tr(AB) = tr(BA).</li>
+<li><b>Adjoint:</b> adj(A) = transpose of cofactor matrix. A·adj(A) = det(A)·I ⇒ A⁻¹ = adj(A)/det(A). det(adj A) = (det A)ⁿ⁻¹ for n×n. adj(adj A) = (det A)ⁿ⁻²·A.</li>
+</ul>
+<h3>Determinant</h3>
+<ul>
+<li>det(AB) = det A·det B; det(Aᵀ) = det A; det(kA) = kⁿ det A; det(A⁻¹) = 1/det A.</li>
+<li>Swapping two rows changes sign; adding a multiple of one row to another leaves det unchanged; two equal/proportional rows ⇒ det = 0.</li>
+<li>Triangular matrix: det = product of diagonal. det = product of eigenvalues.</li>
+</ul>
+<h3>Rank</h3>
+<ul>
+<li>Rank = number of linearly independent rows (= columns) = number of non-zero rows in row-echelon form = order of largest non-zero minor.</li>
+<li>rank(AB) ≤ min(rank A, rank B). rank(A) = rank(Aᵀ). Rank–nullity: rank + nullity = n (number of columns).</li>
+</ul>
+<h3>Systems of linear equations Ax = b (n unknowns)</h3>
+<table>
+<tr><th>Condition</th><th>Result</th></tr>
+<tr><td>rank(A) ≠ rank([A|b])</td><td>Inconsistent — no solution</td></tr>
+<tr><td>rank(A) = rank([A|b]) = n</td><td>Unique solution</td></tr>
+<tr><td>rank(A) = rank([A|b]) = r &lt; n</td><td>Infinitely many solutions; n − r free parameters</td></tr>
+</table>
+<ul>
+<li>Homogeneous Ax = 0 is always consistent; non-trivial solution exists iff rank &lt; n (for square A, iff det A = 0).</li>
+<li>Methods: Gaussian elimination, Gauss–Jordan, Cramer's rule (xᵢ = det Aᵢ / det A), LU decomposition.</li>
+</ul>
+<h3>Eigenvalues and eigenvectors</h3>
+<ul>
+<li>Ax = λx, x ≠ 0. Characteristic equation: det(A − λI) = 0.</li>
+<li>Σλᵢ = trace, Πλᵢ = det. Eigenvalues of triangular/diagonal matrix = diagonal entries.</li>
+<li>Eigenvalues of A⁻¹: 1/λ; Aᵏ: λᵏ; A + kI: λ + k; kA: kλ; Aᵀ: same λ. Eigenvectors stay the same (except for Aᵀ).</li>
+<li>Real symmetric ⇒ real eigenvalues, orthogonal eigenvectors. Skew-symmetric ⇒ zero or purely imaginary. Orthogonal ⇒ |λ| = 1.</li>
+<li>Distinct eigenvalues ⇒ linearly independent eigenvectors ⇒ diagonalizable: A = PDP⁻¹.</li>
+<li><b>Cayley–Hamilton:</b> every matrix satisfies its own characteristic equation (useful to find A⁻¹ and powers).</li>
+<li>Algebraic multiplicity ≥ geometric multiplicity (= n − rank(A − λI)).</li>
+</ul>
+
+<h2 id="s2">2. Calculus</h2>
+<h3>Limits, continuity, differentiability</h3>
+<ul>
+<li>Limit exists iff LHL = RHL. Continuous at a iff lim<sub>x→a</sub> f(x) = f(a).</li>
+<li>Differentiable ⇒ continuous (not conversely; e.g. |x| at 0).</li>
+<li>Standard limits: sin x/x → 1; (1 + x)<sup>1/x</sup> → e; (eˣ − 1)/x → 1; (aˣ − 1)/x → ln a; (1 + 1/x)ˣ → e as x→∞.</li>
+</ul>
+<h3>Mean value theorems</h3>
+<ul>
+<li><b>Rolle:</b> f continuous on [a,b], differentiable on (a,b), f(a) = f(b) ⇒ ∃ c: f′(c) = 0.</li>
+<li><b>Lagrange (MVT):</b> ∃ c ∈ (a,b): f′(c) = [f(b) − f(a)]/(b − a).</li>
+<li><b>Cauchy:</b> [f(b) − f(a)]/[g(b) − g(a)] = f′(c)/g′(c).</li>
+</ul>
+<h3>Indeterminate forms</h3>
+<ul>
+<li>0/0, ∞/∞ → L'Hôpital: lim f/g = lim f′/g′.</li>
+<li>0·∞ → rewrite as 0/0. ∞ − ∞ → combine into one fraction. 1^∞, 0⁰, ∞⁰ → take log: L = e<sup>lim g·ln f</sup>. For 1^∞: L = e<sup>lim g(f − 1)</sup>.</li>
+</ul>
+<h3>Integrals</h3>
+<ul>
+<li>∫₀ᵃ f(x)dx = ∫₀ᵃ f(a − x)dx. ∫₋ₐᵃ f dx = 2∫₀ᵃ f (even) or 0 (odd).</li>
+<li>Wallis: ∫₀^{π/2} sinⁿx dx = [(n−1)(n−3).../n(n−2)...] × (π/2 if n even, 1 if n odd).</li>
+<li><b>Improper integrals:</b> infinite limits or unbounded integrand; evaluate as a limit. ∫₁^∞ 1/xᵖ dx converges iff p &gt; 1; ∫₀¹ 1/xᵖ dx converges iff p &lt; 1.</li>
+<li>Gamma: Γ(n) = ∫₀^∞ e⁻ˣxⁿ⁻¹dx, Γ(n+1) = nΓ(n) = n!, Γ(½) = √π. ∫₀^∞ e^{−x²}dx = √π/2.</li>
+</ul>
+<h3>Double and triple integrals</h3>
+<ul>
+<li>Change order of integration by redrawing the region. Polar: dx dy = r dr dθ. Cylindrical: r dr dθ dz. Spherical: r² sin φ dr dθ dφ.</li>
+<li>Area = ∬ dx dy; volume = ∭ dV; general change of variables uses the Jacobian |∂(x,y)/∂(u,v)|.</li>
+</ul>
+<h3>Partial and total derivatives</h3>
+<ul>
+<li>Total differential: du = (∂u/∂x)dx + (∂u/∂y)dy. Chain rule: du/dt = u<sub>x</sub>·dx/dt + u<sub>y</sub>·dy/dt.</li>
+<li><b>Euler's theorem</b> (u homogeneous of degree n): x u<sub>x</sub> + y u<sub>y</sub> = n u; second order: x²u<sub>xx</sub> + 2xy u<sub>xy</sub> + y²u<sub>yy</sub> = n(n−1)u.</li>
+<li>Implicit: dy/dx = −f<sub>x</sub>/f<sub>y</sub>.</li>
+</ul>
+<h3>Taylor series</h3>
+<ul>
+<li>One variable: f(a+h) = f(a) + h f′(a) + h²/2! f″(a) + … Maclaurin at a = 0.</li>
+<li>Key series: eˣ = Σxⁿ/n!; sin x = x − x³/3! + x⁵/5! − …; cos x = 1 − x²/2! + x⁴/4! − …; ln(1+x) = x − x²/2 + x³/3 − …; 1/(1−x) = 1 + x + x² + … (|x| &lt; 1).</li>
+<li>Two variables: f(a+h, b+k) = f + (h f<sub>x</sub> + k f<sub>y</sub>) + (1/2!)(h² f<sub>xx</sub> + 2hk f<sub>xy</sub> + k² f<sub>yy</sub>) + …</li>
+</ul>
+<h3>Maxima and minima</h3>
+<ul>
+<li>One variable: f′ = 0; f″ &lt; 0 ⇒ max, f″ &gt; 0 ⇒ min, f″ = 0 ⇒ check higher derivatives.</li>
+<li>Two variables: f<sub>x</sub> = f<sub>y</sub> = 0. r = f<sub>xx</sub>, s = f<sub>xy</sub>, t = f<sub>yy</sub>. rt − s² &gt; 0 and r &lt; 0 ⇒ max; rt − s² &gt; 0 and r &gt; 0 ⇒ min; rt − s² &lt; 0 ⇒ saddle; = 0 ⇒ inconclusive.</li>
+<li>Constrained: Lagrange multipliers, ∇f = λ∇g.</li>
+</ul>
+<h3>Vector calculus</h3>
+<ul>
+<li><b>Gradient</b> ∇φ: vector normal to level surface; directional derivative = ∇φ·â; maximum rate = |∇φ|.</li>
+<li><b>Divergence</b> ∇·F = ∂F₁/∂x + ∂F₂/∂y + ∂F₃/∂z (scalar). ∇·F = 0 ⇒ solenoidal.</li>
+<li><b>Curl</b> ∇×F (vector). ∇×F = 0 ⇒ irrotational (conservative, F = ∇φ).</li>
+<li>Identities: ∇×(∇φ) = 0; ∇·(∇×F) = 0; ∇·(φF) = φ∇·F + F·∇φ; ∇×(φF) = φ∇×F + ∇φ×F; ∇×(∇×F) = ∇(∇·F) − ∇²F; ∇·r = 3, ∇×r = 0, ∇rⁿ = n rⁿ⁻² r.</li>
+<li><b>Green:</b> ∮(M dx + N dy) = ∬(∂N/∂x − ∂M/∂y) dA. <b>Stokes:</b> ∮F·dr = ∬(∇×F)·n dS. <b>Gauss divergence:</b> ∯F·n dS = ∭∇·F dV.</li>
+</ul>
+
+<h2 id="s3">3. Differential Equations</h2>
+<h3>First order</h3>
+<ul>
+<li><b>Variable separable:</b> f(x)dx = g(y)dy.</li>
+<li><b>Homogeneous</b> dy/dx = f(y/x): put y = vx.</li>
+<li><b>Exact:</b> M dx + N dy = 0 exact iff ∂M/∂y = ∂N/∂x. Solution: ∫M dx (y const) + ∫(terms of N without x) dy = c. Integrating factors: (M<sub>y</sub> − N<sub>x</sub>)/N = f(x) ⇒ IF = e<sup>∫f dx</sup>.</li>
+<li><b>Linear:</b> y′ + P(x)y = Q(x). IF = e<sup>∫P dx</sup>; y·IF = ∫Q·IF dx + c.</li>
+<li><b>Bernoulli</b> (nonlinear): y′ + Py = Qyⁿ; put z = y<sup>1−n</sup> to make it linear.</li>
+</ul>
+<h3>Higher order linear with constant coefficients</h3>
+<ul>
+<li>Solution y = C.F. + P.I. Auxiliary equation from D → m.</li>
+<li>C.F.: distinct real roots → Σcᵢe<sup>mᵢx</sup>; repeated root m → (c₁ + c₂x)e<sup>mx</sup>; complex α ± iβ → e<sup>αx</sup>(c₁cos βx + c₂sin βx).</li>
+<li>P.I.: e<sup>ax</sup> → e<sup>ax</sup>/f(a) (if f(a) = 0, multiply by x and differentiate f). sin ax, cos ax → replace D² by −a². xⁿ → expand [f(D)]⁻¹ as a power series. e<sup>ax</sup>V → e<sup>ax</sup>·[1/f(D+a)]V.</li>
+</ul>
+<h3>Euler–Cauchy equation</h3>
+<ul>
+<li>x²y″ + a x y′ + b y = R(x). Substitute x = eᵗ (xD = θ, x²D² = θ(θ−1)) → constant-coefficient ODE in t.</li>
+<li>Equivalently try y = xᵐ: m(m−1) + am + b = 0. Repeated root m ⇒ y = (c₁ + c₂ ln x)xᵐ.</li>
+</ul>
+<h3>IVP and BVP</h3>
+<ul>
+<li>IVP: conditions at one point (y(x₀), y′(x₀)). BVP: conditions at two points; may have no or infinitely many solutions.</li>
+</ul>
+<h3>Laplace transforms</h3>
+<table>
+<tr><th>f(t)</th><th>F(s)</th><th>f(t)</th><th>F(s)</th></tr>
+<tr><td>1</td><td>1/s</td><td>tⁿ</td><td>n!/sⁿ⁺¹</td></tr>
+<tr><td>e<sup>at</sup></td><td>1/(s−a)</td><td>sin at</td><td>a/(s²+a²)</td></tr>
+<tr><td>cos at</td><td>s/(s²+a²)</td><td>sinh at</td><td>a/(s²−a²)</td></tr>
+<tr><td>δ(t)</td><td>1</td><td>u(t−a)</td><td>e<sup>−as</sup>/s</td></tr>
+</table>
+<ul>
+<li>Shifting: L{e<sup>at</sup>f} = F(s−a); L{f(t−a)u(t−a)} = e<sup>−as</sup>F(s).</li>
+<li>Derivative: L{f′} = sF − f(0); L{f″} = s²F − s f(0) − f′(0). Integral: L{∫₀ᵗf} = F/s.</li>
+<li>L{t f} = −F′(s); L{f/t} = ∫ₛ^∞F ds. Convolution: L{f*g} = F·G.</li>
+<li>Initial value: f(0⁺) = lim<sub>s→∞</sub> sF(s). Final value: f(∞) = lim<sub>s→0</sub> sF(s) (if poles of sF in LHP).</li>
+</ul>
+<h3>PDEs: heat, wave, Laplace</h3>
+<ul>
+<li>Classification of A u<sub>xx</sub> + B u<sub>xy</sub> + C u<sub>yy</sub>: B² − 4AC &lt; 0 elliptic (Laplace), = 0 parabolic (heat), &gt; 0 hyperbolic (wave).</li>
+<li><b>Heat:</b> u<sub>t</sub> = c²u<sub>xx</sub>; with u(0,t) = u(L,t) = 0: u = Σ bₙ sin(nπx/L) e<sup>−c²n²π²t/L²</sup>.</li>
+<li><b>Wave:</b> u<sub>tt</sub> = c²u<sub>xx</sub>; fixed ends: u = Σ [Aₙ cos(nπct/L) + Bₙ sin(nπct/L)] sin(nπx/L). D'Alembert: u = ½[f(x+ct) + f(x−ct)] + (1/2c)∫g.</li>
+<li><b>Laplace:</b> u<sub>xx</sub> + u<sub>yy</sub> = 0 (steady-state heat). Method: separation of variables u = X(x)T(t).</li>
+</ul>
+<h3>Fourier series</h3>
+<ul>
+<li>Period 2L: f(x) = a₀/2 + Σ[aₙcos(nπx/L) + bₙsin(nπx/L)]; aₙ = (1/L)∫₋ₗᴸ f cos(nπx/L) dx, bₙ = (1/L)∫₋ₗᴸ f sin(nπx/L) dx.</li>
+<li>Even f ⇒ cosine series (bₙ = 0). Odd f ⇒ sine series (aₙ = 0).</li>
+<li>At a jump discontinuity the series converges to the average of left and right limits (Dirichlet).</li>
+<li>Parseval: (1/L)∫f² = a₀²/2 + Σ(aₙ² + bₙ²).</li>
+</ul>
+
+<h2 id="s4">4. Probability and Statistics</h2>
+<ul>
+<li><b>Axioms:</b> P(A) ≥ 0; P(S) = 1; for disjoint events P(A∪B) = P(A) + P(B).</li>
+<li>P(A∪B) = P(A) + P(B) − P(A∩B). Independent ⇒ P(A∩B) = P(A)P(B).</li>
+<li><b>Conditional:</b> P(A|B) = P(A∩B)/P(B). <b>Total probability:</b> P(B) = ΣP(B|Aᵢ)P(Aᵢ). <b>Bayes:</b> P(Aᵢ|B) = P(B|Aᵢ)P(Aᵢ)/ΣP(B|Aⱼ)P(Aⱼ).</li>
+<li><b>Central tendency:</b> mean = Σx/n; median = middle value; mode = most frequent. Empirical: mode ≈ 3 median − 2 mean.</li>
+<li><b>Dispersion:</b> variance σ² = E[X²] − (E[X])²; SD = σ. Var(aX + b) = a²Var(X).</li>
+<li><b>Random variable:</b> discrete (PMF) or continuous (PDF). <b>PDF</b> f(x) ≥ 0, ∫f = 1, P(a&lt;X&lt;b) = ∫ₐᵇ f. <b>CDF</b> F(x) = P(X ≤ x), non-decreasing, F(−∞) = 0, F(∞) = 1, f = F′.</li>
+<li>E[X] = Σx p(x) or ∫x f(x) dx; E[aX + bY] = aE[X] + bE[Y].</li>
+</ul>
+<table>
+<tr><th>Distribution</th><th>PMF / PDF</th><th>Mean</th><th>Variance</th></tr>
+<tr><td>Binomial (n, p)</td><td>ⁿCₓ pˣ qⁿ⁻ˣ</td><td>np</td><td>npq</td></tr>
+<tr><td>Poisson (λ)</td><td>e<sup>−λ</sup>λˣ/x!</td><td>λ</td><td>λ</td></tr>
+<tr><td>Uniform (a, b)</td><td>1/(b−a)</td><td>(a+b)/2</td><td>(b−a)²/12</td></tr>
+<tr><td>Exponential (λ)</td><td>λe<sup>−λx</sup></td><td>1/λ</td><td>1/λ²</td></tr>
+<tr><td>Normal (μ, σ²)</td><td>(1/σ√2π) e<sup>−(x−μ)²/2σ²</sup></td><td>μ</td><td>σ²</td></tr>
+</table>
+<ul>
+<li>Poisson approximates binomial when n large, p small, λ = np. Normal: z = (x − μ)/σ; 68–95–99.7 rule for ±1σ, ±2σ, ±3σ.</li>
+<li><b>Hypothesis testing:</b> H₀ (null) vs H₁. Type I error α = P(reject H₀ | H₀ true); Type II β = P(accept H₀ | H₀ false); power = 1 − β.</li>
+<li>z-test (σ known, large n): z = (x̄ − μ)/(σ/√n). t-test (σ unknown, small n): t = (x̄ − μ)/(s/√n), n−1 dof. χ² test for goodness of fit/variance. Reject H₀ if |statistic| &gt; critical value (or p-value &lt; α).</li>
+</ul>
+
+<h2 id="s5">5. Numerical Methods</h2>
+<h3>Algebraic and transcendental equations</h3>
+<ul>
+<li><b>Bisection:</b> f(a)f(b) &lt; 0, halve the interval; linear convergence; error after n steps ≤ (b−a)/2ⁿ.</li>
+<li><b>Regula falsi:</b> x = (a f(b) − b f(a))/(f(b) − f(a)).</li>
+<li><b>Newton–Raphson:</b> xₙ₊₁ = xₙ − f(xₙ)/f′(xₙ); quadratic convergence (order 2). Square root of N: xₙ₊₁ = ½(xₙ + N/xₙ).</li>
+<li><b>Secant:</b> order ≈ 1.618. <b>Fixed-point</b> x = g(x) converges if |g′(x)| &lt; 1.</li>
+<li>Linear systems: Gauss elimination (direct); Jacobi and Gauss–Seidel (iterative, converge if diagonally dominant; Gauss–Seidel faster).</li>
+</ul>
+<h3>Numerical integration (h = (b−a)/n)</h3>
+<table>
+<tr><th>Rule</th><th>Formula</th><th>Error order</th></tr>
+<tr><td>Trapezoidal</td><td>(h/2)[y₀ + 2(y₁+…+yₙ₋₁) + yₙ]</td><td>O(h²) global; exact for linear</td></tr>
+<tr><td>Simpson 1/3 (n even)</td><td>(h/3)[y₀ + 4(odd) + 2(even) + yₙ]</td><td>O(h⁴); exact up to cubic</td></tr>
+<tr><td>Simpson 3/8 (n multiple of 3)</td><td>(3h/8)[y₀ + 3y₁ + 3y₂ + 2y₃ + … + yₙ]</td><td>O(h⁴)</td></tr>
+</table>
+<h3>Finite differences</h3>
+<ul>
+<li>Forward Δy = y₁ − y₀; backward ∇y = y₁ − y₀ (at y₁); central δ. Shift E = 1 + Δ.</li>
+<li>f′(x) ≈ [f(x+h) − f(x)]/h (O(h)); central [f(x+h) − f(x−h)]/2h (O(h²)); f″ ≈ [f(x+h) − 2f(x) + f(x−h)]/h².</li>
+</ul>
+<h3>ODE solvers for y′ = f(x, y)</h3>
+<ul>
+<li><b>Explicit Euler:</b> yₙ₊₁ = yₙ + h f(xₙ, yₙ) — first order, local error O(h²), global O(h).</li>
+<li><b>Modified Euler / Heun:</b> predictor-corrector, second order.</li>
+<li><b>RK4:</b> k₁ = hf(x,y); k₂ = hf(x+h/2, y+k₁/2); k₃ = hf(x+h/2, y+k₂/2); k₄ = hf(x+h, y+k₃); yₙ₊₁ = yₙ + (k₁ + 2k₂ + 2k₃ + k₄)/6. Fourth order.</li>
+<li><b>Multi-step:</b> Adams–Bashforth (explicit), Adams–Moulton (implicit), Milne's predictor-corrector — use several previous points.</li>
+<li>Stability: explicit Euler for y′ = λy stable if |1 + hλ| ≤ 1.</li>
+</ul>
+</section>
+<section><h1 id="a2">Part A.2 — Basics of Mechatronics</h1>
+
+<h2 id="s6">1. Network Elements and Analysis</h2>
+<h3>Elements and sources</h3>
+<ul>
+<li><b>Ideal voltage source:</b> fixed V, zero internal resistance (practical: series R). <b>Ideal current source:</b> fixed I, infinite internal resistance (practical: parallel R).</li>
+<li><b>Dependent sources:</b> VCVS, VCCS, CCVS, CCCS. Do not switch them off when finding R<sub>th</sub>; use a test source instead.</li>
+<li><b>R:</b> v = iR, P = i²R. <b>L:</b> v = L di/dt, energy ½Li², current cannot change instantly, acts as a short at DC. <b>C:</b> i = C dv/dt, energy ½Cv², voltage cannot change instantly, acts as an open at DC.</li>
+<li>Series R add; parallel 1/R add. Inductors combine like R; capacitors combine the opposite way. <b>M (mutual inductance):</b> v₂ = M di₁/dt; M = k√(L₁L₂); series aiding L = L₁ + L₂ + 2M, opposing L₁ + L₂ − 2M.</li>
+<li>Voltage divider: Vₓ = V·Rₓ/ΣR. Current divider: I₁ = I·R₂/(R₁ + R₂).</li>
+<li>Star–delta: R<sub>Y</sub> = R<sub>ab</sub>R<sub>ac</sub>/ΣR<sub>Δ</sub>; balanced R<sub>Y</sub> = R<sub>Δ</sub>/3.</li>
+</ul>
+<h3>Kirchhoff's laws and solution methods</h3>
+<ul>
+<li><b>KCL:</b> Σ currents into a node = 0 (charge conservation). <b>KVL:</b> Σ voltages around a loop = 0 (energy conservation).</li>
+<li><b>Nodal analysis:</b> pick a reference node, write KCL at the other (n − 1) nodes in terms of node voltages. A voltage source between two non-reference nodes forms a supernode.</li>
+<li><b>Mesh analysis:</b> write KVL around b − n + 1 meshes (planar circuits). A current source shared by two meshes forms a supermesh.</li>
+</ul>
+<h3>Network theorems</h3>
+<ul>
+<li><b>Thevenin:</b> any linear two-terminal network = V<sub>th</sub> (open-circuit voltage) in series with R<sub>th</sub> (sources off: V → short, I → open).</li>
+<li><b>Norton:</b> I<sub>N</sub> (short-circuit current) in parallel with R<sub>N</sub> = R<sub>th</sub>. V<sub>th</sub> = I<sub>N</sub>R<sub>th</sub>.</li>
+<li><b>Superposition:</b> response = sum of responses to each independent source acting alone (linear circuits only; not valid for power).</li>
+<li><b>Maximum power transfer:</b> DC: R<sub>L</sub> = R<sub>th</sub>, P<sub>max</sub> = V<sub>th</sub>²/4R<sub>th</sub>, efficiency 50%. AC: Z<sub>L</sub> = Z<sub>th</sub>* (conjugate); if only |Z<sub>L</sub>| can vary, R<sub>L</sub> = |Z<sub>th</sub>|.</li>
+<li>Also know: reciprocity, Tellegen (Σvᵢiᵢ = 0), Millman.</li>
+</ul>
+<h3>Transient response</h3>
+<ul>
+<li>First order: x(t) = x(∞) + [x(0⁺) − x(∞)]e<sup>−t/τ</sup>. τ = RC or L/R (R = Thevenin resistance seen by C or L).</li>
+<li>After 5τ the response is &gt;99% settled. RC charging: v<sub>C</sub> = V(1 − e<sup>−t/RC</sup>).</li>
+<li>Second-order series RLC: s² + (R/L)s + 1/LC = 0. ω₀ = 1/√LC, ζ = (R/2)√(C/L). ζ &gt; 1 overdamped, = 1 critically damped, &lt; 1 underdamped (oscillatory with ω<sub>d</sub> = ω₀√(1−ζ²)).</li>
+<li>Parallel RLC: ζ = (1/2R)√(L/C).</li>
+</ul>
+<h3>Sinusoidal steady state</h3>
+<ul>
+<li>Phasor: v = V<sub>m</sub>cos(ωt + φ) → V∠φ. Impedances: Z<sub>R</sub> = R, Z<sub>L</sub> = jωL, Z<sub>C</sub> = 1/jωC.</li>
+<li>RMS of sinusoid = V<sub>m</sub>/√2. Current lags voltage in an inductive circuit, leads in a capacitive circuit.</li>
+<li><b>Complex power:</b> S = V I* = P + jQ. P = V<sub>rms</sub>I<sub>rms</sub>cos φ (W), Q = V<sub>rms</sub>I<sub>rms</sub>sin φ (VAR), |S| (VA). Power factor = cos φ = P/|S|. PF correction adds a shunt capacitor: Q<sub>C</sub> = P(tan φ₁ − tan φ₂).</li>
+</ul>
+<h3>Resonance</h3>
+<ul>
+<li><b>Series RLC:</b> ω₀ = 1/√LC; Z = R (minimum), current maximum, PF = 1. Q = ω₀L/R = (1/R)√(L/C). Bandwidth = R/L = ω₀/Q. Voltage across L or C = Q × supply voltage.</li>
+<li><b>Parallel RLC:</b> impedance maximum, current minimum. Q = R√(C/L). BW = 1/RC.</li>
+<li>Half-power frequencies: ω₁ω₂ = ω₀².</li>
+</ul>
+<h3>Two-port networks</h3>
+<table>
+<tr><th>Parameters</th><th>Equations</th><th>Reciprocal if</th><th>Symmetric if</th></tr>
+<tr><td>Z (open circuit)</td><td>V₁ = Z₁₁I₁ + Z₁₂I₂; V₂ = Z₂₁I₁ + Z₂₂I₂</td><td>Z₁₂ = Z₂₁</td><td>Z₁₁ = Z₂₂</td></tr>
+<tr><td>Y (short circuit)</td><td>I₁ = Y₁₁V₁ + Y₁₂V₂; I₂ = Y₂₁V₁ + Y₂₂V₂</td><td>Y₁₂ = Y₂₁</td><td>Y₁₁ = Y₂₂</td></tr>
+<tr><td>h (hybrid)</td><td>V₁ = h₁₁I₁ + h₁₂V₂; I₂ = h₂₁I₁ + h₂₂V₂</td><td>h₁₂ = −h₂₁</td><td>Δh = 1</td></tr>
+<tr><td>ABCD (transmission)</td><td>V₁ = AV₂ − BI₂; I₁ = CV₂ − DI₂</td><td>AD − BC = 1</td><td>A = D</td></tr>
+</table>
+<ul>
+<li>Cascade connection: multiply ABCD matrices. Series: add Z. Parallel: add Y.</li>
+</ul>
+<h3>Balanced three-phase circuits</h3>
+<ul>
+<li>Star (Y): V<sub>L</sub> = √3 V<sub>ph</sub> (leads by 30°), I<sub>L</sub> = I<sub>ph</sub>. Delta (Δ): V<sub>L</sub> = V<sub>ph</sub>, I<sub>L</sub> = √3 I<sub>ph</sub> (lags by 30°).</li>
+<li>Total power P = √3 V<sub>L</sub>I<sub>L</sub>cos φ = 3V<sub>ph</sub>I<sub>ph</sub>cos φ. Q = √3 V<sub>L</sub>I<sub>L</sub>sin φ.</li>
+<li><b>Two-wattmeter method:</b> P = W₁ + W₂; tan φ = √3(W₁ − W₂)/(W₁ + W₂). At PF 0.5 one wattmeter reads zero; below 0.5 one reads negative.</li>
+<li>Neutral current in a balanced star = 0.</li>
+</ul>
+
+<h2 id="s7">2. Digital Circuits</h2>
+<h3>Boolean algebra</h3>
+<ul>
+<li>Laws: identity (A + 0 = A, A·1 = A), null (A + 1 = 1, A·0 = 0), idempotent, complement (A + A′ = 1), absorption (A + AB = A, A(A + B) = A), A + A′B = A + B.</li>
+<li><b>De Morgan:</b> (A + B)′ = A′B′; (AB)′ = A′ + B′. <b>Consensus:</b> AB + A′C + BC = AB + A′C.</li>
+<li>SOP (minterms Σm) and POS (maxterms ΠM). K-maps: group 1s in powers of 2 (adjacent wraps around); don't-cares can be used for larger groups.</li>
+<li>NAND and NOR are universal gates. XOR: A ⊕ B = A′B + AB′; XNOR is equality. A ⊕ A = 0, A ⊕ 1 = A′.</li>
+<li>Number systems: binary, octal, hex, BCD, Gray (gᵢ = bᵢ ⊕ bᵢ₊₁). 2's complement: invert and add 1; n-bit range −2ⁿ⁻¹ to 2ⁿ⁻¹ − 1.</li>
+</ul>
+<h3>Combinational circuits</h3>
+<ul>
+<li><b>Half adder:</b> S = A ⊕ B, C = AB. <b>Full adder:</b> S = A ⊕ B ⊕ Cᵢₙ, C = AB + Cᵢₙ(A ⊕ B).</li>
+<li><b>Multiplexer (2ⁿ:1):</b> n select lines choose one of 2ⁿ inputs. A 2ⁿ:1 MUX can implement any n-variable function (or n+1 variables using the last variable at data inputs).</li>
+<li><b>Demultiplexer:</b> one input to one of 2ⁿ outputs.</li>
+<li><b>Decoder (n → 2ⁿ):</b> activates one output per input code; decoder + OR gate implements any SOP.</li>
+<li><b>Encoder (2ⁿ → n):</b> inverse; <b>priority encoder</b> outputs the highest-priority active input.</li>
+<li>Comparators, code converters, parity generators.</li>
+</ul>
+<h3>Sequential circuits</h3>
+<table>
+<tr><th>Flip-flop</th><th>Characteristic equation</th><th>Notes</th></tr>
+<tr><td>SR</td><td>Q⁺ = S + R′Q (SR = 0)</td><td>S = R = 1 forbidden</td></tr>
+<tr><td>JK</td><td>Q⁺ = JQ′ + K′Q</td><td>J = K = 1 toggles; race-around in level-triggered → use master-slave/edge</td></tr>
+<tr><td>D</td><td>Q⁺ = D</td><td>Delay/data latch</td></tr>
+<tr><td>T</td><td>Q⁺ = T ⊕ Q</td><td>Toggles when T = 1</td></tr>
+</table>
+<ul>
+<li>Latches are level-triggered; flip-flops are edge-triggered. Setup and hold time must be met.</li>
+<li><b>Counters:</b> asynchronous (ripple): clock passes through FFs, delay = n·t<sub>pd</sub>. Synchronous: common clock, faster. n flip-flops → mod up to 2ⁿ.</li>
+<li><b>Ring counter:</b> n FFs → mod n. <b>Johnson (twisted ring):</b> n FFs → mod 2n.</li>
+<li>Shift registers: SISO, SIPO, PISO, PIPO. Mealy output depends on state and input; Moore depends on state only.</li>
+<li>Max clock frequency f<sub>max</sub> = 1/(t<sub>pd,FF</sub> + t<sub>comb</sub> + t<sub>setup</sub>).</li>
+</ul>
+
+<h2 id="s8">3. Sensors and Signal Conditioning</h2>
+<ul>
+<li><b>Static characteristics:</b> accuracy, precision, resolution, sensitivity (Δoutput/Δinput), linearity, hysteresis, range/span, drift, dead zone. <b>Dynamic:</b> response time, time constant, bandwidth.</li>
+<li><b>Resistive:</b> potentiometer (displacement, V<sub>out</sub> = V·x/L; loading error when meter R is finite), strain gauge (gauge factor GF = (ΔR/R)/ε ≈ 2 for metals), RTD (R = R₀(1 + αT), platinum Pt100), thermistor (NTC, nonlinear, R = R₀e<sup>β(1/T − 1/T₀)</sup>), LDR.</li>
+<li><b>Capacitive:</b> C = εA/d. Vary d (nonlinear, high sensitivity), A (linear) or ε (level sensing). Differential arrangement improves linearity.</li>
+<li><b>Inductive:</b> variable reluctance, <b>LVDT</b> (primary + two secondaries in series opposition; output ∝ displacement, phase gives direction; null at centre; needs phase-sensitive demodulation). RVDT for angle.</li>
+<li><b>Piezoelectric:</b> charge q = d·F (d = charge sensitivity, C/N). Only for dynamic (not static) measurement because charge leaks. Needs a charge amplifier. Used in accelerometers, force/pressure sensors.</li>
+<li><b>Hall effect:</b> V<sub>H</sub> = BI/(n q t). Used for proximity, current, speed sensing, BLDC commutation.</li>
+<li><b>Thermocouple:</b> Seebeck effect, needs cold-junction compensation.</li>
+</ul>
+<h3>Signal conditioning</h3>
+<ul>
+<li><b>Wheatstone bridge:</b> balanced when R₁R₄ = R₂R₃. Quarter bridge (1 active gauge): V<sub>o</sub> ≈ V·GF·ε/4; half bridge ×2; full bridge (4 active): V·GF·ε. Dummy gauge for temperature compensation.</li>
+<li>Instrumentation amplifier (high CMRR, high input impedance), filtering, linearization, isolation, ADC, excitation, cold-junction compensation, demodulation.</li>
+</ul>
+<h3>Transducers for industrial instrumentation</h3>
+<table>
+<tr><th>Quantity</th><th>Transducers</th></tr>
+<tr><td>Linear displacement</td><td>Potentiometer, LVDT, capacitive, linear encoder, ultrasonic, laser triangulation</td></tr>
+<tr><td>Angular displacement</td><td>Rotary potentiometer, RVDT, resolver, synchro, incremental/absolute encoders (resolution = 360°/2ⁿ for n-bit absolute; incremental uses A/B quadrature, ×4 decoding)</td></tr>
+<tr><td>Velocity</td><td>Tachogenerator (DC: V = kω), encoder frequency, moving-coil/magnet, Doppler</td></tr>
+<tr><td>Acceleration</td><td>Seismic mass accelerometers (piezoelectric, piezoresistive, capacitive MEMS). Seismic instrument: accelerometer uses ω ≪ ωₙ; vibrometer (displacement) uses ω ≫ ωₙ</td></tr>
+<tr><td>Force</td><td>Load cells (strain gauge), piezoelectric, LVDT with spring, proving ring</td></tr>
+<tr><td>Torque</td><td>Strain gauges at 45° on a shaft, torsion bar with angle sensing, slip rings or telemetry</td></tr>
+<tr><td>Pressure</td><td>Bourdon tube, diaphragm, bellows, manometer, piezoresistive/capacitive/piezoelectric sensors</td></tr>
+</table>
+
+<h2 id="s9">4. Actuators</h2>
+<h3>Hydraulic and pneumatic</h3>
+<ul>
+<li>Pascal's law: pressure transmitted equally; F = pA. Cylinder extend force = pA<sub>bore</sub>; retract force = p(A<sub>bore</sub> − A<sub>rod</sub>). Velocity = Q/A. Power = pQ.</li>
+<li><b>Hydraulic:</b> incompressible oil, high force/power density, stiff, precise, but leaks and needs a pump and reservoir. Typical pressure 70–350 bar.</li>
+<li><b>Pneumatic:</b> compressed air (~6–8 bar), fast, clean, cheap, compliant; poor position control due to compressibility.</li>
+<li>Components: pumps (gear, vane, piston), cylinders (single/double acting), motors, directional control valves (e.g. 4/3, 5/2: ports/positions), pressure relief valve, flow control valve, check valve, servo and proportional valves, accumulator.</li>
+<li>Hydraulic motor torque T = pD/(2π) (D = displacement per rev); speed N = Q/D.</li>
+</ul>
+<h3>DC motors</h3>
+<ul>
+<li>Back-EMF E<sub>b</sub> = kφω; V = E<sub>b</sub> + I<sub>a</sub>R<sub>a</sub>; torque T = kφI<sub>a</sub>. Power: E<sub>b</sub>I<sub>a</sub> = Tω.</li>
+<li>Permanent magnet / separately excited: ω = V/kφ − R<sub>a</sub>T/(kφ)² — linear drooping torque-speed line. Stall torque at ω = 0; no-load speed at T = 0. Max power at half the no-load speed.</li>
+<li>Series motor: T ∝ I² (high starting torque, dangerous at no load). Shunt: nearly constant speed.</li>
+<li>Speed control: armature voltage (below base speed), field weakening (above base speed). PWM with an H-bridge for direction.</li>
+<li>Transfer function θ(s)/V(s) = K/[s(Js + b)(Ls + R) + K²] ≈ K<sub>m</sub>/[s(τ<sub>m</sub>s + 1)].</li>
+</ul>
+<h3>Stepper motors</h3>
+<ul>
+<li>Step angle = 360°/(2m·N<sub>r</sub>) for PM/hybrid (m = phases, N<sub>r</sub> = rotor teeth or pole pairs; e.g. 2-phase hybrid with 50 teeth → 1.8°); variable reluctance: (N<sub>s</sub> − N<sub>r</sub>)/(N<sub>s</sub>N<sub>r</sub>) × 360°.</li>
+<li>Steps/rev = 360°/step angle. Speed (rpm) = (step rate × step angle × 60)/360.</li>
+<li>Types: permanent magnet, variable reluctance, hybrid (typically 1.8°). Drive modes: full step, half step (doubles resolution), microstepping.</li>
+<li>Open-loop positioning; holding torque, detent torque, pull-in and pull-out torque curves; can lose steps or resonate.</li>
+</ul>
+<h3>Servo motors</h3>
+<ul>
+<li>Motor + feedback sensor (encoder/resolver/potentiometer) + controller in a closed loop. DC servo, AC servo (BLDC/PMSM), RC servo (PWM: 1–2 ms pulse every 20 ms sets angle).</li>
+<li>BLDC: electronic commutation using Hall sensors; high efficiency, no brush wear.</li>
+<li>AC induction motor: synchronous speed Nₛ = 120f/P; slip s = (Nₛ − N)/Nₛ.</li>
+</ul>
+
+<h2 id="s10">5. Engineering Mechanics</h2>
+<h3>Free-body diagrams and equilibrium</h3>
+<ul>
+<li>FBD: isolate the body, show all external forces and moments (weights, reactions, friction, applied loads).</li>
+<li>2D equilibrium: ΣF<sub>x</sub> = 0, ΣF<sub>y</sub> = 0, ΣM = 0 (3 equations). 3D: 6 equations.</li>
+<li>Supports: roller (1 reaction), pin/hinge (2), fixed (3 incl. moment).</li>
+<li><b>Lami's theorem</b> (3 concurrent forces): F₁/sin α = F₂/sin β = F₃/sin γ (angle opposite each force). Two-force member: forces equal, opposite, collinear.</li>
+<li>Varignon: moment of resultant = sum of moments of components. Couple: moment independent of point.</li>
+<li>Virtual work: ΣF·δr = 0 for equilibrium.</li>
+</ul>
+<h3>Friction</h3>
+<ul>
+<li>Coulomb: F ≤ μ<sub>s</sub>N; sliding F = μ<sub>k</sub>N (μ<sub>k</sub> &lt; μ<sub>s</sub>). Angle of friction tan φ = μ = angle of repose.</li>
+<li>Block on incline: slides if tan θ &gt; μ. Force up the incline P = W(sin θ + μ cos θ); to prevent sliding down P = W(sin θ − μ cos θ).</li>
+<li>Wedges, screw jack: effort P = W tan(α + φ); self-locking if φ &gt; α; efficiency = tan α/tan(α + φ).</li>
+<li><b>Rolling friction:</b> resistance F = W·a/r (a = coefficient of rolling resistance, length units). Much smaller than sliding friction.</li>
+<li><b>Belt friction:</b> T₁/T₂ = e<sup>μθ</sup> (θ in radians, T₁ tight side). V-belt: e<sup>μθ/sin(β/2)</sup>. Power = (T₁ − T₂)v. With centrifugal tension T<sub>c</sub> = mv², max power when T<sub>c</sub> = T<sub>max</sub>/3. Open belt vs crossed belt lengths; crossed belt reverses direction.</li>
+</ul>
+<h3>Trusses and frames</h3>
+<ul>
+<li>Truss: two-force members joined by pins, loads at joints. Simple (perfect) plane truss: m = 2j − 3. m &lt; 2j − 3 → mechanism; m &gt; 2j − 3 → statically indeterminate.</li>
+<li><b>Method of joints:</b> equilibrium at each joint (2 equations, ≤2 unknowns). <b>Method of sections:</b> cut through ≤3 members, use 3 equations.</li>
+<li>Zero-force members: at an unloaded joint with two non-collinear members, both are zero; with three members where two are collinear, the third is zero.</li>
+<li>Frames/machines contain multi-force members; disassemble and apply equilibrium to each part.</li>
+</ul>
+<h3>Kinematics of rigid bodies (plane motion)</h3>
+<ul>
+<li>Particle: v = u + at; s = ut + ½at²; v² = u² + 2as. Projectile: range = u²sin 2θ/g; max height = u²sin²θ/2g; time = 2u sin θ/g.</li>
+<li>Circular: v = ωr; a<sub>t</sub> = αr; a<sub>n</sub> = ω²r = v²/r.</li>
+<li>Rigid body: v<sub>B</sub> = v<sub>A</sub> + ω × r<sub>B/A</sub>; a<sub>B</sub> = a<sub>A</sub> + α × r<sub>B/A</sub> − ω²r<sub>B/A</sub>.</li>
+<li><b>Instantaneous centre (IC):</b> point of zero velocity; v = ω × (distance from IC). Rolling without slipping: v<sub>centre</sub> = ωR, contact point at rest, top point 2v.</li>
+</ul>
+<h3>Dynamics of rigid bodies</h3>
+<ul>
+<li>ΣF = m a<sub>G</sub>; ΣM<sub>G</sub> = I<sub>G</sub>α. D'Alembert: add inertia force −ma and inertia torque −Iα, then treat as statics.</li>
+<li>Moments of inertia: rod about centre mL²/12, about end mL²/3; disc mR²/2; ring mR²; solid sphere 2mR²/5. Parallel axis I = I<sub>G</sub> + md².</li>
+<li>Work–energy: KE = ½mv<sub>G</sub>² + ½I<sub>G</sub>ω². Rolling down incline: a = g sin θ/(1 + k²/R²).</li>
+<li>Impulse–momentum: ∫F dt = Δ(mv); angular momentum H = Iω conserved if no external torque. Coefficient of restitution e = (v₂ − v₁)/(u₁ − u₂).</li>
+</ul>
+
+<h2 id="s11">6. Programming (Python)</h2>
+<ul>
+<li><b>Flowcharts:</b> oval = start/end, rectangle = process, parallelogram = input/output, diamond = decision, arrows = flow. <b>Pseudocode:</b> structured plain-language steps (IF/ELSE, WHILE, FOR).</li>
+<li><b>Data types:</b> int (arbitrary precision), float, complex, bool, str (immutable), list (mutable), tuple (immutable), set (unique, unordered), dict (key → value; keys must be hashable), NoneType.</li>
+<li><b>Operators:</b> arithmetic + − * / (true division, always float) // (floor division) % (modulo; sign follows divisor: −7 % 3 = 2, −7 // 3 = −3) ** (power, right-associative: 2**3**2 = 512). Comparison, logical (and/or/not, short-circuit), bitwise (&amp; | ^ ~ &lt;&lt; &gt;&gt;; ~x = −x − 1), membership (in), identity (is).</li>
+<li>Precedence: ** &gt; unary − &gt; * / // % &gt; + − &gt; shifts &gt; &amp; &gt; ^ &gt; | &gt; comparisons &gt; not &gt; and &gt; or.</li>
+<li><b>Conditionals:</b> if / elif / else; ternary x if cond else y; match–case (Python 3.10+) is the "case" construct.</li>
+<li><b>Loops:</b> for x in iterable; while cond. range(start, stop, step) excludes stop. break exits the loop; continue skips to next iteration; a loop's else runs only if no break happened.</li>
+<li><b>Functions:</b> def f(a, b=2, *args, **kwargs). Default arguments are evaluated once (mutable default pitfall). Variables assigned inside a function are local unless declared global/nonlocal. Functions are first-class; lambda for small anonymous functions.</li>
+<li><b>Arrays/lists:</b> zero-indexed; negative index from end; slicing a[start:stop:step] (a[::-1] reverses). Lists are references: b = a aliases, b = a[:] or a.copy() makes a shallow copy. append O(1), insert/pop(0) O(n).</li>
+<li><b>Dictionaries:</b> d[k], d.get(k, default), d.keys()/values()/items(); insertion-ordered (3.7+); average O(1) lookup.</li>
+<li><b>Strings:</b> immutable; s[i], slicing, len, s.upper(), s.split(), ''.join(list), s.find(), s.replace(), f-strings. "ab" * 3 = "ababab".</li>
+<li><b>Recursion:</b> base case + recursive case. Factorial, Fibonacci (naive is O(2ⁿ)), Tower of Hanoi (2ⁿ − 1 moves). Default recursion limit ~1000. Trace by drawing the call tree.</li>
+</ul>
+
+<h2 id="s12">7. Data Structures</h2>
+<table>
+<tr><th>Structure</th><th>Key idea</th><th>Operations / complexity</th></tr>
+<tr><td>Stack</td><td>LIFO</td><td>push/pop/peek O(1). Uses: recursion, expression evaluation, infix→postfix, balanced parentheses, undo</td></tr>
+<tr><td>Queue</td><td>FIFO</td><td>enqueue/dequeue O(1). Circular queue: full when (rear+1) % n == front. Deque, priority queue. Uses: BFS, scheduling</td></tr>
+<tr><td>Linked list</td><td>Nodes with pointers</td><td>Insert/delete at head O(1); search O(n); no random access. Singly, doubly, circular. Reverse in O(n); detect cycle with slow/fast pointers</td></tr>
+<tr><td>Binary search tree</td><td>left &lt; node &lt; right</td><td>Search/insert/delete O(h): O(log n) balanced, O(n) skewed. Inorder traversal gives sorted order. Delete with 2 children: replace by inorder successor/predecessor</td></tr>
+<tr><td>Binary heap</td><td>Complete tree; parent ≥ children (max-heap)</td><td>Array: children of i at 2i+1, 2i+2; parent ⌊(i−1)/2⌋. Insert/delete-max O(log n); peek O(1); build-heap O(n); heapsort O(n log n)</td></tr>
+<tr><td>Graph</td><td>G = (V, E)</td><td>Adjacency matrix O(V²) space; adjacency list O(V + E). BFS/DFS O(V + E). Dijkstra O((V+E) log V) with heap; topological sort for DAGs; MST via Prim/Kruskal</td></tr>
+</table>
+<ul>
+<li>Tree facts: binary tree of height h has at most 2^(h+1) − 1 nodes; n nodes → n − 1 edges; leaves = internal nodes with 2 children + 1.</li>
+<li>Traversals: preorder (NLR), inorder (LNR), postorder (LRN), level order (BFS). Inorder + preorder (or postorder) uniquely determines a binary tree.</li>
+<li>Number of distinct BSTs with n keys = Catalan number C(2n, n)/(n + 1).</li>
+<li>Undirected graph: Σdegree = 2|E|; complete graph has n(n−1)/2 edges; tree on n vertices has n − 1 edges.</li>
+</ul>
+</section>
+<section><h1 id="a3">Part A.3 — Principles of Robotics and Automation</h1>
+
+<h2 id="s13">1. Robot Classification</h2>
+<ul>
+<li><b>Serial manipulator:</b> open kinematic chain, one path from base to end-effector. Large workspace, dexterous, but errors accumulate along the chain and stiffness/payload is lower. Forward kinematics easy, inverse kinematics hard (multiple solutions).</li>
+<li><b>Parallel manipulator:</b> closed chains; the end-effector (platform) is connected to the base by several legs (e.g. Stewart–Gough platform 6-DOF, Delta robot 3-DOF translation). High stiffness, accuracy, speed, payload-to-weight ratio; small workspace. Inverse kinematics easy, forward kinematics hard.</li>
+<li>Other classifications: by drive (electric, hydraulic, pneumatic), by control (point-to-point, continuous path, servo/non-servo), by application (industrial, mobile, service), by generation/intelligence.</li>
+</ul>
+<h3>Geometrical configurations (first three joints → arm workspace)</h3>
+<table>
+<tr><th>Configuration</th><th>Joints</th><th>Workspace</th><th>Example use</th></tr>
+<tr><td>Cartesian (gantry)</td><td>PPP</td><td>Rectangular box</td><td>Pick-and-place, CNC-like, 3D printers</td></tr>
+<tr><td>Cylindrical</td><td>RPP</td><td>Hollow cylinder</td><td>Assembly, machine loading</td></tr>
+<tr><td>Spherical (polar)</td><td>RRP</td><td>Partial hollow sphere</td><td>Welding, Stanford arm</td></tr>
+<tr><td>Articulated (revolute/anthropomorphic)</td><td>RRR</td><td>Near-spherical, irregular</td><td>Painting, welding, most industrial arms</td></tr>
+<tr><td>SCARA</td><td>RRP (two parallel vertical R axes)</td><td>Cylindrical-like</td><td>Fast planar assembly, compliant in XY, stiff in Z</td></tr>
+</table>
+
+<h2 id="s14">2. Links, Joints, Coordinate Systems and DOF</h2>
+<ul>
+<li><b>Link:</b> rigid body. <b>Joint:</b> connection allowing relative motion.</li>
+<li>Lower pairs: revolute R (1 DOF), prismatic P (1), helical/screw H (1), cylindrical C (2), spherical S (3), planar E (3). Universal joint U (2).</li>
+<li><b>DOF of a rigid body:</b> 3 in a plane, 6 in space (3 position + 3 orientation).</li>
+<li><b>Grübler–Kutzbach (mobility):</b> planar M = 3(n − 1) − 2j₁ − j₂; spatial M = 6(n − 1) − Σ(6 − fᵢ) (n = links incl. ground, j₁ = 1-DOF joints, j₂ = 2-DOF joints, fᵢ = DOF of joint i).</li>
+<li>A serial arm's DOF = sum of joint DOFs. 6 DOF are needed for arbitrary position and orientation; &gt;6 is <b>redundant</b> (e.g. 7-DOF arms; avoid obstacles/singularities).</li>
+<li>Typical arm: 3 joints for position (arm) + 3 for orientation (wrist: roll–pitch–yaw / spherical wrist with intersecting axes).</li>
+<li><b>Coordinate frames:</b> world/base frame, joint frames, tool (TCP) frame, user/workpiece frame. Joint space (θ₁…θₙ) vs task/Cartesian space (x, y, z, orientation).</li>
+<li><b>Workspace:</b> reachable workspace (points reachable in at least one orientation) vs dexterous workspace (all orientations).</li>
+<li><b>Singularity:</b> configuration where the Jacobian loses rank (det J = 0): loss of a DOF, infinite joint velocities needed; e.g. a fully stretched arm or two aligned wrist axes.</li>
+</ul>
+
+<h2 id="s15">3. Rotation Matrices</h2>
+<h3>2D</h3>
+<ul>
+<li>R(θ) = [[cos θ, −sin θ], [sin θ, cos θ]]. Rotating a vector counter-clockwise by θ: p′ = R p.</li>
+</ul>
+<h3>3D elementary rotations</h3>
+<ul>
+<li>R<sub>x</sub>(θ) = [[1, 0, 0], [0, cθ, −sθ], [0, sθ, cθ]]</li>
+<li>R<sub>y</sub>(θ) = [[cθ, 0, sθ], [0, 1, 0], [−sθ, 0, cθ]]  (note the sign pattern)</li>
+<li>R<sub>z</sub>(θ) = [[cθ, −sθ, 0], [sθ, cθ, 0], [0, 0, 1]]</li>
+</ul>
+<h3>Properties (SO(3))</h3>
+<ul>
+<li>Columns of <sup>A</sup>R<sub>B</sub> are the unit axes of frame B expressed in frame A.</li>
+<li>Orthogonal: Rᵀ R = I, R⁻¹ = Rᵀ, det R = +1. Each row/column is a unit vector, mutually perpendicular. Preserves lengths and angles.</li>
+<li>Eigenvalues: 1, e<sup>±iθ</sup>. The eigenvector for λ = 1 is the rotation axis. trace R = 1 + 2 cos θ.</li>
+<li><b>Composition:</b> <sup>A</sup>R<sub>C</sub> = <sup>A</sup>R<sub>B</sub> <sup>B</sup>R<sub>C</sub>. Rotations about the <b>current (moving)</b> frame → post-multiply; about the <b>fixed</b> frame → pre-multiply. Matrix multiplication is not commutative.</li>
+<li><b>Euler angles</b> (ZYZ): R = R<sub>z</sub>(φ)R<sub>y</sub>(θ)R<sub>z</sub>(ψ). <b>Roll–pitch–yaw</b> (fixed XYZ): R = R<sub>z</sub>(α)R<sub>y</sub>(β)R<sub>x</sub>(γ). Both have singularities (gimbal lock).</li>
+<li><b>Axis–angle (Rodrigues):</b> R = I + sin θ [k]ₓ + (1 − cos θ)[k]ₓ². Quaternions avoid singularities: q = (cos θ/2, k sin θ/2).</li>
+</ul>
+
+<h2 id="s16">4. Homogeneous Transformations</h2>
+<ul>
+<li>T = [[R, d], [0 0 0, 1]] (4×4), combining rotation R and translation d. Point in homogeneous form p̃ = [x, y, z, 1]ᵀ; <sup>A</sup>p̃ = <sup>A</sup>T<sub>B</sub> <sup>B</sup>p̃.</li>
+<li>Inverse: T⁻¹ = [[Rᵀ, −Rᵀd], [0, 1]] (not simply the transpose).</li>
+<li>Chain: <sup>0</sup>T<sub>n</sub> = <sup>0</sup>T₁ <sup>1</sup>T₂ … <sup>n−1</sup>T<sub>n</sub>. Same pre/post-multiplication rule as for rotations.</li>
+<li>Pure translation Trans(a, b, c) has R = I; pure rotation has d = 0.</li>
+<li>Free vectors (directions) use a 0 as the fourth component, so translation does not affect them.</li>
+</ul>
+
+<h2 id="s17">5. Forward Kinematics</h2>
+<ul>
+<li>Given joint variables, find end-effector position and orientation: <sup>0</sup>T<sub>n</sub>(q).</li>
+<li><b>Denavit–Hartenberg (standard) convention:</b> zᵢ along joint i+1 axis; xᵢ along the common normal from zᵢ₋₁ to zᵢ. Four parameters per link:
+<ul>
+<li>θᵢ — joint angle about zᵢ₋₁ (variable for revolute)</li>
+<li>dᵢ — offset along zᵢ₋₁ (variable for prismatic)</li>
+<li>aᵢ — link length along xᵢ</li>
+<li>αᵢ — link twist about xᵢ</li>
+</ul></li>
+<li><sup>i−1</sup>Aᵢ = Rot<sub>z</sub>(θᵢ) Trans<sub>z</sub>(dᵢ) Trans<sub>x</sub>(aᵢ) Rot<sub>x</sub>(αᵢ) =
+[[cθ, −sθcα, sθsα, a cθ], [sθ, cθcα, −cθsα, a sθ], [0, sα, cα, d], [0, 0, 0, 1]].</li>
+<li><b>2-link planar arm</b> (lengths L₁, L₂): x = L₁cos θ₁ + L₂cos(θ₁ + θ₂); y = L₁sin θ₁ + L₂sin(θ₁ + θ₂); orientation φ = θ₁ + θ₂. Workspace: annulus with radii |L₁ − L₂| and L₁ + L₂.</li>
+<li><b>Inverse kinematics</b> (2-link): cos θ₂ = (x² + y² − L₁² − L₂²)/(2L₁L₂) (two solutions: elbow up/down); θ₁ = atan2(y, x) − atan2(L₂ sin θ₂, L₁ + L₂ cos θ₂).</li>
+<li><b>Jacobian:</b> ẋ = J(q) q̇ relates joint velocities to end-effector velocity; τ = Jᵀ F relates end-effector force to joint torques. For the 2-link arm: J = [[−L₁s₁ − L₂s₁₂, −L₂s₁₂], [L₁c₁ + L₂c₁₂, L₂c₁₂]], det J = L₁L₂ sin θ₂ (singular at θ₂ = 0, π).</li>
+</ul>
+
+<h2 id="s18">6. Robot Applications and Performance</h2>
+<ul>
+<li><b>Point-to-point (PTP) control:</b> only the end points matter, path between them is not controlled (spot welding, pick-and-place, machine loading, drilling). Often joint-interpolated motion.</li>
+<li><b>Continuous path (CP) control:</b> the whole trajectory is controlled (arc welding, spray painting, gluing, deburring). Requires Cartesian interpolation (linear/circular) and coordinated joints.</li>
+<li>Trajectory planning: cubic polynomial (4 constraints: positions and velocities at both ends), quintic (adds accelerations), linear segments with parabolic blends (LSPB/trapezoidal velocity).</li>
+<li>Teaching/programming: lead-through, teach pendant, offline programming (simulation).</li>
+<li>Applications: material handling, palletizing, machine tending, welding, painting, assembly, inspection, medical, space, underwater.</li>
+</ul>
+<h3>End-effectors</h3>
+<ul>
+<li><b>Grippers:</b> mechanical (2/3-finger, parallel or angular jaws; friction grip μ·n<sub>f</sub>·F<sub>g</sub> ≥ W × g-factor, n<sub>f</sub> = contact surfaces, g-factor accounts for acceleration), vacuum (suction cups; F = ΔP·A; flat, smooth parts), magnetic (electromagnet or permanent; ferrous parts), adhesive, soft/compliant, multi-fingered hands.</li>
+<li><b>Tools:</b> welding torch, spot-welding gun, spray gun, drill/spindle, screwdriver, laser/water-jet cutter.</li>
+<li>Tool changers; Remote Centre Compliance (RCC) device for peg-in-hole assembly.</li>
+</ul>
+<h3>Accuracy, repeatability, resolution</h3>
+<ul>
+<li><b>Resolution (control resolution):</b> smallest increment the controller can command; = range/2ⁿ for an n-bit encoder/control word.</li>
+<li><b>Accuracy:</b> how close the robot gets to a commanded target. Accuracy = ½ control resolution + ½ mechanical inaccuracy spread (3σ). Errors come from link deflection, gear backlash, calibration, thermal expansion.</li>
+<li><b>Repeatability:</b> how close the robot returns to a previously taught point (± 3σ of the spread). Industrial robots: repeatability (~±0.02–0.1 mm) is much better than absolute accuracy.</li>
+<li>Other specs: payload, reach, speed, DOF, work envelope, compliance.</li>
+</ul>
+
+<h2 id="s19">7. Computer Integrated Manufacturing (CIM)</h2>
+<h3>Automation in manufacturing</h3>
+<ul>
+<li><b>Fixed (hard) automation:</b> high volume, low variety, high initial cost (transfer lines). <b>Programmable:</b> batch production, reprogrammable (CNC, robots). <b>Flexible:</b> variety without lost changeover time (FMS).</li>
+<li>Production metrics: cycle time T<sub>c</sub>; production rate R<sub>p</sub> = 1/T<sub>p</sub>; utilization; availability A = (MTBF − MTTR)/MTBF; manufacturing lead time MLT = n<sub>o</sub>(T<sub>su</sub> + Q T<sub>c</sub> + T<sub>no</sub>); WIP.</li>
+<li>Levels of automation: device → machine → cell/system → plant → enterprise. Ten strategies: specialization of operations, combined operations, simultaneous operations, integration of operations, increased flexibility, improved material handling and storage, on-line inspection, process control and optimization, plant operations control, CIM.</li>
+<li>Transfer line efficiency E = T<sub>c</sub>/(T<sub>c</sub> + F·T<sub>d</sub>) (F = breakdown frequency, T<sub>d</sub> = downtime). Line balancing: balance efficiency = T<sub>wc</sub>/(n × T<sub>s</sub>).</li>
+</ul>
+<h3>Programmable Logic Controllers (PLCs)</h3>
+<ul>
+<li>Industrial computer: CPU, memory, input modules (sensors/switches), output modules (relay, transistor, triac), power supply, programming device; communication (Modbus, Profibus, EtherNet/IP).</li>
+<li><b>Scan cycle:</b> read inputs → execute program → update outputs → housekeeping/communication. Scan time typically ms; an input shorter than one scan can be missed.</li>
+<li>IEC 61131-3 languages: Ladder Diagram (LD), Function Block Diagram (FBD), Structured Text (ST), Instruction List (IL), Sequential Function Chart (SFC).</li>
+<li>Ladder logic: series contacts = AND, parallel contacts = OR, NC contact = NOT. Seal-in (latch) circuit for start/stop: (Start + Motor)·Stop′ → Motor.</li>
+<li>Timers (TON on-delay, TOF off-delay, RTO retentive), counters (CTU, CTD), comparison/math, sequencers. Advantages over relays: reprogrammable, compact, diagnostics.</li>
+</ul>
+<h3>Automated material handling</h3>
+<ul>
+<li>Industrial trucks, <b>AGVs</b> (automated guided vehicles: wire/tape/laser/vision guidance; towing, unit-load, forklift types) and AMRs, conveyors (roller, belt, chain, overhead trolley, cart-on-track), cranes and hoists, monorails, industrial robots.</li>
+<li>Principles: unit load, minimum handling, straight-line flow, standardization, gravity use. AGV system sizing: number of vehicles = total workload / available time per vehicle.</li>
+</ul>
+<h3>Automated storage and retrieval systems (AS/RS)</h3>
+<ul>
+<li>Storage racks + storage/retrieval (S/R) machines in aisles + pickup/deposit (P&amp;D) stations, under computer control. Types: unit load, mini-load, man-on-board, deep-lane, carousel storage (horizontal/vertical).</li>
+<li>Cycle time: single command T<sub>sc</sub> = 2 max(h/v<sub>y</sub>, L/v<sub>x</sub>) + 2T<sub>pd</sub>; dual command T<sub>dc</sub> = 2 max(1.5h/v<sub>y</sub>, 1.5L/v<sub>x</sub>) + 4T<sub>pd</sub> (MH-10 approximation).</li>
+<li>Benefits: higher density, less labour, better inventory control, security.</li>
+</ul>
+<h3>Automated identification and data capture (AIDC)</h3>
+<ul>
+<li><b>Bar codes:</b> 1D linear (Code 39, Code 128, UPC/EAN) and 2D (stacked PDF417; matrix QR, Data Matrix). Read by laser/CCD scanners.</li>
+<li><b>RFID:</b> tag (chip + antenna) and reader; passive (powered by reader) or active (battery); no line-of-sight needed, read/write, multiple tags at once; frequencies LF/HF/UHF.</li>
+<li>Others: magnetic stripes, OCR, machine vision, smart cards. AIDC reduces errors versus manual entry (~1 in 300 keystrokes vs ~1 in millions for bar codes).</li>
+</ul>
+<h3>Computer numerical control (CNC)</h3>
+<ul>
+<li>NC: program of numerical instructions controls a machine tool. CNC: a dedicated computer stores and executes the part program. DNC: several machines served from a central computer.</li>
+<li>Components: part program, machine control unit (MCU), processing equipment. Axes: Z along spindle, X longest horizontal, Y by right-hand rule; rotary A, B, C about X, Y, Z.</li>
+<li>Motion control: point-to-point vs contouring (continuous path); interpolation linear (G01) and circular (G02 CW, G03 CCW). G00 rapid positioning; G90 absolute vs G91 incremental; G17/18/19 plane selection; G41/G42 cutter radius compensation; M03 spindle CW; M05 spindle stop; M06 tool change; M08 coolant on; M30 end of program.</li>
+<li>Control: open loop (stepper) vs closed loop (servo + encoder feedback). <b>Control resolution</b> (open loop with stepper and leadscrew): BLU = p/(n<sub>s</sub>·r<sub>g</sub>) (p = screw pitch, n<sub>s</sub> = steps/rev, r<sub>g</sub> = gear ratio). Pulse rate f<sub>p</sub> = v·n<sub>s</sub>·r<sub>g</sub>/p.</li>
+<li>Machining centres with automatic tool changer (ATC), automatic pallet changer. APT language, CAM post-processing.</li>
+</ul>
+<h3>Single and multi-axis positioning systems</h3>
+<ul>
+<li>Single axis: motor + leadscrew/ball screw (low friction, high efficiency, minimal backlash with preload) or belt/rack-and-pinion/linear motor + guideway + feedback (rotary encoder, linear scale).</li>
+<li>Multi-axis: stacked XY tables, gantries, CNC axes. Positioning accuracy is affected by resolution, mechanical errors (backlash, pitch error, thermal), and Abbe error.</li>
+<li>Ball screw: linear speed v = N·p; thrust F = 2πηT/p.</li>
+</ul>
+<h3>Concurrent design and manufacturing planning</h3>
+<ul>
+<li><b>Concurrent (simultaneous) engineering:</b> design, manufacturing, quality, purchasing and service work in parallel teams instead of sequentially ("over the wall"). Shorter lead time, fewer changes, lower cost.</li>
+<li><b>DFM / DFA</b> (design for manufacture / assembly): minimize part count, use standard parts, design for top-down assembly, self-locating features, avoid flexible parts; Boothroyd–Dewhurst DFA index.</li>
+<li>Design for automation: parts easy to feed and orient (symmetry or obvious asymmetry), avoid tangling, fewer fasteners.</li>
+<li><b>Process planning:</b> manual or computer-aided (CAPP): variant (retrieve similar plan via group technology/coding, e.g. Opitz) or generative (logic creates a new plan).</li>
+<li>MRP (material requirements planning), MRP II, ERP; capacity planning; master production schedule; shop floor control; JIT/lean; group technology and cellular manufacturing.</li>
+</ul>
+</section>
+<section><h1 id="b1">Part B1 — Electrical Engineering</h1>
+
+<h2 id="s20">B1.1 Analog Circuits and Embedded Systems</h2>
+<h3>Analog filters</h3>
+<ul>
+<li><b>Low-pass:</b> passes f &lt; f<sub>c</sub>. First-order RC: H(s) = 1/(1 + sRC), f<sub>c</sub> = 1/(2πRC); −20 dB/decade roll-off per order; −3 dB and −45° at f<sub>c</sub>.</li>
+<li><b>High-pass:</b> H(s) = sRC/(1 + sRC). <b>Band-pass:</b> passes f₁ &lt; f &lt; f₂; centre f₀ = √(f₁f₂), Q = f₀/BW. <b>Band-reject (notch):</b> rejects a band (e.g. 50 Hz hum; twin-T).</li>
+<li>Second-order standard form: LP H = ω₀²/(s² + (ω₀/Q)s + ω₀²); −40 dB/decade.</li>
+<li>Passive (RLC, no gain, loading problems) vs active (op-amp; gain, buffering, no inductors). Sallen–Key and multiple-feedback topologies.</li>
+<li>Approximations: Butterworth (maximally flat passband), Chebyshev (ripple, sharper roll-off), Bessel (linear phase), Elliptic (sharpest, ripple in both bands). Order n → roll-off 20n dB/decade.</li>
+</ul>
+<h3>Amplifiers: biasing, equivalent circuit, frequency response</h3>
+<ul>
+<li><b>BJT:</b> I<sub>C</sub> = βI<sub>B</sub>, I<sub>E</sub> = I<sub>C</sub> + I<sub>B</sub>, α = β/(β + 1). Active region: BE forward, BC reverse. V<sub>BE</sub> ≈ 0.7 V (Si). Thermal voltage V<sub>T</sub> ≈ 25 mV at room temperature.</li>
+<li><b>Biasing:</b> fixed bias (unstable), collector-feedback, <b>voltage-divider bias</b> (most stable; Thevenin: V<sub>BB</sub> = V<sub>CC</sub>R₂/(R₁+R₂), I<sub>E</sub> ≈ (V<sub>BB</sub> − V<sub>BE</sub>)/R<sub>E</sub> when βR<sub>E</sub> ≫ R<sub>B</sub>). Stability factor S = ∂I<sub>C</sub>/∂I<sub>CO</sub>; Q-point on the DC load line, middle for maximum symmetric swing.</li>
+<li><b>Small-signal (hybrid-π):</b> g<sub>m</sub> = I<sub>C</sub>/V<sub>T</sub>; r<sub>π</sub> = β/g<sub>m</sub>; r<sub>o</sub> = V<sub>A</sub>/I<sub>C</sub>. h-parameters: h<sub>ie</sub> ≈ r<sub>π</sub>, h<sub>fe</sub> ≈ β.</li>
+<li>CE: A<sub>v</sub> ≈ −g<sub>m</sub>(R<sub>C</sub>∥R<sub>L</sub>), inverting, medium R<sub>in</sub>. With unbypassed R<sub>E</sub>: A<sub>v</sub> ≈ −R<sub>C</sub>/R<sub>E</sub>. CB: non-inverting, low R<sub>in</sub>, current gain ≈ 1. CC (emitter follower): A<sub>v</sub> ≈ 1, high R<sub>in</sub>, low R<sub>out</sub> (buffer).</li>
+<li><b>MOSFET:</b> saturation I<sub>D</sub> = ½k(V<sub>GS</sub> − V<sub>t</sub>)²; g<sub>m</sub> = 2I<sub>D</sub>/(V<sub>GS</sub> − V<sub>t</sub>) = √(2kI<sub>D</sub>). Saturation if V<sub>DS</sub> ≥ V<sub>GS</sub> − V<sub>t</sub>. CS ≈ CE, CG ≈ CB, CD (source follower) ≈ CC.</li>
+<li><b>Frequency response:</b> low-frequency cut-off from coupling/bypass capacitors; high-frequency from junction/parasitic capacitances. <b>Miller effect:</b> C<sub>in</sub> = C<sub>μ</sub>(1 − A<sub>v</sub>) — large for high-gain inverting stages. Gain–bandwidth product is roughly constant.</li>
+<li>Multistage: overall gain = product; overall bandwidth shrinks. Power amplifier classes: A (η ≤ 25%/50%), B (78.5%, crossover distortion), AB, C (tuned).</li>
+</ul>
+<h3>Feedback amplifiers</h3>
+<ul>
+<li>Closed-loop gain A<sub>f</sub> = A/(1 + Aβ) (negative feedback). Desensitivity D = 1 + Aβ: gain sensitivity reduced by D, bandwidth increased by D, distortion and noise reduced.</li>
+<li>Topologies (sampling–mixing): voltage-series (series–shunt): R<sub>in</sub> × D, R<sub>out</sub> ÷ D — ideal voltage amplifier. Current-series: R<sub>in</sub> × D, R<sub>out</sub> × D (transconductance). Voltage-shunt: R<sub>in</sub> ÷ D, R<sub>out</sub> ÷ D (transresistance). Current-shunt: R<sub>in</sub> ÷ D, R<sub>out</sub> × D (current amplifier). Rule: series mixing raises R<sub>in</sub>, shunt lowers; voltage sampling lowers R<sub>out</sub>, current sampling raises.</li>
+</ul>
+<h3>Operational amplifiers</h3>
+<ul>
+<li><b>Ideal:</b> infinite open-loop gain, R<sub>in</sub> = ∞, R<sub>out</sub> = 0, infinite bandwidth, CMRR = ∞. With negative feedback: virtual short (V₊ = V₋) and no input current.</li>
+<li><b>Non-ideal parameters:</b> input offset voltage/current, bias current, CMRR = A<sub>d</sub>/A<sub>cm</sub>, slew rate (max dV<sub>o</sub>/dt; full-power bandwidth f<sub>max</sub> = SR/(2πV<sub>m</sub>)), gain–bandwidth product (unity-gain frequency f<sub>T</sub>: closed-loop BW = f<sub>T</sub>/A<sub>CL</sub>), output saturation.</li>
+</ul>
+<table>
+<tr><th>Circuit</th><th>Output</th></tr>
+<tr><td>Inverting</td><td>V<sub>o</sub> = −(R<sub>f</sub>/R₁)V<sub>i</sub>; R<sub>in</sub> = R₁</td></tr>
+<tr><td>Non-inverting</td><td>V<sub>o</sub> = (1 + R<sub>f</sub>/R₁)V<sub>i</sub>; R<sub>in</sub> ≈ ∞</td></tr>
+<tr><td>Voltage follower</td><td>V<sub>o</sub> = V<sub>i</sub> (buffer)</td></tr>
+<tr><td>Summing (inverting)</td><td>V<sub>o</sub> = −R<sub>f</sub>(V₁/R₁ + V₂/R₂ + …)</td></tr>
+<tr><td>Difference</td><td>V<sub>o</sub> = (R₂/R₁)(V₂ − V₁) with matched resistors</td></tr>
+<tr><td>Integrator</td><td>V<sub>o</sub> = −(1/RC)∫V<sub>i</sub>dt (add R across C to limit DC gain)</td></tr>
+<tr><td>Differentiator</td><td>V<sub>o</sub> = −RC dV<sub>i</sub>/dt (noisy at high frequency)</td></tr>
+<tr><td>Instrumentation amp (3 op-amp)</td><td>V<sub>o</sub> = (1 + 2R/R<sub>G</sub>)(R₃/R₂)(V₂ − V₁); high CMRR and input impedance</td></tr>
+<tr><td>Log / antilog</td><td>Diode/BJT in feedback; V<sub>o</sub> ∝ −V<sub>T</sub>ln(V<sub>i</sub>/RI<sub>s</sub>)</td></tr>
+<tr><td>Precision rectifier</td><td>Diode inside feedback loop removes the 0.7 V drop</td></tr>
+<tr><td>Comparator</td><td>Open loop; output ±V<sub>sat</sub> depending on sign of V₊ − V₋</td></tr>
+</table>
+<h3>Oscillators</h3>
+<ul>
+<li><b>Barkhausen criterion:</b> loop gain |Aβ| = 1 and total phase shift = 0° (or 360°). In practice |Aβ| slightly &gt; 1 at start-up.</li>
+<li><b>RC phase-shift:</b> three RC sections give 180°; f = 1/(2πRC√6); amplifier gain ≥ 29.</li>
+<li><b>Wien bridge:</b> f = 1/(2πRC); β = 1/3 at f₀, so non-inverting gain ≥ 3 (R<sub>f</sub> = 2R₁).</li>
+<li>LC: <b>Colpitts</b> f = 1/(2π√(L C<sub>eq</sub>)), C<sub>eq</sub> = C₁C₂/(C₁ + C₂). <b>Hartley</b> f = 1/(2π√(L<sub>eq</sub>C)), L<sub>eq</sub> = L₁ + L₂ + 2M. <b>Crystal:</b> very stable frequency (high Q), series and parallel resonance.</li>
+<li>Relaxation oscillators (square/triangular): op-amp astable, T = 2RC ln[(1 + β)/(1 − β)], β = R₂/(R₁ + R₂).</li>
+</ul>
+<h3>VCOs and timers</h3>
+<ul>
+<li><b>VCO:</b> output frequency proportional to control voltage (e.g. 566). Used in PLLs (phase detector + loop filter + VCO), FM, frequency synthesis.</li>
+<li><b>555 timer:</b> two comparators (thresholds 2/3 V<sub>CC</sub> and 1/3 V<sub>CC</sub>), SR flip-flop, discharge transistor.</li>
+<li>Monostable: pulse width T = 1.1RC.</li>
+<li>Astable: t<sub>H</sub> = 0.693(R<sub>A</sub> + R<sub>B</sub>)C; t<sub>L</sub> = 0.693R<sub>B</sub>C; f = 1.44/[(R<sub>A</sub> + 2R<sub>B</sub>)C]; duty cycle = (R<sub>A</sub> + R<sub>B</sub>)/(R<sub>A</sub> + 2R<sub>B</sub>) &gt; 50% (add a diode across R<sub>B</sub> for ≤ 50%).</li>
+</ul>
+<h3>Schmitt trigger</h3>
+<ul>
+<li>Comparator with positive feedback → two thresholds (hysteresis), giving noise immunity and squaring slow signals.</li>
+<li>Inverting Schmitt (feedback divider R₁ to ground, R₂ to output): V<sub>UT</sub> = +V<sub>sat</sub>R₁/(R₁ + R₂), V<sub>LT</sub> = −V<sub>sat</sub>R₁/(R₁ + R₂); hysteresis width V<sub>H</sub> = V<sub>UT</sub> − V<sub>LT</sub>.</li>
+</ul>
+<h3>Sample-and-hold</h3>
+<ul>
+<li>Switch (MOSFET) + hold capacitor + buffer op-amps. Samples input during sample mode and holds constant during ADC conversion.</li>
+<li>Specs: acquisition time, aperture time/jitter, droop rate (dV/dt = I<sub>leak</sub>/C), feedthrough. Larger C: less droop but slower acquisition.</li>
+</ul>
+<h3>A/D and D/A converters</h3>
+<ul>
+<li><b>Resolution:</b> LSB = V<sub>FS</sub>/2ⁿ (some texts use V<sub>FS</sub>/(2ⁿ − 1)). Quantization error ±½ LSB; SQNR ≈ 6.02n + 1.76 dB.</li>
+<li><b>DAC:</b> weighted-resistor (needs wide resistor range: R, 2R, 4R … 2ⁿ⁻¹R) and <b>R-2R ladder</b> (only two resistor values; V<sub>o</sub> = −V<sub>ref</sub>(R<sub>f</sub>/R)·Σbᵢ2ⁱ/2ⁿ). Specs: settling time, monotonicity, linearity (INL/DNL).</li>
+</ul>
+<table>
+<tr><th>ADC type</th><th>Conversion time</th><th>Notes</th></tr>
+<tr><td>Flash (parallel)</td><td>1 clock</td><td>Fastest; needs 2ⁿ − 1 comparators</td></tr>
+<tr><td>Successive approximation (SAR)</td><td>n clocks</td><td>Binary search; common in microcontrollers</td></tr>
+<tr><td>Counter (digital ramp)</td><td>Up to 2ⁿ clocks</td><td>Slow, variable time</td></tr>
+<tr><td>Tracking</td><td>Fast once locked</td><td>Up/down counter follows the input</td></tr>
+<tr><td>Dual-slope (integrating)</td><td>Up to 2ⁿ⁺¹ clocks</td><td>Slow, very accurate, rejects noise (DMMs); result independent of RC</td></tr>
+<tr><td>Sigma-delta</td><td>Oversampling</td><td>High resolution, audio/instrumentation</td></tr>
+</table>
+<h3>Switched-mode power supplies (SMPS)</h3>
+<ul>
+<li>Transistor switched at high frequency with duty cycle D, energy stored in L/C. Efficiency 80–95% (vs linear regulators, η ≈ V<sub>o</sub>/V<sub>i</sub>). Smaller magnetics at higher frequency; more EMI and ripple.</li>
+<li>Continuous conduction mode (CCM) steady-state ratios: <b>Buck</b> V<sub>o</sub> = D·V<sub>i</sub>; <b>Boost</b> V<sub>o</sub> = V<sub>i</sub>/(1 − D); <b>Buck-boost</b> V<sub>o</sub> = −D·V<sub>i</sub>/(1 − D) (inverted); <b>Flyback</b> (isolated buck-boost) V<sub>o</sub> = V<sub>i</sub>(N₂/N₁)·D/(1 − D); forward converter (isolated buck).</li>
+<li>Derivation: volt-second balance on the inductor (average inductor voltage = 0) and charge balance on the capacitor.</li>
+<li>Buck ripple: ΔI<sub>L</sub> = (V<sub>i</sub> − V<sub>o</sub>)D/(fL); ΔV<sub>o</sub> = ΔI<sub>L</sub>/(8fC).</li>
+</ul>
+<h3>Microprocessors and microcontrollers</h3>
+<ul>
+<li><b>Microprocessor:</b> CPU only on chip (ALU, registers, control unit); memory and I/O external — general-purpose computing. <b>Microcontroller:</b> CPU + RAM + ROM/Flash + I/O ports + timers + ADC + serial interfaces on one chip — embedded control.</li>
+<li>Architectures: Von Neumann (shared bus for code and data) vs Harvard (separate; most MCUs). CISC (8085/8051, x86) vs RISC (ARM, AVR, PIC).</li>
+<li><b>CPU:</b> ALU, accumulator, general registers, program counter (address of next instruction), stack pointer, instruction register, flags (carry, zero, sign, parity, auxiliary carry, overflow). Fetch–decode–execute cycle; machine cycles and T-states.</li>
+<li><b>Memory:</b> ROM/EPROM/EEPROM/Flash (non-volatile program), SRAM (fast, no refresh) and DRAM (refresh). Address lines n → 2ⁿ locations (e.g. 16 lines → 64 KB). Memory map; address decoding with decoders/logic.</li>
+<li><b>I/O ports:</b> parallel GPIO with direction registers; 8051 has four 8-bit ports (P0–P3). Serial: UART (asynchronous, start/stop bits, baud rate), SPI (full duplex, master/slave, MOSI/MISO/SCK/SS), I²C (two-wire SDA/SCL, addressed, multi-master), CAN (vehicles/industrial).</li>
+<li><b>Timers/counters:</b> count internal clock pulses (timer) or external events (counter). 8051 timer modes 0–3 (13-bit, 16-bit, 8-bit auto-reload, split). Delay = count × machine-cycle time (8051: 12 clock periods per machine cycle). Used for PWM, input capture, baud-rate generation, watchdog.</li>
+</ul>
+<h3>Interrupt handling</h3>
+<ul>
+<li>Interrupt: external/internal event suspends the main program; CPU finishes the current instruction, pushes PC (and status) onto the stack, jumps to the ISR via the vector table, then returns (RETI/IRET) and restores context.</li>
+<li>Polling vs interrupts (interrupts give faster response and free the CPU). Maskable vs non-maskable (NMI, e.g. 8085 TRAP). Vectored vs non-vectored. Edge vs level triggering. Priority and nesting.</li>
+<li>8085 interrupts priority: TRAP &gt; RST 7.5 &gt; RST 6.5 &gt; RST 5.5 &gt; INTR. 8051: five sources (INT0, TF0, INT1, TF1, serial) with IE and IP registers.</li>
+<li>Good ISR practice: short, no blocking calls, mark shared variables volatile, disable interrupts around critical sections.</li>
+</ul>
+<h3>Memory and I/O interfacing</h3>
+<ul>
+<li>Memory-mapped I/O (I/O shares memory address space; all memory instructions usable) vs I/O-mapped / isolated I/O (separate IN/OUT instructions, 8085: 256 ports).</li>
+<li>Address decoding: full vs partial (partial causes aliasing/foldback). Chip select from address decoder (e.g. 74LS138).</li>
+<li>Data transfer: programmed I/O, interrupt-driven, DMA (direct memory access; CPU releases buses via HOLD/HLDA for block transfers).</li>
+<li>Peripheral chips: 8255 PPI, 8253/8254 timer, 8259 interrupt controller, 8251 USART, 8237 DMA controller. Interfacing keypads, 7-segment/LCD displays, ADC/DAC, motors (through drivers, H-bridge, opto-isolation).</li>
+</ul>
+<h3>Data acquisition systems</h3>
+<ul>
+<li>Chain: sensor → signal conditioning (amplify, filter, isolate) → anti-aliasing low-pass filter → analog multiplexer (multiple channels) → sample-and-hold → ADC → microcontroller/computer → storage/display.</li>
+<li>Sampling rate ≥ 2 × highest frequency (Nyquist); in practice 5–10×. Aliasing if undersampled. Throughput for N multiplexed channels: per-channel rate = total rate / N.</li>
+<li>Specs: number of channels, resolution, sampling rate, input range, accuracy, isolation. Single-ended vs differential inputs (differential rejects common-mode noise).</li>
+</ul>
+
+<h2 id="s21">B1.2 Signals and Systems</h2>
+<h3>Signals</h3>
+<ul>
+<li>Continuous-time x(t) and discrete-time x[n]. Periodic: x(t + T) = x(t). Sum of periodic signals is periodic if the ratio of periods is rational; period = LCM. x[n] = cos(ω₀n) is periodic only if ω₀/2π is rational.</li>
+<li>Even/odd decomposition: x<sub>e</sub> = ½[x(t) + x(−t)], x<sub>o</sub> = ½[x(t) − x(−t)].</li>
+<li>Energy E = ∫|x|²dt (finite ⇒ energy signal, P = 0); power P = lim (1/T)∫|x|²dt (finite non-zero ⇒ power signal, E = ∞).</li>
+<li>Standard signals: unit step u(t), impulse δ(t) (∫δ = 1, sifting ∫x(t)δ(t − t₀)dt = x(t₀), δ(at) = δ(t)/|a|), ramp r(t) = t u(t), rect, sinc(x) = sin(πx)/(πx), complex exponential e<sup>st</sup>.</li>
+</ul>
+<h3>Shifting and scaling</h3>
+<ul>
+<li>x(t − t₀): delay (shift right) by t₀. x(at): compress if |a| &gt; 1, expand if |a| &lt; 1. x(−t): time reversal.</li>
+<li>For y(t) = x(at − b): shift first by b, then scale by a (i.e. x(a(t − b/a))). Check with key points.</li>
+<li>Discrete: x[2n] (decimation) loses samples; x[n/2] (interpolation) defined only for even n.</li>
+</ul>
+<h3>System properties</h3>
+<ul>
+<li><b>Linear:</b> additivity + homogeneity (superposition). y = ax + b with b ≠ 0 is not linear (incrementally linear).</li>
+<li><b>Time-invariant:</b> a delayed input gives the same delayed output. y(t) = x(2t) or y(t) = t x(t) are time-variant.</li>
+<li><b>Causal:</b> output depends only on present and past inputs; LTI causal ⇔ h(t) = 0 for t &lt; 0.</li>
+<li><b>Memoryless (static):</b> output depends only on the present input; LTI ⇔ h(t) = kδ(t).</li>
+<li><b>BIBO stable:</b> bounded input → bounded output; LTI ⇔ ∫|h(t)|dt &lt; ∞ (Σ|h[n]| &lt; ∞).</li>
+<li><b>Invertible:</b> distinct inputs → distinct outputs.</li>
+<li>LTI output: convolution y(t) = x(t) * h(t) = ∫x(τ)h(t − τ)dτ; y[n] = Σx[k]h[n − k]. Commutative, associative, distributive. Cascade: h₁ * h₂; parallel: h₁ + h₂. Length of discrete linear convolution = N + M − 1. Eigenfunction: e<sup>st</sup> → H(s)e<sup>st</sup>.</li>
+</ul>
+<h3>Fourier series</h3>
+<ul>
+<li>CT periodic: x(t) = Σ c<sub>k</sub> e<sup>jkω₀t</sup>, c<sub>k</sub> = (1/T)∫<sub>T</sub> x(t) e<sup>−jkω₀t</sup>dt. Real x ⇒ c₋ₖ = c<sub>k</sub>*. Trigonometric form: a₀ + Σ(a<sub>k</sub>cos + b<sub>k</sub>sin).</li>
+<li>Symmetry: even → cosine terms only; odd → sine terms only; half-wave symmetry x(t ± T/2) = −x(t) → odd harmonics only.</li>
+<li>Parseval: P = Σ|c<sub>k</sub>|². Square wave has odd harmonics decaying as 1/k; triangle wave as 1/k². Gibbs phenomenon: ~9% overshoot at discontinuities.</li>
+<li>DT Fourier series: x[n] periodic with N; coefficients are also periodic with N (only N distinct).</li>
+</ul>
+<h3>Sampling theorem (Shannon)</h3>
+<ul>
+<li>A band-limited signal with maximum frequency f<sub>m</sub> can be perfectly recovered from samples if f<sub>s</sub> ≥ 2f<sub>m</sub> (Nyquist rate = 2f<sub>m</sub>; Nyquist interval = 1/2f<sub>m</sub>). Reconstruct with an ideal low-pass filter (sinc interpolation), cut-off between f<sub>m</sub> and f<sub>s</sub> − f<sub>m</sub>.</li>
+<li>Sampled spectrum: copies of X(f) repeated every f<sub>s</sub>. If f<sub>s</sub> &lt; 2f<sub>m</sub> → aliasing: a tone at f appears at |f − k f<sub>s</sub>| folded into [0, f<sub>s</sub>/2].</li>
+<li>For a product of signals, bandwidths add; for x²(t), bandwidth doubles. Band-pass sampling: f<sub>s</sub> = 2f<sub>H</sub>/k.</li>
+</ul>
+<h3>Fourier transform</h3>
+<ul>
+<li>X(ω) = ∫x(t)e<sup>−jωt</sup>dt; x(t) = (1/2π)∫X(ω)e<sup>jωt</sup>dω.</li>
+<li>Properties: linearity; time shift x(t − t₀) ↔ e<sup>−jωt₀</sup>X; frequency shift e<sup>jω₀t</sup>x ↔ X(ω − ω₀); scaling x(at) ↔ (1/|a|)X(ω/a); duality; differentiation ↔ jωX; integration ↔ X/jω + πX(0)δ(ω); convolution ↔ product; product ↔ (1/2π) convolution; modulation x cos ω₀t ↔ ½[X(ω − ω₀) + X(ω + ω₀)]; Parseval ∫|x|²dt = (1/2π)∫|X|²dω.</li>
+<li>Real and even x ⇒ X real and even; real and odd ⇒ X imaginary and odd. X(0) = ∫x dt; x(0) = (1/2π)∫X dω.</li>
+<li>Pairs: δ ↔ 1; 1 ↔ 2πδ(ω); e<sup>−at</sup>u(t) ↔ 1/(a + jω); rect(t/T) ↔ T sinc(ωT/2π); sinc ↔ rect; e<sup>−a|t|</sup> ↔ 2a/(a² + ω²); Gaussian ↔ Gaussian; u(t) ↔ πδ(ω) + 1/jω; sgn ↔ 2/jω.</li>
+<li>DTFT X(e<sup>jω</sup>) = Σx[n]e<sup>−jωn</sup> is periodic in ω with period 2π. DFT: N-point sampled DTFT; FFT computes it in O(N log N).</li>
+</ul>
+<h3>Laplace transform</h3>
+<ul>
+<li>X(s) = ∫x(t)e<sup>−st</sup>dt with region of convergence (ROC). Right-sided signals: ROC to the right of the rightmost pole; left-sided: left of the leftmost pole; two-sided: strip.</li>
+<li>LTI system H(s): causal ⇒ ROC is a right half-plane; stable ⇒ ROC includes the jω-axis; causal and stable ⇒ all poles in the LHP.</li>
+<li>Fourier transform = Laplace on s = jω (if ROC includes jω-axis). Properties as in the mathematics section (shift, derivative, convolution, initial/final value theorems).</li>
+</ul>
+<h3>Z-transform</h3>
+<ul>
+<li>X(z) = Σx[n]z<sup>−n</sup>. Pairs: δ[n] ↔ 1; u[n] ↔ z/(z − 1), |z| &gt; 1; aⁿu[n] ↔ z/(z − a), |z| &gt; |a|; −aⁿu[−n − 1] ↔ z/(z − a), |z| &lt; |a|; n aⁿu[n] ↔ az/(z − a)².</li>
+<li>Properties: shift x[n − k] ↔ z<sup>−k</sup>X; aⁿx ↔ X(z/a); n x ↔ −z dX/dz; convolution ↔ product; initial value x[0] = lim<sub>z→∞</sub>X; final value x[∞] = lim<sub>z→1</sub>(z − 1)X.</li>
+<li>ROC: no poles inside; causal ⇒ outside the outermost pole; stable ⇒ contains the unit circle; causal and stable ⇒ all poles inside the unit circle. DTFT = X(z) on |z| = 1. s-plane to z-plane: z = e<sup>sT</sup>.</li>
+<li>Difference equation y[n] − a y[n − 1] = x[n] → H(z) = 1/(1 − az⁻¹). FIR (no feedback, always stable, can be linear phase) vs IIR (feedback poles).</li>
+</ul>
+<h3>RMS and average values</h3>
+<table>
+<tr><th>Waveform (peak V<sub>m</sub>)</th><th>Average</th><th>RMS</th><th>Form factor (RMS/avg)</th></tr>
+<tr><td>Sine (full cycle)</td><td>0</td><td>V<sub>m</sub>/√2</td><td>—</td></tr>
+<tr><td>Full-wave rectified sine</td><td>2V<sub>m</sub>/π</td><td>V<sub>m</sub>/√2</td><td>1.11</td></tr>
+<tr><td>Half-wave rectified sine</td><td>V<sub>m</sub>/π</td><td>V<sub>m</sub>/2</td><td>1.57</td></tr>
+<tr><td>Square (±V<sub>m</sub>)</td><td>0</td><td>V<sub>m</sub></td><td>1 (half-cycle avg)</td></tr>
+<tr><td>Triangle / sawtooth</td><td>0 (or V<sub>m</sub>/2 if 0..V<sub>m</sub>)</td><td>V<sub>m</sub>/√3</td><td>1.155</td></tr>
+<tr><td>Pulse train, duty D, 0..V<sub>m</sub></td><td>D·V<sub>m</sub></td><td>√D·V<sub>m</sub></td><td>1/√D</td></tr>
+</table>
+<ul>
+<li>General: V<sub>avg</sub> = (1/T)∫v dt; V<sub>rms</sub> = √[(1/T)∫v²dt]. For a sum of a DC and harmonics: V<sub>rms</sub> = √(V<sub>dc</sub>² + V₁,<sub>rms</sub>² + V₂,<sub>rms</sub>² + …). Crest factor = peak/RMS (√2 for a sine).</li>
+</ul>
+
+<h2 id="s22">B1.3 Control Systems</h2>
+<h3>Modelling and representation</h3>
+<ul>
+<li>Mechanical translational: F = M ẍ + B ẋ + K x. Rotational: T = J θ̈ + B θ̇ + K θ. Electrical RLC.</li>
+<li>Analogies: force–voltage (M ↔ L, B ↔ R, K ↔ 1/C, x ↔ q) and force–current (M ↔ C, B ↔ 1/R, K ↔ 1/L).</li>
+<li>Gear trains: θ₁/θ₂ = N₂/N₁; T₂/T₁ = N₂/N₁; load inertia reflected to the motor side: J<sub>eq</sub> = J<sub>m</sub> + J<sub>L</sub>(N₁/N₂)².</li>
+<li>State space: ẋ = Ax + Bu, y = Cx + Du; G(s) = C(sI − A)⁻¹B + D. Eigenvalues of A = poles. State transition matrix Φ(t) = e<sup>At</sup> = L⁻¹{(sI − A)⁻¹}. Controllability: rank[B AB … Aⁿ⁻¹B] = n; observability: rank[C; CA; …; CAⁿ⁻¹] = n.</li>
+</ul>
+<h3>Feedback principle and transfer function</h3>
+<ul>
+<li>Transfer function = L{output}/L{input} with zero initial conditions; = Laplace transform of the impulse response. Poles: roots of denominator; zeros: roots of numerator. Order = highest power of s in the denominator.</li>
+<li>Closed loop (negative feedback): T(s) = G/(1 + GH). Characteristic equation: 1 + G(s)H(s) = 0.</li>
+<li>Feedback reduces sensitivity to parameter changes (S<sup>T</sup><sub>G</sub> = 1/(1 + GH)), rejects disturbances, can improve speed and stabilize, but can also destabilize and adds cost/complexity; it reduces overall gain.</li>
+<li>Open-loop: simple, no stability issue, but cannot correct disturbances.</li>
+</ul>
+<h3>Block diagrams and signal flow graphs</h3>
+<ul>
+<li>Series: G₁G₂. Parallel: G₁ ± G₂. Feedback loop: G/(1 ± GH). Moving a summing point ahead of a block: divide by G; behind: multiply by G. Moving a take-off point ahead: multiply by G; behind: divide by G.</li>
+<li><b>Mason's gain formula:</b> T = (1/Δ)ΣP<sub>k</sub>Δ<sub>k</sub>. Δ = 1 − (sum of individual loop gains) + (sum of products of two non-touching loops) − (three non-touching) + … Δ<sub>k</sub> = Δ with the loops touching the k-th forward path removed.</li>
+</ul>
+<h3>Transient response</h3>
+<ul>
+<li>First order G = K/(τs + 1): step response K(1 − e<sup>−t/τ</sup>); 63.2% at t = τ; settling time ≈ 4τ (2%); rise time (10–90%) = 2.2τ.</li>
+<li>Second order: G = ωₙ²/(s² + 2ζωₙs + ωₙ²); poles −ζωₙ ± jωₙ√(1 − ζ²). ζ = 0 undamped, 0 &lt; ζ &lt; 1 underdamped, 1 critical, &gt; 1 overdamped.</li>
+<li>Underdamped step specs: damped frequency ω<sub>d</sub> = ωₙ√(1 − ζ²); peak time t<sub>p</sub> = π/ω<sub>d</sub>; percent overshoot M<sub>p</sub> = e<sup>−πζ/√(1−ζ²)</sup> × 100%; settling time t<sub>s</sub> = 4/(ζωₙ) (2%) or 3/(ζωₙ) (5%); rise time t<sub>r</sub> = (π − θ)/ω<sub>d</sub>, θ = cos⁻¹ζ. Number of oscillations ≈ t<sub>s</sub>/(2π/ω<sub>d</sub>).</li>
+<li>Dominant poles: poles closest to the jω-axis dominate; poles &gt; 5× further left can be neglected.</li>
+</ul>
+<h3>Steady-state error</h3>
+<ul>
+<li>Unity feedback: e<sub>ss</sub> = lim<sub>s→0</sub> sR(s)/(1 + G(s)). Type = number of poles of G(s)H(s) at the origin.</li>
+<li>Error constants: K<sub>p</sub> = lim G(s); K<sub>v</sub> = lim sG(s); K<sub>a</sub> = lim s²G(s) (as s → 0).</li>
+</ul>
+<table>
+<tr><th>Input</th><th>Type 0</th><th>Type 1</th><th>Type 2</th></tr>
+<tr><td>Step A</td><td>A/(1 + K<sub>p</sub>)</td><td>0</td><td>0</td></tr>
+<tr><td>Ramp A t</td><td>∞</td><td>A/K<sub>v</sub></td><td>0</td></tr>
+<tr><td>Parabola A t²/2</td><td>∞</td><td>∞</td><td>A/K<sub>a</sub></td></tr>
+</table>
+<h3>Routh–Hurwitz criterion</h3>
+<ul>
+<li>Necessary: all coefficients of the characteristic polynomial present and of the same sign.</li>
+<li>Build the Routh array; number of sign changes in the first column = number of roots in the RHP. Stable iff no sign changes.</li>
+<li>Special cases: zero in first column (replace with ε → 0⁺); entire row zero (auxiliary polynomial A(s) from the row above, use dA/ds; indicates symmetric roots, e.g. on the jω-axis → marginal stability; roots of A(s) give the oscillation frequency).</li>
+<li>Second order: stable iff all coefficients &gt; 0. Third order a₀s³ + a₁s² + a₂s + a₃: stable iff all &gt; 0 and a₁a₂ &gt; a₀a₃. Use to find K range for stability and K<sub>marginal</sub>.</li>
+</ul>
+<h3>Nyquist criterion</h3>
+<ul>
+<li>Plot G(jω)H(jω) for ω from −∞ to ∞ (go around RHP poles/zeros on the jω-axis with small semicircles).</li>
+<li><b>Z = P − N</b> (N = counter-clockwise encirclements of −1 + j0; P = open-loop RHP poles; Z = closed-loop RHP poles). Stable iff Z = 0, i.e. N = P. (With clockwise counting: Z = P + N.)</li>
+<li>Open-loop stable (P = 0) ⇒ stable iff no encirclement of −1.</li>
+<li><b>Gain margin</b> GM = 1/|GH(jω<sub>pc</sub>)| at the phase-crossover frequency (phase = −180°); in dB: −20 log|GH(jω<sub>pc</sub>)|. <b>Phase margin</b> PM = 180° + ∠GH(jω<sub>gc</sub>) at the gain-crossover frequency (|GH| = 1). Stable (minimum-phase) when both positive. PM ≈ 100ζ for ζ &lt; 0.7.</li>
+</ul>
+<h3>Bode plots</h3>
+<ul>
+<li>Magnitude in dB (20 log|G|) and phase versus log ω.</li>
+<li>Gain K: flat 20 log K, 0° (180° if negative). Pole at origin 1/s: −20 dB/dec through 0 dB at ω = 1, −90°. Zero at origin: +20 dB/dec, +90°.</li>
+<li>Simple pole 1/(1 + s/a): 0 dB until ω = a then −20 dB/dec (actual −3 dB at the corner); phase 0 → −90° (−45° at a). Simple zero: +20 dB/dec, 0 → +90°.</li>
+<li>Quadratic pole: −40 dB/dec after ωₙ, phase 0 → −180°; resonant peak M<sub>r</sub> = 1/(2ζ√(1 − ζ²)) at ω<sub>r</sub> = ωₙ√(1 − 2ζ²) (for ζ &lt; 0.707).</li>
+<li>Initial slope reveals the system type (−20 × type dB/dec). Final slope = −20 × (poles − zeros). Non-minimum phase (RHP zero) shows extra phase lag for the same magnitude. Transport delay e<sup>−sT</sup>: magnitude 1, phase −ωT.</li>
+<li>Bandwidth of a second-order system: ω<sub>b</sub> = ωₙ√[(1 − 2ζ²) + √(4ζ⁴ − 4ζ² + 2)].</li>
+</ul>
+<h3>Root locus</h3>
+<ul>
+<li>Locus of closed-loop poles as K varies 0 → ∞, from 1 + KG(s)H(s) = 0. Angle condition: ∠GH = ±180°(2q + 1); magnitude condition: |KGH| = 1 (gives K at a point).</li>
+<li>Rules: starts at open-loop poles (K = 0), ends at zeros (K = ∞) or infinity. Number of branches = number of poles. Symmetric about the real axis. Real-axis segment is on the locus if an odd number of poles + zeros lie to its right.</li>
+<li>Asymptotes: n − m of them, angles (2q + 1)180°/(n − m); centroid σ = (Σpoles − Σzeros)/(n − m).</li>
+<li>Break-away/break-in points: dK/ds = 0. jω-axis crossings: Routh array. Angle of departure from a complex pole: 180° − Σ(angles from other poles) + Σ(angles from zeros); arrival at a complex zero analogously.</li>
+<li>Adding a pole pushes the locus right (less stable); adding a zero pulls it left (more stable).</li>
+</ul>
+<h3>Compensators</h3>
+<ul>
+<li><b>Lead</b> G<sub>c</sub> = (1 + aTs)/(1 + Ts), a &gt; 1 (zero closer to origin than the pole). Adds phase lead: φ<sub>max</sub> = sin⁻¹[(a − 1)/(a + 1)] at ω<sub>m</sub> = 1/(T√a). Improves PM, transient response and bandwidth (high-pass, amplifies noise). Approximates PD.</li>
+<li><b>Lag</b> G<sub>c</sub> = (1 + aTs)/(1 + Ts), a &lt; 1 (pole closer to origin). Increases low-frequency gain → reduces steady-state error; place well below crossover to avoid phase loss; reduces bandwidth (slower). Approximates PI.</li>
+<li><b>Lead–lag:</b> combines both — lead for transient response, lag for steady-state accuracy.</li>
+</ul>
+<h3>P, PI, PID controllers</h3>
+<ul>
+<li>u(t) = K<sub>p</sub>e + K<sub>i</sub>∫e dt + K<sub>d</sub> de/dt; G<sub>c</sub>(s) = K<sub>p</sub> + K<sub>i</sub>/s + K<sub>d</sub>s.</li>
+<li><b>P:</b> faster response, reduces but does not eliminate steady-state error; high gain → overshoot/instability.</li>
+<li><b>I (PI):</b> adds a pole at the origin → raises system type by 1 → eliminates steady-state error to a step; can increase overshoot and reduce stability; integral wind-up (use anti-windup).</li>
+<li><b>D (PD):</b> adds a zero → anticipates error, adds damping, reduces overshoot and settling time, improves stability; amplifies noise (use a filtered derivative); no effect on steady-state error.</li>
+<li><b>PID:</b> combines all three. Ziegler–Nichols (ultimate-gain method): K<sub>p</sub> = 0.6K<sub>u</sub>, T<sub>i</sub> = P<sub>u</sub>/2, T<sub>d</sub> = P<sub>u</sub>/8; P only: 0.5K<sub>u</sub>; PI: 0.45K<sub>u</sub>, T<sub>i</sub> = P<sub>u</sub>/1.2.</li>
+</ul>
+</section>
+<section><h1 id="b2">Part B2 — Mechanical Engineering</h1>
+
+<h2 id="s23">B2.1 Mechanics of Materials</h2>
+<h3>Stress and strain</h3>
+<ul>
+<li>Normal stress σ = P/A; shear stress τ = V/A. Normal strain ε = δL/L; shear strain γ (radians).</li>
+<li>Hooke's law: σ = Eε; τ = Gγ. Axial deformation δ = PL/(AE); for stepped bars sum each segment; bar under own weight δ = ρgL²/(2E) = WL/(2AE).</li>
+<li>Stress–strain curve (mild steel): proportional limit, elastic limit, upper/lower yield points, ultimate strength, fracture. Ductile (large plastic strain, cup-and-cone fracture) vs brittle (cast iron, little plastic strain).</li>
+<li>Factor of safety = failure stress/allowable stress. Strain energy U = σ²V/(2E) = P²L/(2AE). Modulus of resilience σ<sub>y</sub>²/(2E). Toughness = area under the curve.</li>
+<li>Suddenly applied load: stress = 2× gradually applied. Impact load from height h: σ = (P/A)[1 + √(1 + 2AEh/(PL))].</li>
+<li>Composite bars in parallel: same strain, load shared in proportion to AE.</li>
+</ul>
+<h3>Elastic constants and Poisson's ratio</h3>
+<ul>
+<li>Poisson's ratio ν = −ε<sub>lateral</sub>/ε<sub>axial</sub>; 0 ≤ ν ≤ 0.5 (0.5 incompressible, rubber; ~0.3 steel; ~0 cork).</li>
+<li>E = 2G(1 + ν) = 3K(1 − 2ν); E = 9KG/(3K + G).</li>
+<li>Volumetric strain ε<sub>v</sub> = ε<sub>x</sub> + ε<sub>y</sub> + ε<sub>z</sub>; for uniaxial: ε(1 − 2ν). Bulk modulus K = −p/ε<sub>v</sub>.</li>
+<li>Generalized Hooke: ε<sub>x</sub> = [σ<sub>x</sub> − ν(σ<sub>y</sub> + σ<sub>z</sub>)]/E.</li>
+</ul>
+<h3>Mohr's circle — plane stress</h3>
+<ul>
+<li>Stresses on a plane at θ: σ<sub>θ</sub> = (σ<sub>x</sub> + σ<sub>y</sub>)/2 + [(σ<sub>x</sub> − σ<sub>y</sub>)/2]cos 2θ + τ<sub>xy</sub>sin 2θ; τ<sub>θ</sub> = −[(σ<sub>x</sub> − σ<sub>y</sub>)/2]sin 2θ + τ<sub>xy</sub>cos 2θ.</li>
+<li>Principal stresses σ₁,₂ = (σ<sub>x</sub> + σ<sub>y</sub>)/2 ± √{[(σ<sub>x</sub> − σ<sub>y</sub>)/2]² + τ<sub>xy</sub>²}; principal planes tan 2θ<sub>p</sub> = 2τ<sub>xy</sub>/(σ<sub>x</sub> − σ<sub>y</sub>); zero shear on principal planes.</li>
+<li>Max in-plane shear τ<sub>max</sub> = (σ₁ − σ₂)/2 = radius of Mohr's circle, on planes at 45° to principal planes (normal stress = average there). Absolute max shear (3D) = (σ<sub>max</sub> − σ<sub>min</sub>)/2 including σ₃ = 0.</li>
+<li>Mohr's circle: centre ((σ<sub>x</sub> + σ<sub>y</sub>)/2, 0), radius R as above; an angle θ on the element = 2θ on the circle. σ<sub>x</sub> + σ<sub>y</sub> is invariant.</li>
+<li>Pure shear: σ₁ = τ, σ₂ = −τ at 45°. Uniaxial σ: τ<sub>max</sub> = σ/2 at 45°.</li>
+</ul>
+<h3>Plane strain</h3>
+<ul>
+<li>Same transformation with σ → ε and τ → γ/2. Principal strains ε₁,₂ = (ε<sub>x</sub> + ε<sub>y</sub>)/2 ± √{[(ε<sub>x</sub> − ε<sub>y</sub>)/2]² + (γ<sub>xy</sub>/2)²}. Max shear strain γ<sub>max</sub> = ε₁ − ε₂.</li>
+</ul>
+<h3>Thin cylinders and spheres (t &lt; d/20)</h3>
+<ul>
+<li>Hoop (circumferential) σ<sub>h</sub> = pd/(2t); longitudinal σ<sub>l</sub> = pd/(4t) = σ<sub>h</sub>/2. Max in-plane shear = pd/(8t); absolute max = pd/(4t).</li>
+<li>Thin sphere: σ = pd/(4t) in all directions.</li>
+<li>Volumetric strain of cylinder: (pd/4tE)(5 − 4ν); sphere: (3pd/4tE)(1 − ν). Joint efficiency η: σ<sub>h</sub> = pd/(2tη<sub>l</sub>), σ<sub>l</sub> = pd/(4tη<sub>c</sub>).</li>
+<li>Thick cylinders (Lamé): σ<sub>r</sub> = A − B/r², σ<sub>h</sub> = A + B/r²; max hoop stress at inner radius.</li>
+</ul>
+<h3>Shear force and bending moment diagrams</h3>
+<ul>
+<li>Relations: dV/dx = −w (load intensity; sign conventions vary), dM/dx = V. Max bending moment where SF = 0 (or changes sign). Point load → step in SFD; UDL → linear SFD and parabolic BMD; uniformly varying load → parabolic SFD and cubic BMD. Applied couple → jump in BMD.</li>
+<li>Point of contraflexure: BM changes sign (only in overhanging/fixed beams).</li>
+<li>Standard maxima: simply supported, central load P: M<sub>max</sub> = PL/4; UDL w: wL²/8. Cantilever end load P: PL; UDL: wL²/2. Fixed–fixed UDL: wL²/12 at supports, wL²/24 at centre.</li>
+</ul>
+<h3>Bending and shear stresses in beams</h3>
+<ul>
+<li>Flexure formula: M/I = σ/y = E/R; σ<sub>max</sub> = M/Z, section modulus Z = I/y<sub>max</sub>. Neutral axis passes through the centroid (zero bending stress).</li>
+<li>I values: rectangle bh³/12 (Z = bh²/6); circle πd⁴/64 (Z = πd³/32); hollow circle π(D⁴ − d⁴)/64; triangle about base bh³/12, about centroid bh³/36.</li>
+<li>Shear stress τ = VQ/(Ib) (Q = first moment of area above the point). Rectangle: τ<sub>max</sub> = 1.5τ<sub>avg</sub> at neutral axis (parabolic distribution). Circle: τ<sub>max</sub> = (4/3)τ<sub>avg</sub>. I-section: web carries most shear.</li>
+<li>Beam of uniform strength: section varies so that M/Z is constant.</li>
+</ul>
+<h3>Shear centre</h3>
+<ul>
+<li>Point through which a transverse load must act to cause bending without twisting. Coincides with the centroid for doubly symmetric sections; lies on the axis of symmetry for singly symmetric sections.</li>
+<li>Channel section: shear centre lies outside the web, at e = b²h²t/(4I) from the web centre line (b = flange width, h = web height between flange centres, t = flange thickness). Angle and T sections: at the intersection of the legs/flange-web centre lines.</li>
+</ul>
+<h3>Deflection of beams</h3>
+<ul>
+<li>EI d²y/dx² = M. Methods: double integration, Macaulay's method, moment-area theorems (slope change = area of M/EI diagram; deflection = moment of that area), conjugate beam, superposition, energy methods.</li>
+</ul>
+<table>
+<tr><th>Case</th><th>Max slope</th><th>Max deflection</th></tr>
+<tr><td>Cantilever, end load P</td><td>PL²/(2EI)</td><td>PL³/(3EI)</td></tr>
+<tr><td>Cantilever, UDL w</td><td>wL³/(6EI)</td><td>wL⁴/(8EI)</td></tr>
+<tr><td>Cantilever, end moment M</td><td>ML/(EI)</td><td>ML²/(2EI)</td></tr>
+<tr><td>Simply supported, central P</td><td>PL²/(16EI)</td><td>PL³/(48EI)</td></tr>
+<tr><td>Simply supported, UDL w</td><td>wL³/(24EI)</td><td>5wL⁴/(384EI)</td></tr>
+<tr><td>Fixed–fixed, central P</td><td>0</td><td>PL³/(192EI)</td></tr>
+<tr><td>Fixed–fixed, UDL w</td><td>0</td><td>wL⁴/(384EI)</td></tr>
+</table>
+<h3>Torsion of circular shafts</h3>
+<ul>
+<li>T/J = τ/r = Gθ/L. Polar moment J = πd⁴/32 (solid), π(D⁴ − d⁴)/32 (hollow). τ<sub>max</sub> = 16T/(πd³) (solid).</li>
+<li>Angle of twist θ = TL/(GJ); torsional stiffness GJ/L. Power P = 2πNT/60 (N in rpm).</li>
+<li>Series shafts: same torque, angles add. Parallel (both ends fixed, torque at a point): same angle, torques add.</li>
+<li>Hollow shafts are stronger and stiffer per unit weight. Combined bending and torsion: equivalent torque T<sub>e</sub> = √(M² + T²); equivalent moment M<sub>e</sub> = ½[M + √(M² + T²)].</li>
+<li>Closely coiled helical spring: τ = 8WDK/(πd³) (K = Wahl factor); deflection δ = 8WD³n/(Gd⁴); stiffness k = Gd⁴/(8D³n). Springs in series: 1/k = Σ1/kᵢ; parallel: k = Σkᵢ.</li>
+</ul>
+<h3>Euler's theory of columns</h3>
+<ul>
+<li>Critical buckling load P<sub>cr</sub> = π²EI<sub>min</sub>/L<sub>e</sub>².</li>
+<li>Effective length L<sub>e</sub>: both ends pinned L; one fixed one free 2L; both fixed L/2; one fixed one pinned L/√2.</li>
+<li>Slenderness ratio λ = L<sub>e</sub>/k (k = √(I/A), radius of gyration); critical stress σ<sub>cr</sub> = π²E/λ². Euler valid for long columns (λ above the limit where σ<sub>cr</sub> = σ<sub>yield</sub>; ≈ 80–100 for mild steel).</li>
+<li>Rankine–Gordon (short and intermediate columns): 1/P<sub>R</sub> = 1/P<sub>crushing</sub> + 1/P<sub>Euler</sub>.</li>
+<li>Eccentric loading: secant formula. Buckling occurs about the axis of minimum I.</li>
+</ul>
+<h3>Castigliano's theorems (energy methods)</h3>
+<ul>
+<li>Strain energy: axial ∫N²dx/(2AE); bending ∫M²dx/(2EI); torsion ∫T²dx/(2GJ); shear ∫kV²dx/(2GA).</li>
+<li><b>Castigliano's (second) theorem:</b> deflection at the point of load Pᵢ in its direction δᵢ = ∂U/∂Pᵢ; rotation θ = ∂U/∂M. (First theorem: Pᵢ = ∂U/∂δᵢ.) To find deflection where no load acts, apply a dummy load Q and set Q = 0 after differentiating.</li>
+<li>Statically indeterminate structures: ∂U/∂R = 0 for a redundant reaction R (theorem of least work).</li>
+<li>Maxwell's reciprocal theorem: δ<sub>ij</sub> = δ<sub>ji</sub>.</li>
+</ul>
+<h3>Thermal stresses</h3>
+<ul>
+<li>Free thermal strain ε<sub>T</sub> = αΔT; free expansion δ = αLΔT (no stress).</li>
+<li>Fully restrained: σ = EαΔT (compressive when heated). Partially restrained with gap δ₀: σ = E(αLΔT − δ₀)/L.</li>
+<li>Composite bars of different materials heated together: compatibility of strain; the one with higher α goes into compression. σ₁A₁ = σ₂A₂ (equilibrium); α₁ΔT − σ₁/E₁ = α₂ΔT + σ₂/E₂.</li>
+</ul>
+<h3>Strain gauges and rosettes</h3>
+<ul>
+<li>Strain gauge: GF = (ΔR/R)/ε. Measures normal strain in one direction only; shear strain must be derived.</li>
+<li><b>Rosette</b> (three gauges at known angles) gives ε<sub>x</sub>, ε<sub>y</sub>, γ<sub>xy</sub> using ε<sub>θ</sub> = ε<sub>x</sub>cos²θ + ε<sub>y</sub>sin²θ + γ<sub>xy</sub>sin θ cos θ.</li>
+<li>Rectangular (0°, 45°, 90°): ε<sub>x</sub> = ε₀, ε<sub>y</sub> = ε₉₀, γ<sub>xy</sub> = 2ε₄₅ − ε₀ − ε₉₀. Delta (0°, 60°, 120°) rosettes also used.</li>
+<li>Principal stresses from principal strains: σ₁ = E(ε₁ + νε₂)/(1 − ν²); σ₂ = E(ε₂ + νε₁)/(1 − ν²).</li>
+</ul>
+<h3>Testing of materials</h3>
+<ul>
+<li><b>Universal testing machine (UTM):</b> tension, compression, bending, shear tests. Results: E, yield strength (0.2% offset proof stress for materials without a clear yield point), UTS, % elongation = (L<sub>f</sub> − L₀)/L₀ × 100, % reduction in area (ductility). Engineering vs true stress (σ<sub>true</sub> = σ(1 + ε), ε<sub>true</sub> = ln(1 + ε)). Necking starts at UTS.</li>
+<li><b>Hardness:</b> Brinell (hardened steel/tungsten ball, BHN = 2P/[πD(D − √(D² − d²))], soft-to-medium metals); Vickers (diamond pyramid 136°, HV = 1.854P/d², all hardness ranges, micro-hardness); Rockwell (depth of penetration, minor + major load; scales B (ball, soft) and C (diamond cone, hard)); Knoop (thin layers); Shore scleroscope (rebound) and Mohs (scratch). UTS ≈ 3.45 × BHN (MPa) for steels.</li>
+<li><b>Impact strength:</b> Charpy (simply supported, notch facing away from striker) and Izod (cantilever, notch facing striker). Energy absorbed = W(h₁ − h₂). Ductile-to-brittle transition temperature (BCC metals).</li>
+<li>Others: fatigue (rotating beam), creep, torsion test, non-destructive testing (ultrasonic, radiography, dye penetrant, magnetic particle, eddy current).</li>
+</ul>
+
+<h2 id="s24">B2.2 Kinematics and Dynamics of Machines</h2>
+<h3>Mechanisms basics</h3>
+<ul>
+<li>Kinematic link, pair (lower: surface contact; higher: point/line contact), chain, mechanism (one link fixed), machine. Inversion: fixing different links of the same chain.</li>
+<li>Mobility (Grübler, planar): F = 3(n − 1) − 2j − h (j = lower pairs, h = higher pairs). F = 0 structure; F &lt; 0 indeterminate; F = 1 constrained mechanism.</li>
+<li><b>Grashof's law</b> (four-bar): s + l ≤ p + q ⇒ at least one link can fully rotate. Shortest link as crank → crank-rocker; shortest as frame → double crank (drag link); shortest as coupler → double rocker. Non-Grashof → triple rocker.</li>
+<li>Inversions: four-bar (beam engine, coupling rod of locomotive, Watt's indicator); single slider-crank (reciprocating engine, Whitworth quick return, rotary engine, oscillating cylinder, hand pump); double slider-crank (elliptical trammel, Scotch yoke, Oldham coupling).</li>
+<li>Quick-return ratio = time of cutting / time of return = α/β (crank angles). Transmission angle μ (best near 90°, acceptable 40°–140°). Toggle position: mechanical advantage → ∞.</li>
+</ul>
+<h3>Displacement, velocity and acceleration analysis</h3>
+<ul>
+<li><b>Relative velocity:</b> v<sub>BA</sub> = ω·AB, perpendicular to AB. Velocity polygons drawn link by link.</li>
+<li><b>Instantaneous centres:</b> number of ICs N = n(n − 1)/2. <b>Kennedy's theorem:</b> the three ICs of three bodies in plane motion lie on a straight line. Velocity v = ω × distance from IC. Slider on a fixed straight path: IC at infinity perpendicular to the path.</li>
+<li><b>Acceleration:</b> centripetal (radial) a<sub>r</sub> = ω²r = v²/r towards the centre; tangential a<sub>t</sub> = αr. <b>Coriolis component</b> 2ωv (when a point slides along a rotating link; direction: rotate the sliding velocity by 90° in the sense of ω) — appears in quick-return and slotted-link mechanisms.</li>
+<li><b>Slider-crank</b> (crank r, connecting rod l, n = l/r): piston displacement x ≈ r[(1 − cos θ) + (sin²θ)/(2n)]; velocity v ≈ ωr(sin θ + sin 2θ/(2n)); acceleration a ≈ ω²r(cos θ + cos 2θ/n). Angular velocity of connecting rod ω<sub>c</sub> ≈ ω cos θ/n.</li>
+<li>Analytical: loop-closure equations; graphical: polygons; Klein's construction for slider-crank.</li>
+</ul>
+<h3>Dynamic analysis of linkages</h3>
+<ul>
+<li>D'Alembert: add inertia force −m a<sub>G</sub> and inertia couple −I<sub>G</sub>α; then solve as a static problem (link by link, or by virtual work: Σ(F·v) + Σ(T·ω) = 0).</li>
+<li>Slider-crank engine: piston effort F<sub>P</sub> = gas force − inertia force (F<sub>I</sub> = m<sub>R</sub>ω²r(cos θ + cos 2θ/n)); force along connecting rod F<sub>Q</sub> = F<sub>P</sub>/cos φ; crank effort/torque T = F<sub>P</sub>·r·sin(θ + φ)/cos φ ≈ F<sub>P</sub>r(sin θ + sin 2θ/(2√(n² − sin²θ))).</li>
+<li>Dynamically equivalent two-mass system: same total mass, same centroid, same moment of inertia (l₁l₂ = k²).</li>
+<li><b>Turning moment diagram and flywheel:</b> fluctuation of energy ΔE = Iω²C<sub>s</sub> = mk²ω²C<sub>s</sub>; coefficient of fluctuation of speed C<sub>s</sub> = (ω<sub>max</sub> − ω<sub>min</sub>)/ω<sub>mean</sub>. Rim flywheel: ΔE = mv²C<sub>s</sub>.</li>
+<li>Governors (Watt, Porter, Proell, Hartnell): control mean speed with load; sensitiveness, stability, isochronism, hunting. Flywheel controls cyclic fluctuations within a cycle.</li>
+</ul>
+<h3>Gears and gear trains</h3>
+<ul>
+<li><b>Law of gearing:</b> the common normal at the point of contact passes through a fixed point (pitch point) → constant velocity ratio. Satisfied by involute and cycloidal profiles. Involute: centre-distance changes do not affect the velocity ratio; pressure angle constant (14.5°, 20°).</li>
+<li>Terminology: module m = d/T (mm); circular pitch p = πm; diametral pitch P = T/d; addendum = 1m (standard), dedendum = 1.25m; base circle d<sub>b</sub> = d cos φ. Velocity ratio ω₁/ω₂ = T₂/T₁ = d₂/d₁.</li>
+<li>Path of contact = √(R<sub>a</sub>² − R²cos²φ) + √(r<sub>a</sub>² − r²cos²φ) − (R + r)sin φ. Arc of contact = path/cos φ. <b>Contact ratio</b> = arc of contact/circular pitch (&gt; 1, usually 1.2–1.6).</li>
+<li><b>Interference:</b> tip of one gear digs into the non-involute flank of the other. Minimum teeth on pinion to avoid interference (rack, 20° full depth): T<sub>min</sub> = 2a<sub>w</sub>/sin²φ ≈ 17 (32 for 14.5°). Remedies: increase pressure angle, stub teeth, undercutting, profile shift.</li>
+<li>Gear types: spur, helical (axial thrust; double helical/herringbone cancels it), bevel (intersecting shafts), worm and wheel (large ratio, non-intersecting perpendicular shafts, often self-locking), rack and pinion, hypoid, spiral.</li>
+<li><b>Gear trains:</b> simple (idler only changes direction), compound (speed ratio = product of driven teeth/product of driver teeth), reverted (input and output coaxial).</li>
+<li><b>Epicyclic (planetary)</b> trains: arm rotates; use the tabular method (lock arm, give +1 rotation to sun, then add arm rotation) or the relative velocity formula (N<sub>s</sub> − N<sub>a</sub>)/(N<sub>r</sub> − N<sub>a</sub>) = −T<sub>r</sub>/T<sub>s</sub>. Ring teeth T<sub>r</sub> = T<sub>s</sub> + 2T<sub>p</sub> (same module). Torque balance: ΣT = 0 (T<sub>in</sub> + T<sub>out</sub> + T<sub>fixed</sub> = 0) and power balance ΣTω = 0. Used in automatic transmissions, differentials, robot reducers.</li>
+<li>Harmonic drives (strain wave): very high ratio, zero backlash — common in robot joints.</li>
+</ul>
+<h3>Balancing of rotating masses</h3>
+<ul>
+<li>Unbalanced force from mass m at radius r: F = mω²r.</li>
+<li><b>Static balance:</b> Σmr = 0 (vector sum; one balancing mass in the same plane). <b>Dynamic balance:</b> Σmr = 0 and Σmrl = 0 (couple about a reference plane); requires two balancing masses in two planes.</li>
+<li>Graphical: force polygon and couple polygon (reference plane chosen at one balancing plane to eliminate its unknown).</li>
+</ul>
+<h3>Balancing of reciprocating masses</h3>
+<ul>
+<li>Primary disturbing force m ω²r cos θ; secondary m ω²r cos 2θ/n (behaves like a mass at radius r/(4n) rotating at 2ω).</li>
+<li>Single cylinder: primary force can be only partially balanced (fraction c of the reciprocating mass); adding rotating balance mass introduces an unbalanced vertical force c mω²r sin θ. Typically c = 2/3 to 3/4 in locomotives (hammer blow, swaying couple, variation of tractive effort).</li>
+<li>Multi-cylinder in-line: Σ primary forces and couples = 0, Σ secondary forces and couples = 0 (use direct and reverse crank method for V-engines and radial engines). In-line 6-cylinder engines are fully balanced for primary and secondary.</li>
+</ul>
+<h3>Gyroscope</h3>
+<ul>
+<li>Gyroscopic couple C = Iωω<sub>p</sub> (I = spin moment of inertia, ω = spin, ω<sub>p</sub> = precession). The spin vector moves towards the applied torque vector (precession).</li>
+<li>Ship: steering (turning) → pitching effect on bow/stern; pitching → yawing (steering) effect; rolling → no gyroscopic effect (spin and roll axes parallel). Aeroplane turning → nose up or down depending on directions.</li>
+<li>Vehicles on curved track: gyroscopic couple of wheels and engine changes wheel reactions, adds to overturning effect. Two-wheeler cornering requires leaning.</li>
+<li>Gyroscopes in navigation/stabilization (and MEMS gyros in robot IMUs).</li>
+</ul>
+<h3>Vibrations of single DOF systems</h3>
+<ul>
+<li><b>Free undamped:</b> m ẍ + kx = 0; ωₙ = √(k/m); fₙ = ωₙ/2π; static deflection δ<sub>st</sub> = mg/k → ωₙ = √(g/δ<sub>st</sub>). Energy method (Rayleigh): d(KE + PE)/dt = 0.</li>
+<li>Examples: simple pendulum ωₙ = √(g/L); compound pendulum ωₙ = √(mgh/I<sub>O</sub>); torsional ωₙ = √(k<sub>t</sub>/I); spring mass with spring mass m<sub>s</sub>: add m<sub>s</sub>/3. Cantilever end mass k = 3EI/L³; simply supported centre k = 48EI/L³.</li>
+<li><b>Free damped:</b> m ẍ + c ẋ + kx = 0. Critical damping c<sub>c</sub> = 2√(km) = 2mωₙ; damping ratio ζ = c/c<sub>c</sub>. ζ &lt; 1 underdamped: ω<sub>d</sub> = ωₙ√(1 − ζ²). Logarithmic decrement δ = ln(x<sub>n</sub>/x<sub>n+1</sub>) = 2πζ/√(1 − ζ²) ≈ 2πζ; over n cycles δ = (1/n)ln(x₀/x<sub>n</sub>).</li>
+<li>Coulomb (dry friction) damping: amplitude decreases linearly by 4F/k per cycle.</li>
+<li><b>Forced vibration</b> F₀ sin ωt: steady-state amplitude X = (F₀/k)/√[(1 − r²)² + (2ζr)²], r = ω/ωₙ. Magnification factor MF = X/(F₀/k). Phase tan φ = 2ζr/(1 − r²) (90° at resonance).</li>
+<li>Peak amplitude at r = √(1 − 2ζ²); at resonance (r = 1) MF = 1/(2ζ). For r ≫ 1 the mass barely moves (X → F₀/(mω²)).</li>
+<li>Rotating unbalance m₀e: X = (m₀e/m)·r²/√[(1 − r²)² + (2ζr)²]. Base excitation: same as transmissibility below.</li>
+</ul>
+<h3>Effect of damping; vibration isolation</h3>
+<ul>
+<li>Damping reduces amplitude near resonance strongly, has little effect far from resonance.</li>
+<li><b>Transmissibility</b> TR = F<sub>T</sub>/F₀ = √[1 + (2ζr)²]/√[(1 − r²)² + (2ζr)²].</li>
+<li>TR = 1 at r = √2 for any ζ. Isolation (TR &lt; 1) only when r &gt; √2 → use soft mounts (low k, low ωₙ). In the isolation region, more damping increases TR (worse), but damping helps when passing through resonance during start-up.</li>
+<li>Isolation efficiency = 1 − TR.</li>
+</ul>
+<h3>Resonance and critical speed of shafts</h3>
+<ul>
+<li>Resonance: forcing frequency = natural frequency → large amplitudes, limited only by damping.</li>
+<li>Critical (whirling) speed: rotor speed at which the shaft whirls violently = its natural transverse frequency, ω<sub>c</sub> = √(k/m) = √(g/δ<sub>st</sub>); N<sub>c</sub> = (60/2π)√(g/δ). Shaft with eccentricity e: whirl amplitude y = e r²/(1 − r²) (undamped); above critical speed the shaft centre tends towards the mass centre (self-centring).</li>
+<li>Multiple loads — Dunkerley: 1/ω<sub>c</sub>² = 1/ω₁² + 1/ω₂² + … + 1/ω<sub>s</sub>² (lower bound). Rayleigh's method for the fundamental frequency (upper bound).</li>
+<li>Two-rotor torsional system: node location from I<sub>A</sub>l<sub>A</sub> = I<sub>B</sub>l<sub>B</sub>; ω = √(GJ/(I<sub>A</sub>l<sub>A</sub>)).</li>
+</ul>
+
+<h2 id="s25">B2.3 Machine Design and Computer Integrated Manufacturing</h2>
+<h3>Design for static loading</h3>
+<ul>
+<li>Allowable stress = σ<sub>y</sub>/FoS (ductile) or σ<sub>u</sub>/FoS (brittle). Factor of safety accounts for uncertainty in load, material, analysis.</li>
+<li><b>Stress concentration</b> K<sub>t</sub> = σ<sub>max</sub>/σ<sub>nom</sub> (holes, notches, fillets, keyways). Elliptical hole in a plate: K<sub>t</sub> = 1 + 2a/b; circular hole: 3. Important for brittle materials under static load and for all materials under fatigue; reduce with generous fillets, relief grooves.</li>
+<li>Combined loads: superpose normal stresses; compute principal stresses; apply a failure theory.</li>
+</ul>
+<h3>Failure theories</h3>
+<table>
+<tr><th>Theory</th><th>Criterion</th><th>Use</th></tr>
+<tr><td>Max principal stress (Rankine)</td><td>σ₁ = S<sub>ut</sub>/N</td><td>Brittle materials</td></tr>
+<tr><td>Max shear stress (Tresca/Guest)</td><td>σ₁ − σ₃ = S<sub>y</sub>/N; τ<sub>max</sub> = S<sub>y</sub>/(2N); shear yield S<sub>sy</sub> = 0.5S<sub>y</sub></td><td>Ductile, conservative; hexagon in σ₁–σ₂ plane</td></tr>
+<tr><td>Distortion energy (von Mises)</td><td>σ<sub>vm</sub> = √(σ₁² − σ₁σ₂ + σ₂²) = S<sub>y</sub>/N; general √[½((σ₁−σ₂)² + (σ₂−σ₃)² + (σ₃−σ₁)²)]; S<sub>sy</sub> = 0.577S<sub>y</sub></td><td>Ductile, most accurate; ellipse</td></tr>
+<tr><td>Max principal strain (St. Venant)</td><td>σ₁ − ν(σ₂ + σ₃) = S<sub>y</sub>/N</td><td>Rarely used</td></tr>
+<tr><td>Max strain energy (Haigh)</td><td>σ₁² + σ₂² − 2νσ₁σ₂ = (S<sub>y</sub>/N)²</td><td>Ductile (less used)</td></tr>
+<tr><td>Coulomb–Mohr</td><td>σ₁/S<sub>t</sub> − σ₃/S<sub>c</sub> = 1/N</td><td>Brittle with S<sub>c</sub> ≠ S<sub>t</sub></td></tr>
+</table>
+<ul>
+<li>Shaft under bending + torsion (Tresca): τ<sub>max</sub> = (16/πd³)√(M² + T²); (von Mises): σ<sub>eq</sub> = (32/πd³)√(M² + 0.75T²).</li>
+</ul>
+<h3>Fatigue strength and the S-N diagram</h3>
+<ul>
+<li>Fatigue: failure under fluctuating stress well below S<sub>u</sub>; crack initiation at stress raisers, propagation (beach marks), sudden final fracture.</li>
+<li><b>S-N (Wöhler) diagram:</b> log stress amplitude vs log cycles. Steels show an endurance limit S<sub>e</sub>′ ≈ 0.5S<sub>ut</sub> (for S<sub>ut</sub> ≤ 1400 MPa) at ~10⁶–10⁷ cycles; non-ferrous metals (aluminium) have no endurance limit. Low-cycle (&lt;10³) vs high-cycle fatigue; 10³ cycles ≈ 0.9S<sub>ut</sub>.</li>
+<li>Corrected endurance limit (Marin): S<sub>e</sub> = k<sub>a</sub>k<sub>b</sub>k<sub>c</sub>k<sub>d</sub>k<sub>e</sub>S<sub>e</sub>′ (surface, size, load, temperature, reliability factors). Fatigue stress concentration K<sub>f</sub> = 1 + q(K<sub>t</sub> − 1), notch sensitivity 0 ≤ q ≤ 1.</li>
+<li>Fluctuating stress: mean σ<sub>m</sub> = (σ<sub>max</sub> + σ<sub>min</sub>)/2; amplitude σ<sub>a</sub> = (σ<sub>max</sub> − σ<sub>min</sub>)/2; stress ratio R = σ<sub>min</sub>/σ<sub>max</sub> (fully reversed R = −1).</li>
+<li>Mean-stress criteria: <b>Soderberg</b> σ<sub>a</sub>/S<sub>e</sub> + σ<sub>m</sub>/S<sub>y</sub> = 1/N (most conservative); <b>Goodman</b> σ<sub>a</sub>/S<sub>e</sub> + σ<sub>m</sub>/S<sub>ut</sub> = 1/N; <b>Gerber</b> parabola Nσ<sub>a</sub>/S<sub>e</sub> + (Nσ<sub>m</sub>/S<sub>ut</sub>)² = 1.</li>
+<li>Cumulative damage — Miner's rule: Σnᵢ/Nᵢ = 1 at failure.</li>
+<li>Improve fatigue life: polish surfaces, shot peening (compressive residual stress), avoid sharp corners, nitriding/case hardening.</li>
+</ul>
+<h3>Bolted joints</h3>
+<ul>
+<li>Tensile stress area; σ = P/A<sub>t</sub>. Core diameter d<sub>c</sub> ≈ 0.84d. Shear of bolts in single/double shear: P = n·(π/4)d²·τ (×2 for double).</li>
+<li>Preload (initial tension) F<sub>i</sub>; external load P shared: bolt load F<sub>b</sub> = F<sub>i</sub> + C·P, C = k<sub>b</sub>/(k<sub>b</sub> + k<sub>m</sub>) (joint stiffness constant); joint separates when (1 − C)P = F<sub>i</sub>. Tightening torque T ≈ 0.2F<sub>i</sub>d.</li>
+<li><b>Eccentrically loaded bolted joints:</b> primary (direct) shear P/n on each bolt + secondary shear from moment ∝ distance from the centroid of the bolt group: F″ᵢ = P·e·rᵢ/Σr²; combine vectorially. For a moment in the plane perpendicular to bolts (bracket), tensile load ∝ distance from the tilting edge: Fᵢ = P·e·lᵢ/Σl².</li>
+<li>Power screws: torque to raise T = W(d<sub>m</sub>/2)tan(φ + α) (square thread); self-locking if φ &gt; α; efficiency η = tan α/tan(α + φ) &lt; 50% if self-locking.</li>
+</ul>
+<h3>Riveted joints</h3>
+<ul>
+<li>Lap and butt joints (single/double strap). Failure modes per pitch length: tearing of plate P<sub>t</sub> = (p − d)tσ<sub>t</sub>; shearing of rivets P<sub>s</sub> = n(π/4)d²τ (×2 for double shear; IBR: ×1.875); crushing P<sub>c</sub> = n·d·t·σ<sub>c</sub>.</li>
+<li>Efficiency η = min(P<sub>t</sub>, P<sub>s</sub>, P<sub>c</sub>)/(p·t·σ<sub>t</sub>). Unwin's formula d = 6√t (mm). Caulking and fullering for leak-proof boiler joints.</li>
+</ul>
+<h3>Welded joints</h3>
+<ul>
+<li>Butt weld: P = σ<sub>t</sub>·t·l. Fillet weld throat t = 0.707s (leg size s). Transverse fillet: P = 0.707s·l·σ<sub>t</sub>; parallel (longitudinal) fillet: P = 0.707s·l·τ (failure in shear along the throat).</li>
+<li>Eccentric loading: primary shear P/A plus secondary shear τ₂ = M·r/J (J = polar moment of the weld throat area, using unit-weld properties J<sub>u</sub> × 0.707s); combine vectorially. Bending: σ<sub>b</sub> = M/Z of the weld.</li>
+<li>Stress concentration factors for welds in fatigue (reinforced butt weld 1.2, toe of transverse fillet 1.5, end of parallel fillet 2.7).</li>
+</ul>
+<h3>Shafts, keys and couplings</h3>
+<ul>
+<li>Shaft design by strength: ASME code d³ = (16/πτ<sub>allow</sub>)√[(K<sub>b</sub>M)² + (K<sub>t</sub>T)²] (shock/fatigue factors). By rigidity: torsional θ = TL/(GJ) limit (e.g. 0.25°/m) and lateral deflection limits.</li>
+<li>Hollow vs solid: same weight hollow shaft is stronger and stiffer.</li>
+<li>Keys: sunk (rectangular/square), saddle, feather, Woodruff, splines. Square key checked for shear (τ = 2T/(d·w·l)) and crushing (σ<sub>c</sub> = 4T/(d·h·l)); square key equally strong in both when σ<sub>c</sub> = 2τ.</li>
+<li>Couplings: rigid (sleeve, flange) and flexible (bushed-pin, Oldham, universal/Hooke's joint). Hooke's joint: speed ratio ω₂/ω₁ = cos α/(1 − cos²θ sin²α); varies between cos α and 1/cos α; double Hooke's joint gives constant velocity if arranged correctly.</li>
+</ul>
+<h3>Rolling contact bearings</h3>
+<ul>
+<li>Types: deep-groove ball (radial + some axial), angular contact, cylindrical roller (high radial), tapered roller (combined), spherical roller (self-aligning), thrust bearings, needle.</li>
+<li><b>Life:</b> L₁₀ = (C/P)ᵏ million revolutions (k = 3 ball, 10/3 roller); C = basic dynamic load rating (90% reliability). L<sub>h</sub> = L₁₀ × 10⁶/(60N) hours.</li>
+<li>Equivalent dynamic load P = XVF<sub>r</sub> + YF<sub>a</sub> (V = 1 inner race rotating). Reliability adjustment via Weibull: L/L₁₀ = [ln(1/R)/ln(1/0.9)]<sup>1/b</sup>, b ≈ 1.17 (bearing-life Weibull slope; 1.5 in some texts).</li>
+<li>Variable load: P<sub>e</sub> = [Σ(Pᵢᵏnᵢ)/Σnᵢ]<sup>1/k</sup>. Static load rating C₀ for stationary/slow bearings.</li>
+</ul>
+<h3>Sliding contact (journal) bearings</h3>
+<ul>
+<li>Hydrodynamic lubrication: wedge-shaped oil film builds pressure due to rotation (Petroff, Reynolds equation). Lubrication regimes: boundary, mixed, hydrodynamic (Stribeck curve: friction vs ZN/p).</li>
+<li><b>Sommerfeld number</b> S = (r/c)²·μN/p (p = W/(l·d), N in rev/s); design charts (Raimondi–Boyd) give friction coefficient, minimum film thickness, flow, temperature rise. Bearing characteristic number ZN/p must exceed the minimum (≈ 3× critical).</li>
+<li>Petroff's equation: f = 2π²(μN/p)(r/c). Hydrostatic bearings: external pump supplies pressure (work at zero speed).</li>
+<li>Bearing materials: babbitt (white metal), bronze, aluminium alloys, PTFE, porous self-lubricating.</li>
+</ul>
+<h3>Brakes</h3>
+<ul>
+<li><b>Block (shoe) brake:</b> F<sub>braking</sub> = μR<sub>n</sub>; torque T = μR<sub>n</sub>r. Self-energizing if friction moment assists the applied force; self-locking if the required actuating force ≤ 0. Long shoe: equivalent μ′ = 4μ sin θ/(2θ + sin 2θ).</li>
+<li><b>Band brake:</b> T₁/T₂ = e<sup>μθ</sup>; torque (T₁ − T₂)r. Simple, differential (can be self-locking) and band-and-block types.</li>
+<li><b>Disc brakes, internal expanding shoe brakes</b> (automobiles). Energy absorbed: KE + PE; temperature rise ΔT = E/(m·c).</li>
+<li>Dynamometers (absorption: Prony brake, rope brake; transmission types) measure power.</li>
+</ul>
+<h3>Clutches</h3>
+<ul>
+<li>Friction plate clutch torque T = nμWR<sub>m</sub> (n = number of friction surfaces).</li>
+<li><b>Uniform pressure</b> (new clutch): R<sub>m</sub> = (2/3)(R₀³ − Rᵢ³)/(R₀² − Rᵢ²). <b>Uniform wear</b> (worn clutch, pr = constant): R<sub>m</sub> = (R₀ + Rᵢ)/2. Uniform wear gives lower torque → safer design assumption. Optimum Rᵢ/R₀ ≈ 0.577 (uniform wear).</li>
+<li>Cone clutch: T = μW R<sub>m</sub>/sin α. Centrifugal clutch: (F<sub>c</sub> − F<sub>s</sub>)μ r n. Multi-plate clutches for compact, high torque.</li>
+</ul>
+<h3>Springs</h3>
+<ul>
+<li>Helical compression spring: spring index C = D/d (4–12); Wahl factor K = (4C − 1)/(4C − 4) + 0.615/C (curvature + direct shear); τ = K·8PD/(πd³); deflection δ = 8PD³N/(Gd⁴); stiffness k = Gd⁴/(8D³N).</li>
+<li>Energy stored U = ½Pδ. Solid length = N<sub>t</sub>·d; free length = solid length + max deflection + clearance. Buckling if free length/D is too large. Surge: natural frequency should exceed operating frequency (~15–20×).</li>
+<li>Leaf (laminated) springs: treat each half as a cantilever of length L carrying W: σ = 6WL/(nbt²), δ = 6WL³/(nEbt³) (n leaves, width b, thickness t); nipping (pre-stressing) equalizes stresses in full-length and graduated leaves. Torsion springs, Belleville (disc) springs, spiral springs.</li>
+</ul>
+<h3>CAD / CAM and integration</h3>
+<ul>
+<li><b>CAD:</b> geometric modelling — wireframe (edges only, ambiguous), surface (Bezier, B-spline, NURBS; Bezier curves: degree = control points − 1, global control; B-splines: local control), solid (B-rep and CSG). Parametric and feature-based modelling with constraints; assemblies; drafting; FEA (analysis) and CAE.</li>
+<li>Transformations: homogeneous 2D/3D matrices for translation, rotation, scaling, reflection, shear; composite = matrix product (order matters). Projections: orthographic, isometric, perspective.</li>
+<li>Curve representations: explicit, implicit, parametric (preferred). Hermite cubic: needs end points and tangents. Continuity C⁰, C¹, C² and G¹.</li>
+<li><b>CAM:</b> generating tool paths and NC code from CAD geometry; post-processors convert to machine-specific G-code. CAPP, NC verification/simulation, robot offline programming.</li>
+<li><b>Integration tools/standards:</b> data exchange formats IGES, STEP (ISO 10303, product data), STL (triangulated surface for 3D printing), DXF (2D), Parasolid/ACIS kernels. PDM/PLM systems manage product data and revisions. CAD/CAM integration → CIM with MRP/ERP, FMS, DNC.</li>
+<li>Group technology (part families, Opitz/MICLASS coding), FMS (flexible manufacturing systems: workstations + automated handling + central computer).</li>
+</ul>
+<h3>Additive manufacturing (3D printing)</h3>
+<ul>
+<li>Workflow: CAD model → STL (tessellation) → orientation and support generation → slicing into layers → layer-by-layer build → post-processing (support removal, curing, sintering, machining).</li>
+<li>ASTM/ISO 52900 categories:
+<ul>
+<li><b>Material extrusion</b> — FDM/FFF (thermoplastic filament: PLA, ABS, nylon).</li>
+<li><b>Vat photopolymerization</b> — SLA (laser), DLP (projector); liquid resin cured by UV; high resolution.</li>
+<li><b>Powder bed fusion</b> — SLS (polymers), SLM/DMLS (metals, laser), EBM (electron beam, vacuum).</li>
+<li><b>Material jetting</b> — PolyJet (multi-material, colour).</li>
+<li><b>Binder jetting</b> — binder into powder (sand moulds, metals, then sintered).</li>
+<li><b>Directed energy deposition</b> — LENS, wire-arc AM (repair, large metal parts).</li>
+<li><b>Sheet lamination</b> — LOM, ultrasonic AM.</li>
+</ul></li>
+<li>Advantages: complex geometries (lattices, internal channels), no tooling, customization, rapid prototyping, part consolidation. Limitations: slow for mass production, anisotropy, surface finish (stair-stepping proportional to layer thickness), size limits, support structures.</li>
+<li>Applications: prototypes, jigs and fixtures, robot grippers and custom end-effectors, medical implants, aerospace parts, tooling (conformal cooling channels).</li>
+</ul>
+</section></body></html>

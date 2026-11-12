@@ -1,0 +1,155 @@
+<h1 id="a3">Part A.3 — Principles of Robotics and Automation</h1>
+
+<h2>1. Robot Classification</h2>
+<ul>
+<li><b>Serial manipulator:</b> open kinematic chain, one path from base to end-effector. Large workspace, dexterous, but errors accumulate along the chain and stiffness/payload is lower. Forward kinematics easy, inverse kinematics hard (multiple solutions).</li>
+<li><b>Parallel manipulator:</b> closed chains; the end-effector (platform) is connected to the base by several legs (e.g. Stewart–Gough platform 6-DOF, Delta robot 3-DOF translation). High stiffness, accuracy, speed, payload-to-weight ratio; small workspace. Inverse kinematics easy, forward kinematics hard.</li>
+<li>Other classifications: by drive (electric, hydraulic, pneumatic), by control (point-to-point, continuous path, servo/non-servo), by application (industrial, mobile, service), by generation/intelligence.</li>
+</ul>
+<h3>Geometrical configurations (first three joints → arm workspace)</h3>
+<table>
+<tr><th>Configuration</th><th>Joints</th><th>Workspace</th><th>Example use</th></tr>
+<tr><td>Cartesian (gantry)</td><td>PPP</td><td>Rectangular box</td><td>Pick-and-place, CNC-like, 3D printers</td></tr>
+<tr><td>Cylindrical</td><td>RPP</td><td>Hollow cylinder</td><td>Assembly, machine loading</td></tr>
+<tr><td>Spherical (polar)</td><td>RRP</td><td>Partial hollow sphere</td><td>Welding, Stanford arm</td></tr>
+<tr><td>Articulated (revolute/anthropomorphic)</td><td>RRR</td><td>Near-spherical, irregular</td><td>Painting, welding, most industrial arms</td></tr>
+<tr><td>SCARA</td><td>RRP (two parallel vertical R axes)</td><td>Cylindrical-like</td><td>Fast planar assembly, compliant in XY, stiff in Z</td></tr>
+</table>
+
+<h2>2. Links, Joints, Coordinate Systems and DOF</h2>
+<ul>
+<li><b>Link:</b> rigid body. <b>Joint:</b> connection allowing relative motion.</li>
+<li>Lower pairs: revolute R (1 DOF), prismatic P (1), helical/screw H (1), cylindrical C (2), spherical S (3), planar E (3). Universal joint U (2).</li>
+<li><b>DOF of a rigid body:</b> 3 in a plane, 6 in space (3 position + 3 orientation).</li>
+<li><b>Grübler–Kutzbach (mobility):</b> planar M = 3(n − 1) − 2j₁ − j₂; spatial M = 6(n − 1) − Σ(6 − fᵢ) (n = links incl. ground, j₁ = 1-DOF joints, j₂ = 2-DOF joints, fᵢ = DOF of joint i).</li>
+<li>A serial arm's DOF = sum of joint DOFs. 6 DOF are needed for arbitrary position and orientation; &gt;6 is <b>redundant</b> (e.g. 7-DOF arms; avoid obstacles/singularities).</li>
+<li>Typical arm: 3 joints for position (arm) + 3 for orientation (wrist: roll–pitch–yaw / spherical wrist with intersecting axes).</li>
+<li><b>Coordinate frames:</b> world/base frame, joint frames, tool (TCP) frame, user/workpiece frame. Joint space (θ₁…θₙ) vs task/Cartesian space (x, y, z, orientation).</li>
+<li><b>Workspace:</b> reachable workspace (points reachable in at least one orientation) vs dexterous workspace (all orientations).</li>
+<li><b>Singularity:</b> configuration where the Jacobian loses rank (det J = 0): loss of a DOF, infinite joint velocities needed; e.g. a fully stretched arm or two aligned wrist axes.</li>
+</ul>
+
+<h2>3. Rotation Matrices</h2>
+<h3>2D</h3>
+<ul>
+<li>R(θ) = [[cos θ, −sin θ], [sin θ, cos θ]]. Rotating a vector counter-clockwise by θ: p′ = R p.</li>
+</ul>
+<h3>3D elementary rotations</h3>
+<ul>
+<li>R<sub>x</sub>(θ) = [[1, 0, 0], [0, cθ, −sθ], [0, sθ, cθ]]</li>
+<li>R<sub>y</sub>(θ) = [[cθ, 0, sθ], [0, 1, 0], [−sθ, 0, cθ]]  (note the sign pattern)</li>
+<li>R<sub>z</sub>(θ) = [[cθ, −sθ, 0], [sθ, cθ, 0], [0, 0, 1]]</li>
+</ul>
+<h3>Properties (SO(3))</h3>
+<ul>
+<li>Columns of <sup>A</sup>R<sub>B</sub> are the unit axes of frame B expressed in frame A.</li>
+<li>Orthogonal: Rᵀ R = I, R⁻¹ = Rᵀ, det R = +1. Each row/column is a unit vector, mutually perpendicular. Preserves lengths and angles.</li>
+<li>Eigenvalues: 1, e<sup>±iθ</sup>. The eigenvector for λ = 1 is the rotation axis. trace R = 1 + 2 cos θ.</li>
+<li><b>Composition:</b> <sup>A</sup>R<sub>C</sub> = <sup>A</sup>R<sub>B</sub> <sup>B</sup>R<sub>C</sub>. Rotations about the <b>current (moving)</b> frame → post-multiply; about the <b>fixed</b> frame → pre-multiply. Matrix multiplication is not commutative.</li>
+<li><b>Euler angles</b> (ZYZ): R = R<sub>z</sub>(φ)R<sub>y</sub>(θ)R<sub>z</sub>(ψ). <b>Roll–pitch–yaw</b> (fixed XYZ): R = R<sub>z</sub>(α)R<sub>y</sub>(β)R<sub>x</sub>(γ). Both have singularities (gimbal lock).</li>
+<li><b>Axis–angle (Rodrigues):</b> R = I + sin θ [k]ₓ + (1 − cos θ)[k]ₓ². Quaternions avoid singularities: q = (cos θ/2, k sin θ/2).</li>
+</ul>
+
+<h2>4. Homogeneous Transformations</h2>
+<ul>
+<li>T = [[R, d], [0 0 0, 1]] (4×4), combining rotation R and translation d. Point in homogeneous form p̃ = [x, y, z, 1]ᵀ; <sup>A</sup>p̃ = <sup>A</sup>T<sub>B</sub> <sup>B</sup>p̃.</li>
+<li>Inverse: T⁻¹ = [[Rᵀ, −Rᵀd], [0, 1]] (not simply the transpose).</li>
+<li>Chain: <sup>0</sup>T<sub>n</sub> = <sup>0</sup>T₁ <sup>1</sup>T₂ … <sup>n−1</sup>T<sub>n</sub>. Same pre/post-multiplication rule as for rotations.</li>
+<li>Pure translation Trans(a, b, c) has R = I; pure rotation has d = 0.</li>
+<li>Free vectors (directions) use a 0 as the fourth component, so translation does not affect them.</li>
+</ul>
+
+<h2>5. Forward Kinematics</h2>
+<ul>
+<li>Given joint variables, find end-effector position and orientation: <sup>0</sup>T<sub>n</sub>(q).</li>
+<li><b>Denavit–Hartenberg (standard) convention:</b> zᵢ along joint i+1 axis; xᵢ along the common normal from zᵢ₋₁ to zᵢ. Four parameters per link:
+<ul>
+<li>θᵢ — joint angle about zᵢ₋₁ (variable for revolute)</li>
+<li>dᵢ — offset along zᵢ₋₁ (variable for prismatic)</li>
+<li>aᵢ — link length along xᵢ</li>
+<li>αᵢ — link twist about xᵢ</li>
+</ul></li>
+<li><sup>i−1</sup>Aᵢ = Rot<sub>z</sub>(θᵢ) Trans<sub>z</sub>(dᵢ) Trans<sub>x</sub>(aᵢ) Rot<sub>x</sub>(αᵢ) =
+[[cθ, −sθcα, sθsα, a cθ], [sθ, cθcα, −cθsα, a sθ], [0, sα, cα, d], [0, 0, 0, 1]].</li>
+<li><b>2-link planar arm</b> (lengths L₁, L₂): x = L₁cos θ₁ + L₂cos(θ₁ + θ₂); y = L₁sin θ₁ + L₂sin(θ₁ + θ₂); orientation φ = θ₁ + θ₂. Workspace: annulus with radii |L₁ − L₂| and L₁ + L₂.</li>
+<li><b>Inverse kinematics</b> (2-link): cos θ₂ = (x² + y² − L₁² − L₂²)/(2L₁L₂) (two solutions: elbow up/down); θ₁ = atan2(y, x) − atan2(L₂ sin θ₂, L₁ + L₂ cos θ₂).</li>
+<li><b>Jacobian:</b> ẋ = J(q) q̇ relates joint velocities to end-effector velocity; τ = Jᵀ F relates end-effector force to joint torques. For the 2-link arm: J = [[−L₁s₁ − L₂s₁₂, −L₂s₁₂], [L₁c₁ + L₂c₁₂, L₂c₁₂]], det J = L₁L₂ sin θ₂ (singular at θ₂ = 0, π).</li>
+</ul>
+
+<h2>6. Robot Applications and Performance</h2>
+<ul>
+<li><b>Point-to-point (PTP) control:</b> only the end points matter, path between them is not controlled (spot welding, pick-and-place, machine loading, drilling). Often joint-interpolated motion.</li>
+<li><b>Continuous path (CP) control:</b> the whole trajectory is controlled (arc welding, spray painting, gluing, deburring). Requires Cartesian interpolation (linear/circular) and coordinated joints.</li>
+<li>Trajectory planning: cubic polynomial (4 constraints: positions and velocities at both ends), quintic (adds accelerations), linear segments with parabolic blends (LSPB/trapezoidal velocity).</li>
+<li>Teaching/programming: lead-through, teach pendant, offline programming (simulation).</li>
+<li>Applications: material handling, palletizing, machine tending, welding, painting, assembly, inspection, medical, space, underwater.</li>
+</ul>
+<h3>End-effectors</h3>
+<ul>
+<li><b>Grippers:</b> mechanical (2/3-finger, parallel or angular jaws; friction grip μ·n<sub>f</sub>·F<sub>g</sub> ≥ W × g-factor, n<sub>f</sub> = contact surfaces, g-factor accounts for acceleration), vacuum (suction cups; F = ΔP·A; flat, smooth parts), magnetic (electromagnet or permanent; ferrous parts), adhesive, soft/compliant, multi-fingered hands.</li>
+<li><b>Tools:</b> welding torch, spot-welding gun, spray gun, drill/spindle, screwdriver, laser/water-jet cutter.</li>
+<li>Tool changers; Remote Centre Compliance (RCC) device for peg-in-hole assembly.</li>
+</ul>
+<h3>Accuracy, repeatability, resolution</h3>
+<ul>
+<li><b>Resolution (control resolution):</b> smallest increment the controller can command; = range/2ⁿ for an n-bit encoder/control word.</li>
+<li><b>Accuracy:</b> how close the robot gets to a commanded target. Accuracy = ½ control resolution + ½ mechanical inaccuracy spread (3σ). Errors come from link deflection, gear backlash, calibration, thermal expansion.</li>
+<li><b>Repeatability:</b> how close the robot returns to a previously taught point (± 3σ of the spread). Industrial robots: repeatability (~±0.02–0.1 mm) is much better than absolute accuracy.</li>
+<li>Other specs: payload, reach, speed, DOF, work envelope, compliance.</li>
+</ul>
+
+<h2>7. Computer Integrated Manufacturing (CIM)</h2>
+<h3>Automation in manufacturing</h3>
+<ul>
+<li><b>Fixed (hard) automation:</b> high volume, low variety, high initial cost (transfer lines). <b>Programmable:</b> batch production, reprogrammable (CNC, robots). <b>Flexible:</b> variety without lost changeover time (FMS).</li>
+<li>Production metrics: cycle time T<sub>c</sub>; production rate R<sub>p</sub> = 1/T<sub>p</sub>; utilization; availability A = (MTBF − MTTR)/MTBF; manufacturing lead time MLT = n<sub>o</sub>(T<sub>su</sub> + Q T<sub>c</sub> + T<sub>no</sub>); WIP.</li>
+<li>Levels of automation: device → machine → cell/system → plant → enterprise. Ten strategies: specialization of operations, combined operations, simultaneous operations, integration of operations, increased flexibility, improved material handling and storage, on-line inspection, process control and optimization, plant operations control, CIM.</li>
+<li>Transfer line efficiency E = T<sub>c</sub>/(T<sub>c</sub> + F·T<sub>d</sub>) (F = breakdown frequency, T<sub>d</sub> = downtime). Line balancing: balance efficiency = T<sub>wc</sub>/(n × T<sub>s</sub>).</li>
+</ul>
+<h3>Programmable Logic Controllers (PLCs)</h3>
+<ul>
+<li>Industrial computer: CPU, memory, input modules (sensors/switches), output modules (relay, transistor, triac), power supply, programming device; communication (Modbus, Profibus, EtherNet/IP).</li>
+<li><b>Scan cycle:</b> read inputs → execute program → update outputs → housekeeping/communication. Scan time typically ms; an input shorter than one scan can be missed.</li>
+<li>IEC 61131-3 languages: Ladder Diagram (LD), Function Block Diagram (FBD), Structured Text (ST), Instruction List (IL), Sequential Function Chart (SFC).</li>
+<li>Ladder logic: series contacts = AND, parallel contacts = OR, NC contact = NOT. Seal-in (latch) circuit for start/stop: (Start + Motor)·Stop′ → Motor.</li>
+<li>Timers (TON on-delay, TOF off-delay, RTO retentive), counters (CTU, CTD), comparison/math, sequencers. Advantages over relays: reprogrammable, compact, diagnostics.</li>
+</ul>
+<h3>Automated material handling</h3>
+<ul>
+<li>Industrial trucks, <b>AGVs</b> (automated guided vehicles: wire/tape/laser/vision guidance; towing, unit-load, forklift types) and AMRs, conveyors (roller, belt, chain, overhead trolley, cart-on-track), cranes and hoists, monorails, industrial robots.</li>
+<li>Principles: unit load, minimum handling, straight-line flow, standardization, gravity use. AGV system sizing: number of vehicles = total workload / available time per vehicle.</li>
+</ul>
+<h3>Automated storage and retrieval systems (AS/RS)</h3>
+<ul>
+<li>Storage racks + storage/retrieval (S/R) machines in aisles + pickup/deposit (P&amp;D) stations, under computer control. Types: unit load, mini-load, man-on-board, deep-lane, carousel storage (horizontal/vertical).</li>
+<li>Cycle time: single command T<sub>sc</sub> = 2 max(h/v<sub>y</sub>, L/v<sub>x</sub>) + 2T<sub>pd</sub>; dual command T<sub>dc</sub> = 2 max(1.5h/v<sub>y</sub>, 1.5L/v<sub>x</sub>) + 4T<sub>pd</sub> (MH-10 approximation).</li>
+<li>Benefits: higher density, less labour, better inventory control, security.</li>
+</ul>
+<h3>Automated identification and data capture (AIDC)</h3>
+<ul>
+<li><b>Bar codes:</b> 1D linear (Code 39, Code 128, UPC/EAN) and 2D (stacked PDF417; matrix QR, Data Matrix). Read by laser/CCD scanners.</li>
+<li><b>RFID:</b> tag (chip + antenna) and reader; passive (powered by reader) or active (battery); no line-of-sight needed, read/write, multiple tags at once; frequencies LF/HF/UHF.</li>
+<li>Others: magnetic stripes, OCR, machine vision, smart cards. AIDC reduces errors versus manual entry (~1 in 300 keystrokes vs ~1 in millions for bar codes).</li>
+</ul>
+<h3>Computer numerical control (CNC)</h3>
+<ul>
+<li>NC: program of numerical instructions controls a machine tool. CNC: a dedicated computer stores and executes the part program. DNC: several machines served from a central computer.</li>
+<li>Components: part program, machine control unit (MCU), processing equipment. Axes: Z along spindle, X longest horizontal, Y by right-hand rule; rotary A, B, C about X, Y, Z.</li>
+<li>Motion control: point-to-point vs contouring (continuous path); interpolation linear (G01) and circular (G02 CW, G03 CCW). G00 rapid positioning; G90 absolute vs G91 incremental; G17/18/19 plane selection; G41/G42 cutter radius compensation; M03 spindle CW; M05 spindle stop; M06 tool change; M08 coolant on; M30 end of program.</li>
+<li>Control: open loop (stepper) vs closed loop (servo + encoder feedback). <b>Control resolution</b> (open loop with stepper and leadscrew): BLU = p/(n<sub>s</sub>·r<sub>g</sub>) (p = screw pitch, n<sub>s</sub> = steps/rev, r<sub>g</sub> = gear ratio). Pulse rate f<sub>p</sub> = v·n<sub>s</sub>·r<sub>g</sub>/p.</li>
+<li>Machining centres with automatic tool changer (ATC), automatic pallet changer. APT language, CAM post-processing.</li>
+</ul>
+<h3>Single and multi-axis positioning systems</h3>
+<ul>
+<li>Single axis: motor + leadscrew/ball screw (low friction, high efficiency, minimal backlash with preload) or belt/rack-and-pinion/linear motor + guideway + feedback (rotary encoder, linear scale).</li>
+<li>Multi-axis: stacked XY tables, gantries, CNC axes. Positioning accuracy is affected by resolution, mechanical errors (backlash, pitch error, thermal), and Abbe error.</li>
+<li>Ball screw: linear speed v = N·p; thrust F = 2πηT/p.</li>
+</ul>
+<h3>Concurrent design and manufacturing planning</h3>
+<ul>
+<li><b>Concurrent (simultaneous) engineering:</b> design, manufacturing, quality, purchasing and service work in parallel teams instead of sequentially ("over the wall"). Shorter lead time, fewer changes, lower cost.</li>
+<li><b>DFM / DFA</b> (design for manufacture / assembly): minimize part count, use standard parts, design for top-down assembly, self-locating features, avoid flexible parts; Boothroyd–Dewhurst DFA index.</li>
+<li>Design for automation: parts easy to feed and orient (symmetry or obvious asymmetry), avoid tangling, fewer fasteners.</li>
+<li><b>Process planning:</b> manual or computer-aided (CAPP): variant (retrieve similar plan via group technology/coding, e.g. Opitz) or generative (logic creates a new plan).</li>
+<li>MRP (material requirements planning), MRP II, ERP; capacity planning; master production schedule; shop floor control; JIT/lean; group technology and cellular manufacturing.</li>
+</ul>
