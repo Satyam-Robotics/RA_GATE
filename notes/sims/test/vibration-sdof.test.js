@@ -343,5 +343,92 @@ group('invariant: TR < 1 exactly when r > √2; in the isolation region TR incre
   }
 });
 
-if (failures) { console.log(failures + ' group(s) FAILED'); process.exit(1); }
-console.log('all groups passed');
+group('check: spec values once more with an independent formula set (log decrement, halving, peak)', function () {
+  // δ from two successive peaks of the response itself, not from the closed form
+  const pk = m.peaks(1, 100, 0.1, 0.05, 0, 3);
+  printed(Math.log(pk[0].x / pk[1].x), 0.631484, 6, 'ln(x₁/x₂) from the response');
+  printed(Math.LN2 / Math.log(pk[0].x / pk[1].x), 1.0976, 4, 'cycles to halve from the response');
+  near(m.TR(Math.SQRT2, 0.05), 1, 1e-12, 'TR(√2, 0.05)'); near(m.TR(Math.SQRT2, 0.3), 1, 1e-12, 'TR(√2, 0.3)'); near(m.TR(Math.SQRT2, 1), 1, 1e-12, 'TR(√2, 1)');
+});
+
+// ---------------------------------------------------------------------------------------------
+// Browser regression tests (need Playwright; skipped with a message when it is not available or
+// when run with --no-browser). They guard display bugs found in verification.
+// ---------------------------------------------------------------------------------------------
+async function agroup(name, fn) {
+  try { await fn(); console.log('ok   ' + name); }
+  catch (e) { failures++; console.log('FAIL ' + name + ': ' + (e && e.message || e)); }
+}
+async function browserTests() {
+  let playwrightOk = true;
+  try { require.resolve('playwright'); } catch (e) { playwrightOk = false; }
+  if (!playwrightOk || process.argv.indexOf('--no-browser') >= 0) { console.log('skip browser regression tests'); return; }
+  const path = require('path'), os = require('os');
+  const { openSim } = require('./harness.js');
+  const s = await openSim(ID, { width: 1100, outDir: path.join(os.tmpdir(), 'rasim-vibration-sdof-test') });
+  const page = s.page;
+  const DEF = { tab: 'free', m: 1, k: 100, zeta: 0.1, x0: 50, v0: 0, speed: '0.5', r: 1, F0: 10, curve: 'force', playing: false, time: 0 };
+  async function frames() { await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))); }
+  async function setS(st) { await page.evaluate(st => RASim.instances['vibration-sdof'].setState(st), st); await frames(); }
+  const getS = () => page.evaluate(() => RASim.instances['vibration-sdof'].getState());
+  const stats = () => page.evaluate(() => { const o = {}; document.querySelectorAll('[data-stat]').forEach(e => { if (e.offsetParent) o[e.getAttribute('data-stat')] = e.querySelector('.sim-stat-value').textContent; }); return o; });
+  async function typeNum(key, v) { await page.fill('[data-control-num="' + key + '"]', String(v)); await page.press('[data-control-num="' + key + '"]', 'Enter'); await frames(); }
+  const f = RASim.fmt;
+  try {
+    await agroup('browser: initial state is the specification default', async function () {
+      assert.deepStrictEqual(await getS(), DEF);
+    });
+    // Bug found in verification: in the forced tab, changing k (or m) left r fixed and moved the machine speed ω instead,
+    // so hint 5 ("soften the mounts: a lower k lowers ωₙ and raises r") could not be seen. ω must stay fixed and r move.
+    await agroup('browser: hint 5 — a lower k at fixed machine speed raises r and improves isolation', async function () {
+      await setS(Object.assign({}, DEF, { tab: 'forced', k: 800, r: 1.5 }));
+      const before = await stats();
+      assert.strictEqual(before.w, f(1.5 * Math.sqrt(800), 4) + ' rad/s');
+      await typeNum('k', 200);
+      const st = await getS(), after = await stats();
+      near(st.r, 3, 1e-12, 'r after k 800 → 200 (ω fixed)');
+      assert.strictEqual(after.w, before.w, 'ω unchanged');
+      assert.strictEqual(after.TR, f(m.TR(3, 0.1), 4));
+      assert.strictEqual(after.isolation, f((1 - m.TR(3, 0.1)) * 100, 3) + ' % isolated');
+      await typeNum('m', 4);                                    // heavier mass: ωₙ halves, r doubles (clamped at 4)
+      near((await getS()).r, 4, 1e-12, 'r clamped at the top of its range');
+      await setS(DEF);
+      await typeNum('k', 400);                                  // free tab: r untouched
+      near((await getS()).r, 1, 0, 'free tab leaves r alone');
+    });
+    await agroup('browser: read-outs equal the model in the check-value states', async function () {
+      await setS(Object.assign({}, DEF));
+      let r = await stats();
+      assert.strictEqual(r.wn, '10 rad/s'); assert.strictEqual(r.fn, '1.592 Hz'); assert.strictEqual(r.cc, '20 N·s/m'); assert.strictEqual(r.c, '2 N·s/m');
+      assert.strictEqual(r.dst, '98.1 mm'); assert.strictEqual(r.wd, '9.95 rad/s'); assert.strictEqual(r.Td, '0.6315 s'); assert.strictEqual(r.delta, '0.6315');
+      assert.strictEqual(r.ratio, f(1.88040, 4)); assert.strictEqual(r.half, '1.098 cycles');
+      const labels = await page.evaluate(() => document.querySelector('[data-canvas="freePlot"]').vsLabels.map(l => l.text));
+      assert.ok(labels.indexOf('ln(x₁/x₂) = δ = 0.631') >= 0, 'δ label: ' + labels.join(' | '));
+      await setS({ tab: 'forced' });
+      r = await stats();
+      assert.strictEqual(r.MF, '5'); assert.strictEqual(r.phase, '90°'); assert.strictEqual(r.X, '500 mm');
+      assert.strictEqual(r.peak, 'MF<sub>max</sub> = 5.03 at r = 0.990'.replace(/<\/?sub>/g, ''));
+      assert.strictEqual(r.isolation, 'no isolation — TR ≥ 1');
+      await page.click('[data-control="presetIso"]'); await frames();
+      r = await stats();
+      assert.strictEqual(r.TR, '0.1454'); assert.strictEqual(r.isolation, '85.5 % isolated'); assert.strictEqual(r.phase, f(M.deg(m.phase(3, 0.1)), 4) + '°');
+      await setS({ zeta: 0, r: 1 });
+      r = await stats();
+      assert.strictEqual(r.MF, '∞ (resonance)'); assert.strictEqual(r.TR, '∞ (resonance)'); assert.strictEqual(r.X, '∞');
+      await setS({ zeta: 0.8 });
+      assert.strictEqual((await stats()).peak, 'no peak (ζ ≥ 0.707)');
+    });
+    await agroup('browser: Reset restores every default from a dirty state', async function () {
+      await setS({ tab: 'forced', m: 7, k: 1500, zeta: 1.7, x0: -40, v0: 0.6, speed: '1', r: 3.3, F0: 77, curve: 'unbalance', playing: true, time: 1.2 });
+      await page.click('[data-control="reset"]'); await frames();
+      assert.deepStrictEqual(await getS(), DEF);
+    });
+    assert.ok(s.errors.length === 0 && s.warnings.length === 0, 'console: ' + s.errors.concat(s.warnings).join('; '));
+  } finally { await s.browser.close(); }
+}
+
+(async function () {
+  try { await browserTests(); } catch (e) { failures++; console.log('FAIL browser: ' + (e && e.message || e)); }
+  if (failures) { console.log(failures + ' group(s) FAILED'); process.exit(1); }
+  console.log('all groups passed');
+})();

@@ -28,6 +28,8 @@
 //   ωt − 90° − φ, so their HORIZONTAL projections are F₀ sin ωt and X sin(ωt − φ), matching the horizontal
 //   force arrow and mass motion. The displayed cycle lasts 2 s whatever ω (display phase = π·time).
 //   Units in the UI: x₀ and X, x(t) and δ_st in mm; v₀ in m/s; φ in degrees; N in rpm.
+//   Forced tab: moving the m or k slider keeps ω = r·ωₙ (the machine speed) fixed and moves r = ω/ωₙ
+//   (clamped to the r range); setState applies every key literally.
 //
 // STATE KEYS (getState / setState)
 //   tab ('free' | 'forced'), m (kg), k (N/m), zeta, x0 (mm), v0 (m/s), speed ('1' | '0.5' | '0.25'),
@@ -228,10 +230,18 @@
 
       // ---- side column: controls ----
       const gS = ui.group(sp.side, 'System');
+      // In the forced tab a change of m or k keeps the forcing frequency ω (the machine speed) fixed, so
+      // r = ω/ωₙ moves: softer mounts → lower ωₙ → higher r (hint 5). setState applies r literally.
+      function setSystem(m, k) {
+        const w = st.r * Math.sqrt(st.k / st.m);
+        st.m = m; st.k = k;
+        if (st.tab === 'forced') { sR.set(M.clamp(w / Math.sqrt(st.k / st.m), 0, 4)); st.r = sR.get(); }
+        update();
+      }
       const sM = ui.slider(gS, { label: 'Mass m', min: 0.5, max: 10, step: 0.1, value: st.m, unit: 'kg', key: 'm',
-        onInput: function (v) { st.m = v; update(); } });
+        onInput: function (v) { setSystem(v, st.k); } });
       const sK = ui.slider(gS, { label: 'Stiffness k', min: 10, max: 2000, step: 10, value: st.k, unit: 'N/m', key: 'k',
-        onInput: function (v) { st.k = v; update(); } });
+        onInput: function (v) { setSystem(st.m, v); } });
       const sZ = ui.slider(gS, { label: 'Damping ratio ζ', min: 0, max: 2, step: 0.01, value: st.zeta, key: 'zeta',
         onInput: function (v) { st.zeta = v; update(); } });
 
@@ -262,6 +272,7 @@
       ui.button(rowPre, { label: 'Resonance r = 1', key: 'presetRes', title: 'Set r = 1', onClick: function () { setR(1); } });
       ui.button(rowPre, { label: 'r = √2', key: 'presetSqrt2', title: 'Set r = √2 = 1.41421…', onClick: function () { setR(SQRT2); } });
       ui.button(rowPre, { label: 'Isolation r = 3', key: 'presetIso', title: 'Set r = 3', onClick: function () { setR(3); } });
+      ui.note(gD, 'Changing m or k keeps the forcing frequency ω (machine speed) fixed, so r = ω/ω<sub>n</sub> moves.');
       const rowDP = ui.row(gD);
       const bPlayF = ui.button(rowDP, { label: 'Play', primary: true, key: 'playForced', title: 'Play / pause the steady-state animation',
         onClick: function () { setPlaying(!anim.running); } });
@@ -384,9 +395,10 @@
         let stamp = 0;
         function width(s, font) { const k = font + '|' + s; if (!(k in wcache)) { ctx.font = font; wcache[k] = ctx.measureText(s).width; } return wcache[k]; }
         function ov(a, b) { return a.l < b.r && a.r > b.l && a.t < b.b && a.b > b.t; }
+        // fn may return true to stop the walk early
         function cells(b, fn) {
           const i0 = Math.floor(b.l / CELL), i1 = Math.floor(b.r / CELL), j0 = Math.floor(b.t / CELL), j1 = Math.floor(b.b / CELL);
-          for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) fn(i * 4096 + j);
+          for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) if (fn(i * 4096 + j)) return;
         }
         function add(b) {
           // boxes far outside the frame can never meet a label
@@ -423,11 +435,14 @@
               const b = { l: l - 3, r: l + tw + 3, t: c.y - 8, b: c.y + 8 };
               let cost = (c.cost != null ? c.cost : n * 0.5);
               if (b.l < frame.x || b.r > frame.x + frame.w || b.t < frame.y || b.b > frame.y + frame.h) cost += 1000;
+              // costs only grow: a candidate that cannot beat the best one so far is dropped at once
+              // (branch and bound; the result is identical to scoring every candidate in full)
+              if (best && cost >= best.cost) return;
               stamp++;
               const hit = {};                    // a curve counts once per label, whatever its length under it
               cells(b, function (key) {
                 const l2 = grid.get(key);
-                if (!l2) return;
+                if (!l2) return false;
                 for (let i = 0; i < l2.length; i++) {
                   const o = l2[i];
                   if (o.s === stamp) continue;
@@ -436,7 +451,9 @@
                   if (!ov(b, o)) continue;
                   if (o.owner != null) { if (hit[o.owner]) continue; hit[o.owner] = 1; }
                   cost += o.w;
+                  if (best && cost >= best.cost) return true;
                 }
+                return false;
               });
               if (!best || cost < best.cost) best = { cost: cost, c: c, b: b };
             });
