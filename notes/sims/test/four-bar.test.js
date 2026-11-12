@@ -2,7 +2,8 @@
 // Run: node notes/sims/test/four-bar.test.js
 'use strict';
 const assert = require('assert');
-const RASim = require('./load.js')('four-bar');
+const fileArg = process.argv.indexOf('--file') >= 0 ? process.argv[process.argv.indexOf('--file') + 1] : undefined;
+const RASim = require('./load.js')('four-bar', fileArg);
 const m = RASim.sims['four-bar'].model;
 
 const D2R = Math.PI / 180, R2D = 180 / Math.PI;
@@ -318,5 +319,111 @@ group('transmissionRange agrees with a scan of μ', function () {
   }
 });
 
-if (failures) { console.log(failures + ' group(s) failed'); process.exit(1); }
-console.log('all four-bar model tests passed');
+// ---------------------------------------------------------------------------------------------
+// Browser regression tests (need Playwright; skipped with a message when it is not available or
+// when run with --no-browser). They guard display bugs found in verification.
+// Run against another copy of the sim with: node four-bar.test.js --file <path>
+// ---------------------------------------------------------------------------------------------
+async function agroup(name, fn) {
+  try { const extra = await fn(); console.log('ok   ' + name + (extra ? '  (' + extra + ')' : '')); }
+  catch (e) { failures++; console.log('FAIL ' + name + ': ' + (e && e.message || e)); }
+}
+async function browserTests() {
+  let playwrightOk = true;
+  try { require.resolve('playwright'); } catch (e) { playwrightOk = false; }
+  if (!playwrightOk || process.argv.indexOf('--no-browser') >= 0) { console.log('skip browser regression tests'); return; }
+  const path = require('path'), os = require('os');
+  const { openSim } = require('./harness.js');
+  const fi = process.argv.indexOf('--file'), file = fi >= 0 ? process.argv[fi + 1] : undefined;
+  const outDir = path.join(os.tmpdir(), 'rasim-four-bar-test');
+  const num = t => Number(String(t).replace(/−/g, '-').replace(/[°\s]/g, ''));
+  for (const width of [1100, 390]) {
+    const s = await openSim('four-bar', { width: width, outDir: outDir, file: file });
+    const page = s.page;
+    const frames = () => page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+    const setS = async st => { await page.evaluate(st => RASim.instances['four-bar'].setState(st), st); await frames(); };
+    const getS = () => page.evaluate(() => RASim.instances['four-bar'].getState());
+    const stats = () => page.evaluate(() => { const o = {}; document.querySelectorAll('[data-stat]').forEach(e => { o[e.getAttribute('data-stat')] = e.querySelector('.sim-stat-value').textContent; }); o.status = document.querySelector('[data-key="status"]').textContent; return o; });
+    try {
+      if (width === 1100) {
+        await agroup('browser: read-outs equal the model at the check-value states', async function () {
+          await setS({ a: 2, b: 7, c: 5, d: 6, theta2: 90, mode: 'open' });
+          let r = await stats();
+          assert.strictEqual(r.theta3, '25.28°'); assert.strictEqual(r.theta4, '86.22°'); assert.strictEqual(r.mu, '60.94°');
+          assert.strictEqual(r.w4, '0.4138'); assert.strictEqual(r.w3, '0.02155'); assert.strictEqual(r.MA, '2.417');
+          assert.strictEqual(r.swing, '56.34°'); assert.strictEqual(r.timeRatio, '1.272'); assert.strictEqual(r.muRange, '34.05° … 81.79°');
+          assert.strictEqual(r.range, 'full 360°');
+          await setS({ a: 5, b: 2, c: 6, d: 4, theta2: 90 });
+          r = await stats(); assert.strictEqual(r.range, '51.3° … 125.1° and −125.1° … −51.3°'); assert.strictEqual(r.swing, '—');
+          await setS({ a: 4, b: 6, c: 5, d: 8, theta2: 0 });
+          r = await stats(); assert.strictEqual(r.range, '−129.8° … 129.8°');
+          await setS({ a: 2, b: 6, c: 5, d: 6, theta2: 60 });
+          r = await stats(); assert.strictEqual(r.muRange, '41.41° … 92.87°');
+          await setS({ a: 3, b: 6, c: 3, d: 6, theta2: 60, mode: 'open' });
+          r = await stats(); assert.strictEqual(r.theta4, '60.00°'); assert.strictEqual(r.theta3, '0.00°'); assert.strictEqual(r.w4, '1');
+        });
+        await agroup('browser: a typed out-of-range θ₂ stays snapped and keeps its message (regression)', async function () {
+          await setS({ a: 4, b: 6, c: 5, d: 8, theta2: 0, mode: 'open' });
+          const box = await page.$('[data-control-num="theta2"]');
+          await box.fill('170'); await box.press('Enter'); await frames();
+          const g = await getS(), r = await stats();
+          near(g.theta2, m.inputRange(4, 6, 5, 8).rangesDeg[0][1], 'snapped θ₂', 1e-9);
+          assert.ok(/170° cannot be reached/.test(r.status), 'snap message kept: ' + r.status);
+          assert.strictEqual(r.mu, '180.00°', 'μ at the toggle');
+        });
+        await agroup('browser: setState takes θ₂ modulo 360° and names the snapped angle in range form (regression)', async function () {
+          await setS({ a: 4, b: 6, c: 5, d: 8, theta2: -60 });
+          near((await getS()).theta2, 300, 'θ₂ = −60° → 300°', 1e-9);
+          assert.strictEqual((await stats()).theta4, RASim.fmtFixed(m.solve(4, 6, 5, 8, -60 * D2R, 1).theta4 * R2D, 2) + '°');
+          await setS({ theta2: 200 });
+          assert.ok(/230\.2° \(= −129\.8°\)/.test((await stats()).status), (await stats()).status);
+        });
+      }
+      await agroup('browser: no overlapping or clipped canvas labels at ' + width + ' px (regression)', async function () {
+        await page.evaluate(() => {
+          const orig = RASim.draw.text;
+          window.__labels = [];
+          RASim.draw.text = function (ctx, text, x, y, o) {
+            if (ctx.canvas.getAttribute('data-canvas') === 'mechanism') {
+              ctx.save(); ctx.font = (o && o.font) || '12px sans-serif'; const w = ctx.measureText(text).width; ctx.restore();
+              const al = (o && o.align) || 'left', l = al === 'center' ? x - w / 2 : al === 'right' ? x - w : x;
+              const r = ctx.canvas.getBoundingClientRect();
+              window.__labels.push({ text: text, l: l, r: l + w, t: y - 6, b: y + 6, W: r.width, H: r.height });
+            }
+            return orig.apply(this, arguments);
+          };
+        });
+        // states where the old layout put a link letter on top of the μ / θ₂ label or of a point label, plus the preset states
+        const cases = [
+          { a: 5, b: 2, c: 6, d: 4, theta2: 29.5, mode: 'open', showIC: false }, { a: 4, b: 5, c: 6, d: 2, theta2: 204, mode: 'open', showIC: false },
+          { a: 5, b: 2, c: 6, d: 4, theta2: 90, mode: 'crossed', showIC: false }, { a: 5, b: 2, c: 6, d: 4, theta2: 105, mode: 'crossed', showIC: true },
+          { a: 3, b: 6, c: 3, d: 6, theta2: 201, mode: 'open', showIC: true }, { a: 1.1, b: 1.6, c: 9.8, d: 7.3, theta2: 187.5, mode: 'open', u: 0.35, v: 0.5 },
+          { a: 7.9, b: 5.7, c: 2.8, d: 4.3, theta2: 105.5, mode: 'crossed', showIC: true, u: 1.45, v: -2.5 },
+          { a: 2, b: 6, c: 5, d: 6, theta2: 60, mode: 'open', showIC: false, u: 0.5, v: 2 }, { a: 2, b: 7, c: 5, d: 6, theta2: 0 },
+          { a: 4, b: 5, c: 6, d: 2, theta2: 120 }, { a: 5, b: 2, c: 6, d: 4, theta2: 60 }, { a: 4, b: 6, c: 5, d: 8, theta2: 129.838 },
+          { a: 3, b: 6, c: 3, d: 6, theta2: 60 }, { a: 2, b: 6, c: 5, d: 6, theta2: 60, mode: 'crossed' }, { mode: 'open', showIC: true }
+        ];
+        const bad = [];
+        for (const st of cases) {
+          await page.evaluate(() => { window.__labels = []; });
+          await setS(Object.assign({ u: 0.5, v: 2 }, st));
+          const L = await page.evaluate(() => window.__labels);
+          for (let i = 0; i < L.length; i++) {
+            const A = L[i];
+            if (A.l < 0 || A.r > A.W || A.t < 0 || A.b > A.H) bad.push(JSON.stringify(st) + ' clipped ' + A.text);
+            for (let j = i + 1; j < L.length; j++) { const B = L[j]; if (A.l < B.r && B.l < A.r && A.t < B.b && B.t < A.b) bad.push(JSON.stringify(st) + ' ' + A.text + ' × ' + B.text); }
+          }
+        }
+        assert.strictEqual(bad.length, 0, bad.join('; '));
+        return cases.length + ' states';
+      });
+      assert.ok(s.errors.length === 0 && s.warnings.length === 0, 'console: ' + s.errors.concat(s.warnings).join('; '));
+    } finally { await s.browser.close(); }
+  }
+}
+
+(async function () {
+  try { await browserTests(); } catch (e) { failures++; console.log('FAIL browser: ' + (e && e.message || e)); }
+  if (failures) { console.log(failures + ' group(s) failed'); process.exit(1); }
+  console.log('all four-bar tests passed');
+})();

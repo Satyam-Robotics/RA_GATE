@@ -323,7 +323,7 @@
       const tTR = ui.stat(stats, { label: lab('time ratio'), key: 'timeRatio', title: 'quick-return ratio = forward / return crank angle' });
 
       ui.hints(api.root, [
-        'Grashof test: s + l ≤ p + q. With the default lengths the shortest link is the crank → crank-rocker. Choose the drag-link preset (the shortest link is the frame) → both cranks rotate. Make the coupler the shortest → double-rocker.',
+        'Grashof test: s + l ≤ p + q. With the default lengths the shortest link is the crank → crank-rocker. Choose the drag-link preset (the shortest link is the frame) → both cranks rotate. Make the coupler the shortest (keeping s + l &lt; p + q, as in the Grashof double-rocker preset) → double-rocker.',
         'Triple-rocker preset: s + l &gt; p + q — nothing can rotate fully; press Play and watch the input swing between its two toggle positions.',
         'Watch μ: the "poor transmission" preset dips to 34° — below about 40° the coupler pushes the rocker badly.',
         'Crank-rocker: at the rocker\'s two extreme positions the crank and the coupler are collinear; the two strokes take different crank angles, so one stroke is quicker (time ratio &gt; 1).',
@@ -685,16 +685,22 @@
               });
             });
           });
-          labels.push(lay.place(text, I13, color, cands));
+          const lb = lay.place(text, I13, color, cands);
+          labels.push(lb);
+          // a letter pushed away from a short or crowded link gets a leader to the nearest point of that link
+          const tt = M.clamp(((lb.x - P1[0]) * tx + (lb.y - P1[1]) * ty) / L, 0.15, 0.85);
+          leader(lb, P1[0] + tt * L * tx, P1[1] + tt * L * ty, 16);
         }
         function pointLabel(q, text, color, mid, font) {
-          labels.push(lay.place(text, font || B12, color, lay.around(q[0], q[1], 7, mid, Math.PI / 8, 8, text, font || B12)));
+          const lb = lay.place(text, font || B12, color, lay.around(q[0], q[1], 7, mid, Math.PI / 8, 8, text, font || B12));
+          labels.push(lb);
+          leader(lb, q[0], q[1], 18);
         }
-        // a label that ended up away from its arc gets a thin leader line to the middle of the arc
+        // a label that ended up away from its arc, link or point gets a thin leader line to it
         const leaders = [];
-        function leader(lb, ax, ay) {
+        function leader(lb, ax, ay, minGap) {
           const b = lb.box, nx = M.clamp(ax, b.l, b.r), ny = M.clamp(ay, b.t, b.b);
-          if (Math.hypot(nx - ax, ny - ay) > 10) leaders.push([ax, ay, nx, ny, lb.color]);
+          if (Math.hypot(nx - ax, ny - ay) > (minGap || 10)) leaders.push([ax, ay, nx, ny, lb.color]);
         }
         const muTxt = 'μ = ' + fmtDeg(s.mu * R2D, 1);
         if (st.showMu) {
