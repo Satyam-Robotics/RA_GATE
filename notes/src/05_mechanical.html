@@ -25,6 +25,7 @@
 <li>Mohr's circle: centre ((σ<sub>x</sub> + σ<sub>y</sub>)/2, 0), radius R as above; an angle θ on the element = 2θ on the circle. σ<sub>x</sub> + σ<sub>y</sub> is invariant.</li>
 <li>Pure shear: σ₁ = τ, σ₂ = −τ at 45°. Uniaxial σ: τ<sub>max</sub> = σ/2 at 45°.</li>
 </ul>
+<div class="sim" data-sim="mohr-circle"></div>
 <h3>Plane strain</h3>
 <ul>
 <li>Same transformation with σ → ε and τ → γ/2. Principal strains ε₁,₂ = (ε<sub>x</sub> + ε<sub>y</sub>)/2 ± √{[(ε<sub>x</sub> − ε<sub>y</sub>)/2]² + (γ<sub>xy</sub>/2)²}. Max shear strain γ<sub>max</sub> = ε₁ − ε₂.</li>
@@ -42,6 +43,7 @@
 <li>Point of contraflexure: BM changes sign (only in overhanging/fixed beams).</li>
 <li>Standard maxima: simply supported, central load P: M<sub>max</sub> = PL/4; UDL w: wL²/8. Cantilever end load P: PL; UDL: wL²/2. Fixed–fixed UDL: wL²/12 at supports, wL²/24 at centre.</li>
 </ul>
+<div class="sim" data-sim="beam-sfd-bmd"></div>
 <h3>Bending and shear stresses in beams</h3>
 <ul>
 <li>Flexure formula: M/I = σ/y = E/R; σ<sub>max</sub> = M/Z, section modulus Z = I/y<sub>max</sub>. Neutral axis passes through the centroid (zero bending stress).</li>
@@ -121,6 +123,7 @@
 <li>Inversions: four-bar (beam engine, coupling rod of locomotive, Watt's indicator); single slider-crank (reciprocating engine, Whitworth quick return, rotary engine, oscillating cylinder, hand pump); double slider-crank (elliptical trammel, Scotch yoke, Oldham coupling).</li>
 <li>Quick-return ratio = time of cutting / time of return = α/β (crank angles). Transmission angle μ (best near 90°, acceptable 40°–140°). Toggle position: mechanical advantage → ∞.</li>
 </ul>
+<div class="sim" data-sim="four-bar"></div>
 <h3>Displacement, velocity and acceleration analysis</h3>
 <ul>
 <li><b>Relative velocity:</b> v<sub>BA</sub> = ω·AB, perpendicular to AB. Velocity polygons drawn link by link.</li>
@@ -184,6 +187,7 @@
 <li>TR = 1 at r = √2 for any ζ. Isolation (TR &lt; 1) only when r &gt; √2 → use soft mounts (low k, low ωₙ). In the isolation region, more damping increases TR (worse), but damping helps when passing through resonance during start-up.</li>
 <li>Isolation efficiency = 1 − TR.</li>
 </ul>
+<div class="sim" data-sim="vibration-sdof"></div>
 <h3>Resonance and critical speed of shafts</h3>
 <ul>
 <li>Resonance: forcing frequency = natural frequency → large amplitudes, limited only by damping.</li>
