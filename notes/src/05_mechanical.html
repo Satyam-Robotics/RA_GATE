@@ -1,0 +1,307 @@
+<h1 id="b2">Part B2 — Mechanical Engineering</h1>
+
+<h2>B2.1 Mechanics of Materials</h2>
+<h3>Stress and strain</h3>
+<ul>
+<li>Normal stress σ = P/A; shear stress τ = V/A. Normal strain ε = δL/L; shear strain γ (radians).</li>
+<li>Hooke's law: σ = Eε; τ = Gγ. Axial deformation δ = PL/(AE); for stepped bars sum each segment; bar under own weight δ = ρgL²/(2E) = WL/(2AE).</li>
+<li>Stress–strain curve (mild steel): proportional limit, elastic limit, upper/lower yield points, ultimate strength, fracture. Ductile (large plastic strain, cup-and-cone fracture) vs brittle (cast iron, little plastic strain).</li>
+<li>Factor of safety = failure stress/allowable stress. Strain energy U = σ²V/(2E) = P²L/(2AE). Modulus of resilience σ<sub>y</sub>²/(2E). Toughness = area under the curve.</li>
+<li>Suddenly applied load: stress = 2× gradually applied. Impact load from height h: σ = (P/A)[1 + √(1 + 2AEh/(PL))].</li>
+<li>Composite bars in parallel: same strain, load shared in proportion to AE.</li>
+</ul>
+<h3>Elastic constants and Poisson's ratio</h3>
+<ul>
+<li>Poisson's ratio ν = −ε<sub>lateral</sub>/ε<sub>axial</sub>; 0 ≤ ν ≤ 0.5 (0.5 incompressible, rubber; ~0.3 steel; ~0 cork).</li>
+<li>E = 2G(1 + ν) = 3K(1 − 2ν); E = 9KG/(3K + G).</li>
+<li>Volumetric strain ε<sub>v</sub> = ε<sub>x</sub> + ε<sub>y</sub> + ε<sub>z</sub>; for uniaxial: ε(1 − 2ν). Bulk modulus K = −p/ε<sub>v</sub>.</li>
+<li>Generalized Hooke: ε<sub>x</sub> = [σ<sub>x</sub> − ν(σ<sub>y</sub> + σ<sub>z</sub>)]/E.</li>
+</ul>
+<h3>Mohr's circle — plane stress</h3>
+<ul>
+<li>Stresses on a plane at θ: σ<sub>θ</sub> = (σ<sub>x</sub> + σ<sub>y</sub>)/2 + [(σ<sub>x</sub> − σ<sub>y</sub>)/2]cos 2θ + τ<sub>xy</sub>sin 2θ; τ<sub>θ</sub> = −[(σ<sub>x</sub> − σ<sub>y</sub>)/2]sin 2θ + τ<sub>xy</sub>cos 2θ.</li>
+<li>Principal stresses σ₁,₂ = (σ<sub>x</sub> + σ<sub>y</sub>)/2 ± √{[(σ<sub>x</sub> − σ<sub>y</sub>)/2]² + τ<sub>xy</sub>²}; principal planes tan 2θ<sub>p</sub> = 2τ<sub>xy</sub>/(σ<sub>x</sub> − σ<sub>y</sub>); zero shear on principal planes.</li>
+<li>Max in-plane shear τ<sub>max</sub> = (σ₁ − σ₂)/2 = radius of Mohr's circle, on planes at 45° to principal planes (normal stress = average there). Absolute max shear (3D) = (σ<sub>max</sub> − σ<sub>min</sub>)/2 including σ₃ = 0.</li>
+<li>Mohr's circle: centre ((σ<sub>x</sub> + σ<sub>y</sub>)/2, 0), radius R as above; an angle θ on the element = 2θ on the circle. σ<sub>x</sub> + σ<sub>y</sub> is invariant.</li>
+<li>Pure shear: σ₁ = τ, σ₂ = −τ at 45°. Uniaxial σ: τ<sub>max</sub> = σ/2 at 45°.</li>
+</ul>
+<h3>Plane strain</h3>
+<ul>
+<li>Same transformation with σ → ε and τ → γ/2. Principal strains ε₁,₂ = (ε<sub>x</sub> + ε<sub>y</sub>)/2 ± √{[(ε<sub>x</sub> − ε<sub>y</sub>)/2]² + (γ<sub>xy</sub>/2)²}. Max shear strain γ<sub>max</sub> = ε₁ − ε₂.</li>
+</ul>
+<h3>Thin cylinders and spheres (t &lt; d/20)</h3>
+<ul>
+<li>Hoop (circumferential) σ<sub>h</sub> = pd/(2t); longitudinal σ<sub>l</sub> = pd/(4t) = σ<sub>h</sub>/2. Max in-plane shear = pd/(8t); absolute max = pd/(4t).</li>
+<li>Thin sphere: σ = pd/(4t) in all directions.</li>
+<li>Volumetric strain of cylinder: (pd/4tE)(5 − 4ν); sphere: (3pd/4tE)(1 − ν). Joint efficiency η: σ<sub>h</sub> = pd/(2tη<sub>l</sub>), σ<sub>l</sub> = pd/(4tη<sub>c</sub>).</li>
+<li>Thick cylinders (Lamé): σ<sub>r</sub> = A − B/r², σ<sub>h</sub> = A + B/r²; max hoop stress at inner radius.</li>
+</ul>
+<h3>Shear force and bending moment diagrams</h3>
+<ul>
+<li>Relations: dV/dx = −w (load intensity; sign conventions vary), dM/dx = V. Max bending moment where SF = 0 (or changes sign). Point load → step in SFD; UDL → linear SFD and parabolic BMD; uniformly varying load → parabolic SFD and cubic BMD. Applied couple → jump in BMD.</li>
+<li>Point of contraflexure: BM changes sign (only in overhanging/fixed beams).</li>
+<li>Standard maxima: simply supported, central load P: M<sub>max</sub> = PL/4; UDL w: wL²/8. Cantilever end load P: PL; UDL: wL²/2. Fixed–fixed UDL: wL²/12 at supports, wL²/24 at centre.</li>
+</ul>
+<h3>Bending and shear stresses in beams</h3>
+<ul>
+<li>Flexure formula: M/I = σ/y = E/R; σ<sub>max</sub> = M/Z, section modulus Z = I/y<sub>max</sub>. Neutral axis passes through the centroid (zero bending stress).</li>
+<li>I values: rectangle bh³/12 (Z = bh²/6); circle πd⁴/64 (Z = πd³/32); hollow circle π(D⁴ − d⁴)/64; triangle about base bh³/12, about centroid bh³/36.</li>
+<li>Shear stress τ = VQ/(Ib) (Q = first moment of area above the point). Rectangle: τ<sub>max</sub> = 1.5τ<sub>avg</sub> at neutral axis (parabolic distribution). Circle: τ<sub>max</sub> = (4/3)τ<sub>avg</sub>. I-section: web carries most shear.</li>
+<li>Beam of uniform strength: section varies so that M/Z is constant.</li>
+</ul>
+<h3>Shear centre</h3>
+<ul>
+<li>Point through which a transverse load must act to cause bending without twisting. Coincides with the centroid for doubly symmetric sections; lies on the axis of symmetry for singly symmetric sections.</li>
+<li>Channel section: shear centre lies outside the web, at e = b²h²t/(4I) from the web centre line (b = flange width, h = web height between flange centres, t = flange thickness). Angle and T sections: at the intersection of the legs/flange-web centre lines.</li>
+</ul>
+<h3>Deflection of beams</h3>
+<ul>
+<li>EI d²y/dx² = M. Methods: double integration, Macaulay's method, moment-area theorems (slope change = area of M/EI diagram; deflection = moment of that area), conjugate beam, superposition, energy methods.</li>
+</ul>
+<table>
+<tr><th>Case</th><th>Max slope</th><th>Max deflection</th></tr>
+<tr><td>Cantilever, end load P</td><td>PL²/(2EI)</td><td>PL³/(3EI)</td></tr>
+<tr><td>Cantilever, UDL w</td><td>wL³/(6EI)</td><td>wL⁴/(8EI)</td></tr>
+<tr><td>Cantilever, end moment M</td><td>ML/(EI)</td><td>ML²/(2EI)</td></tr>
+<tr><td>Simply supported, central P</td><td>PL²/(16EI)</td><td>PL³/(48EI)</td></tr>
+<tr><td>Simply supported, UDL w</td><td>wL³/(24EI)</td><td>5wL⁴/(384EI)</td></tr>
+<tr><td>Fixed–fixed, central P</td><td>0</td><td>PL³/(192EI)</td></tr>
+<tr><td>Fixed–fixed, UDL w</td><td>0</td><td>wL⁴/(384EI)</td></tr>
+</table>
+<h3>Torsion of circular shafts</h3>
+<ul>
+<li>T/J = τ/r = Gθ/L. Polar moment J = πd⁴/32 (solid), π(D⁴ − d⁴)/32 (hollow). τ<sub>max</sub> = 16T/(πd³) (solid).</li>
+<li>Angle of twist θ = TL/(GJ); torsional stiffness GJ/L. Power P = 2πNT/60 (N in rpm).</li>
+<li>Series shafts: same torque, angles add. Parallel (both ends fixed, torque at a point): same angle, torques add.</li>
+<li>Hollow shafts are stronger and stiffer per unit weight. Combined bending and torsion: equivalent torque T<sub>e</sub> = √(M² + T²); equivalent moment M<sub>e</sub> = ½[M + √(M² + T²)].</li>
+<li>Closely coiled helical spring: τ = 8WDK/(πd³) (K = Wahl factor); deflection δ = 8WD³n/(Gd⁴); stiffness k = Gd⁴/(8D³n). Springs in series: 1/k = Σ1/kᵢ; parallel: k = Σkᵢ.</li>
+</ul>
+<h3>Euler's theory of columns</h3>
+<ul>
+<li>Critical buckling load P<sub>cr</sub> = π²EI<sub>min</sub>/L<sub>e</sub>².</li>
+<li>Effective length L<sub>e</sub>: both ends pinned L; one fixed one free 2L; both fixed L/2; one fixed one pinned L/√2.</li>
+<li>Slenderness ratio λ = L<sub>e</sub>/k (k = √(I/A), radius of gyration); critical stress σ<sub>cr</sub> = π²E/λ². Euler valid for long columns (λ above the limit where σ<sub>cr</sub> = σ<sub>yield</sub>; ≈ 80–100 for mild steel).</li>
+<li>Rankine–Gordon (short and intermediate columns): 1/P<sub>R</sub> = 1/P<sub>crushing</sub> + 1/P<sub>Euler</sub>.</li>
+<li>Eccentric loading: secant formula. Buckling occurs about the axis of minimum I.</li>
+</ul>
+<h3>Castigliano's theorems (energy methods)</h3>
+<ul>
+<li>Strain energy: axial ∫N²dx/(2AE); bending ∫M²dx/(2EI); torsion ∫T²dx/(2GJ); shear ∫kV²dx/(2GA).</li>
+<li><b>Castigliano's (second) theorem:</b> deflection at the point of load Pᵢ in its direction δᵢ = ∂U/∂Pᵢ; rotation θ = ∂U/∂M. (First theorem: Pᵢ = ∂U/∂δᵢ.) To find deflection where no load acts, apply a dummy load Q and set Q = 0 after differentiating.</li>
+<li>Statically indeterminate structures: ∂U/∂R = 0 for a redundant reaction R (theorem of least work).</li>
+<li>Maxwell's reciprocal theorem: δ<sub>ij</sub> = δ<sub>ji</sub>.</li>
+</ul>
+<h3>Thermal stresses</h3>
+<ul>
+<li>Free thermal strain ε<sub>T</sub> = αΔT; free expansion δ = αLΔT (no stress).</li>
+<li>Fully restrained: σ = EαΔT (compressive when heated). Partially restrained with gap δ₀: σ = E(αLΔT − δ₀)/L.</li>
+<li>Composite bars of different materials heated together: compatibility of strain; the one with higher α goes into compression. σ₁A₁ = σ₂A₂ (equilibrium); α₁ΔT − σ₁/E₁ = α₂ΔT + σ₂/E₂.</li>
+</ul>
+<h3>Strain gauges and rosettes</h3>
+<ul>
+<li>Strain gauge: GF = (ΔR/R)/ε. Measures normal strain in one direction only; shear strain must be derived.</li>
+<li><b>Rosette</b> (three gauges at known angles) gives ε<sub>x</sub>, ε<sub>y</sub>, γ<sub>xy</sub> using ε<sub>θ</sub> = ε<sub>x</sub>cos²θ + ε<sub>y</sub>sin²θ + γ<sub>xy</sub>sin θ cos θ.</li>
+<li>Rectangular (0°, 45°, 90°): ε<sub>x</sub> = ε₀, ε<sub>y</sub> = ε₉₀, γ<sub>xy</sub> = 2ε₄₅ − ε₀ − ε₉₀. Delta (0°, 60°, 120°) rosettes also used.</li>
+<li>Principal stresses from principal strains: σ₁ = E(ε₁ + νε₂)/(1 − ν²); σ₂ = E(ε₂ + νε₁)/(1 − ν²).</li>
+</ul>
+<h3>Testing of materials</h3>
+<ul>
+<li><b>Universal testing machine (UTM):</b> tension, compression, bending, shear tests. Results: E, yield strength (0.2% offset proof stress for materials without a clear yield point), UTS, % elongation = (L<sub>f</sub> − L₀)/L₀ × 100, % reduction in area (ductility). Engineering vs true stress (σ<sub>true</sub> = σ(1 + ε), ε<sub>true</sub> = ln(1 + ε)). Necking starts at UTS.</li>
+<li><b>Hardness:</b> Brinell (hardened steel/tungsten ball, BHN = 2P/[πD(D − √(D² − d²))], soft-to-medium metals); Vickers (diamond pyramid 136°, HV = 1.854P/d², all hardness ranges, micro-hardness); Rockwell (depth of penetration, minor + major load; scales B (ball, soft) and C (diamond cone, hard)); Knoop (thin layers); Shore scleroscope (rebound) and Mohs (scratch). UTS ≈ 3.45 × BHN (MPa) for steels.</li>
+<li><b>Impact strength:</b> Charpy (simply supported, notch facing away from striker) and Izod (cantilever, notch facing striker). Energy absorbed = W(h₁ − h₂). Ductile-to-brittle transition temperature (BCC metals).</li>
+<li>Others: fatigue (rotating beam), creep, torsion test, non-destructive testing (ultrasonic, radiography, dye penetrant, magnetic particle, eddy current).</li>
+</ul>
+
+<h2>B2.2 Kinematics and Dynamics of Machines</h2>
+<h3>Mechanisms basics</h3>
+<ul>
+<li>Kinematic link, pair (lower: surface contact; higher: point/line contact), chain, mechanism (one link fixed), machine. Inversion: fixing different links of the same chain.</li>
+<li>Mobility (Grübler, planar): F = 3(n − 1) − 2j − h (j = lower pairs, h = higher pairs). F = 0 structure; F &lt; 0 indeterminate; F = 1 constrained mechanism.</li>
+<li><b>Grashof's law</b> (four-bar): s + l ≤ p + q ⇒ at least one link can fully rotate. Shortest link as crank → crank-rocker; shortest as frame → double crank (drag link); shortest as coupler → double rocker. Non-Grashof → triple rocker.</li>
+<li>Inversions: four-bar (beam engine, coupling rod of locomotive, Watt's indicator); single slider-crank (reciprocating engine, Whitworth quick return, rotary engine, oscillating cylinder, hand pump); double slider-crank (elliptical trammel, Scotch yoke, Oldham coupling).</li>
+<li>Quick-return ratio = time of cutting / time of return = α/β (crank angles). Transmission angle μ (best near 90°, acceptable 40°–140°). Toggle position: mechanical advantage → ∞.</li>
+</ul>
+<h3>Displacement, velocity and acceleration analysis</h3>
+<ul>
+<li><b>Relative velocity:</b> v<sub>BA</sub> = ω·AB, perpendicular to AB. Velocity polygons drawn link by link.</li>
+<li><b>Instantaneous centres:</b> number of ICs N = n(n − 1)/2. <b>Kennedy's theorem:</b> the three ICs of three bodies in plane motion lie on a straight line. Velocity v = ω × distance from IC. Slider on a fixed straight path: IC at infinity perpendicular to the path.</li>
+<li><b>Acceleration:</b> centripetal (radial) a<sub>r</sub> = ω²r = v²/r towards the centre; tangential a<sub>t</sub> = αr. <b>Coriolis component</b> 2ωv (when a point slides along a rotating link; direction: rotate the sliding velocity by 90° in the sense of ω) — appears in quick-return and slotted-link mechanisms.</li>
+<li><b>Slider-crank</b> (crank r, connecting rod l, n = l/r): piston displacement x ≈ r[(1 − cos θ) + (sin²θ)/(2n)]; velocity v ≈ ωr(sin θ + sin 2θ/(2n)); acceleration a ≈ ω²r(cos θ + cos 2θ/n). Angular velocity of connecting rod ω<sub>c</sub> ≈ ω cos θ/n.</li>
+<li>Analytical: loop-closure equations; graphical: polygons; Klein's construction for slider-crank.</li>
+</ul>
+<h3>Dynamic analysis of linkages</h3>
+<ul>
+<li>D'Alembert: add inertia force −m a<sub>G</sub> and inertia couple −I<sub>G</sub>α; then solve as a static problem (link by link, or by virtual work: Σ(F·v) + Σ(T·ω) = 0).</li>
+<li>Slider-crank engine: piston effort F<sub>P</sub> = gas force − inertia force (F<sub>I</sub> = m<sub>R</sub>ω²r(cos θ + cos 2θ/n)); force along connecting rod F<sub>Q</sub> = F<sub>P</sub>/cos φ; crank effort/torque T = F<sub>P</sub>·r·sin(θ + φ)/cos φ ≈ F<sub>P</sub>r(sin θ + sin 2θ/(2√(n² − sin²θ))).</li>
+<li>Dynamically equivalent two-mass system: same total mass, same centroid, same moment of inertia (l₁l₂ = k²).</li>
+<li><b>Turning moment diagram and flywheel:</b> fluctuation of energy ΔE = Iω²C<sub>s</sub> = mk²ω²C<sub>s</sub>; coefficient of fluctuation of speed C<sub>s</sub> = (ω<sub>max</sub> − ω<sub>min</sub>)/ω<sub>mean</sub>. Rim flywheel: ΔE = mv²C<sub>s</sub>.</li>
+<li>Governors (Watt, Porter, Proell, Hartnell): control mean speed with load; sensitiveness, stability, isochronism, hunting. Flywheel controls cyclic fluctuations within a cycle.</li>
+</ul>
+<h3>Gears and gear trains</h3>
+<ul>
+<li><b>Law of gearing:</b> the common normal at the point of contact passes through a fixed point (pitch point) → constant velocity ratio. Satisfied by involute and cycloidal profiles. Involute: centre-distance changes do not affect the velocity ratio; pressure angle constant (14.5°, 20°).</li>
+<li>Terminology: module m = d/T (mm); circular pitch p = πm; diametral pitch P = T/d; addendum = 1m (standard), dedendum = 1.25m; base circle d<sub>b</sub> = d cos φ. Velocity ratio ω₁/ω₂ = T₂/T₁ = d₂/d₁.</li>
+<li>Path of contact = √(R<sub>a</sub>² − R²cos²φ) + √(r<sub>a</sub>² − r²cos²φ) − (R + r)sin φ. Arc of contact = path/cos φ. <b>Contact ratio</b> = arc of contact/circular pitch (&gt; 1, usually 1.2–1.6).</li>
+<li><b>Interference:</b> tip of one gear digs into the non-involute flank of the other. Minimum teeth on pinion to avoid interference (rack, 20° full depth): T<sub>min</sub> = 2a<sub>w</sub>/sin²φ ≈ 17 (32 for 14.5°). Remedies: increase pressure angle, stub teeth, undercutting, profile shift.</li>
+<li>Gear types: spur, helical (axial thrust; double helical/herringbone cancels it), bevel (intersecting shafts), worm and wheel (large ratio, non-intersecting perpendicular shafts, often self-locking), rack and pinion, hypoid, spiral.</li>
+<li><b>Gear trains:</b> simple (idler only changes direction), compound (speed ratio = product of driven teeth/product of driver teeth), reverted (input and output coaxial).</li>
+<li><b>Epicyclic (planetary)</b> trains: arm rotates; use the tabular method (lock arm, give +1 rotation to sun, then add arm rotation) or the relative velocity formula (N<sub>s</sub> − N<sub>a</sub>)/(N<sub>r</sub> − N<sub>a</sub>) = −T<sub>r</sub>/T<sub>s</sub>. Ring teeth T<sub>r</sub> = T<sub>s</sub> + 2T<sub>p</sub> (same module). Torque balance: ΣT = 0 (T<sub>in</sub> + T<sub>out</sub> + T<sub>fixed</sub> = 0) and power balance ΣTω = 0. Used in automatic transmissions, differentials, robot reducers.</li>
+<li>Harmonic drives (strain wave): very high ratio, zero backlash — common in robot joints.</li>
+</ul>
+<h3>Balancing of rotating masses</h3>
+<ul>
+<li>Unbalanced force from mass m at radius r: F = mω²r.</li>
+<li><b>Static balance:</b> Σmr = 0 (vector sum; one balancing mass in the same plane). <b>Dynamic balance:</b> Σmr = 0 and Σmrl = 0 (couple about a reference plane); requires two balancing masses in two planes.</li>
+<li>Graphical: force polygon and couple polygon (reference plane chosen at one balancing plane to eliminate its unknown).</li>
+</ul>
+<h3>Balancing of reciprocating masses</h3>
+<ul>
+<li>Primary disturbing force m ω²r cos θ; secondary m ω²r cos 2θ/n (behaves like a mass at radius r/(4n) rotating at 2ω).</li>
+<li>Single cylinder: primary force can be only partially balanced (fraction c of the reciprocating mass); adding rotating balance mass introduces an unbalanced vertical force c mω²r sin θ. Typically c = 2/3 to 3/4 in locomotives (hammer blow, swaying couple, variation of tractive effort).</li>
+<li>Multi-cylinder in-line: Σ primary forces and couples = 0, Σ secondary forces and couples = 0 (use direct and reverse crank method for V-engines and radial engines). In-line 6-cylinder engines are fully balanced for primary and secondary.</li>
+</ul>
+<h3>Gyroscope</h3>
+<ul>
+<li>Gyroscopic couple C = Iωω<sub>p</sub> (I = spin moment of inertia, ω = spin, ω<sub>p</sub> = precession). The spin vector moves towards the applied torque vector (precession).</li>
+<li>Ship: steering (turning) → pitching effect on bow/stern; pitching → yawing (steering) effect; rolling → no gyroscopic effect (spin and roll axes parallel). Aeroplane turning → nose up or down depending on directions.</li>
+<li>Vehicles on curved track: gyroscopic couple of wheels and engine changes wheel reactions, adds to overturning effect. Two-wheeler cornering requires leaning.</li>
+<li>Gyroscopes in navigation/stabilization (and MEMS gyros in robot IMUs).</li>
+</ul>
+<h3>Vibrations of single DOF systems</h3>
+<ul>
+<li><b>Free undamped:</b> m ẍ + kx = 0; ωₙ = √(k/m); fₙ = ωₙ/2π; static deflection δ<sub>st</sub> = mg/k → ωₙ = √(g/δ<sub>st</sub>). Energy method (Rayleigh): d(KE + PE)/dt = 0.</li>
+<li>Examples: simple pendulum ωₙ = √(g/L); compound pendulum ωₙ = √(mgh/I<sub>O</sub>); torsional ωₙ = √(k<sub>t</sub>/I); spring mass with spring mass m<sub>s</sub>: add m<sub>s</sub>/3. Cantilever end mass k = 3EI/L³; simply supported centre k = 48EI/L³.</li>
+<li><b>Free damped:</b> m ẍ + c ẋ + kx = 0. Critical damping c<sub>c</sub> = 2√(km) = 2mωₙ; damping ratio ζ = c/c<sub>c</sub>. ζ &lt; 1 underdamped: ω<sub>d</sub> = ωₙ√(1 − ζ²). Logarithmic decrement δ = ln(x<sub>n</sub>/x<sub>n+1</sub>) = 2πζ/√(1 − ζ²) ≈ 2πζ; over n cycles δ = (1/n)ln(x₀/x<sub>n</sub>).</li>
+<li>Coulomb (dry friction) damping: amplitude decreases linearly by 4F/k per cycle.</li>
+<li><b>Forced vibration</b> F₀ sin ωt: steady-state amplitude X = (F₀/k)/√[(1 − r²)² + (2ζr)²], r = ω/ωₙ. Magnification factor MF = X/(F₀/k). Phase tan φ = 2ζr/(1 − r²) (90° at resonance).</li>
+<li>Peak amplitude at r = √(1 − 2ζ²); at resonance (r = 1) MF = 1/(2ζ). For r ≫ 1 the mass barely moves (X → F₀/(mω²)).</li>
+<li>Rotating unbalance m₀e: X = (m₀e/m)·r²/√[(1 − r²)² + (2ζr)²]. Base excitation: same as transmissibility below.</li>
+</ul>
+<h3>Effect of damping; vibration isolation</h3>
+<ul>
+<li>Damping reduces amplitude near resonance strongly, has little effect far from resonance.</li>
+<li><b>Transmissibility</b> TR = F<sub>T</sub>/F₀ = √[1 + (2ζr)²]/√[(1 − r²)² + (2ζr)²].</li>
+<li>TR = 1 at r = √2 for any ζ. Isolation (TR &lt; 1) only when r &gt; √2 → use soft mounts (low k, low ωₙ). In the isolation region, more damping increases TR (worse), but damping helps when passing through resonance during start-up.</li>
+<li>Isolation efficiency = 1 − TR.</li>
+</ul>
+<h3>Resonance and critical speed of shafts</h3>
+<ul>
+<li>Resonance: forcing frequency = natural frequency → large amplitudes, limited only by damping.</li>
+<li>Critical (whirling) speed: rotor speed at which the shaft whirls violently = its natural transverse frequency, ω<sub>c</sub> = √(k/m) = √(g/δ<sub>st</sub>); N<sub>c</sub> = (60/2π)√(g/δ). Shaft with eccentricity e: whirl amplitude y = e r²/(1 − r²) (undamped); above critical speed the shaft centre tends towards the mass centre (self-centring).</li>
+<li>Multiple loads — Dunkerley: 1/ω<sub>c</sub>² = 1/ω₁² + 1/ω₂² + … + 1/ω<sub>s</sub>² (lower bound). Rayleigh's method for the fundamental frequency (upper bound).</li>
+<li>Two-rotor torsional system: node location from I<sub>A</sub>l<sub>A</sub> = I<sub>B</sub>l<sub>B</sub>; ω = √(GJ/(I<sub>A</sub>l<sub>A</sub>)).</li>
+</ul>
+
+<h2>B2.3 Machine Design and Computer Integrated Manufacturing</h2>
+<h3>Design for static loading</h3>
+<ul>
+<li>Allowable stress = σ<sub>y</sub>/FoS (ductile) or σ<sub>u</sub>/FoS (brittle). Factor of safety accounts for uncertainty in load, material, analysis.</li>
+<li><b>Stress concentration</b> K<sub>t</sub> = σ<sub>max</sub>/σ<sub>nom</sub> (holes, notches, fillets, keyways). Elliptical hole in a plate: K<sub>t</sub> = 1 + 2a/b; circular hole: 3. Important for brittle materials under static load and for all materials under fatigue; reduce with generous fillets, relief grooves.</li>
+<li>Combined loads: superpose normal stresses; compute principal stresses; apply a failure theory.</li>
+</ul>
+<h3>Failure theories</h3>
+<table>
+<tr><th>Theory</th><th>Criterion</th><th>Use</th></tr>
+<tr><td>Max principal stress (Rankine)</td><td>σ₁ = S<sub>ut</sub>/N</td><td>Brittle materials</td></tr>
+<tr><td>Max shear stress (Tresca/Guest)</td><td>σ₁ − σ₃ = S<sub>y</sub>/N; τ<sub>max</sub> = S<sub>y</sub>/(2N); shear yield S<sub>sy</sub> = 0.5S<sub>y</sub></td><td>Ductile, conservative; hexagon in σ₁–σ₂ plane</td></tr>
+<tr><td>Distortion energy (von Mises)</td><td>σ<sub>vm</sub> = √(σ₁² − σ₁σ₂ + σ₂²) = S<sub>y</sub>/N; general √[½((σ₁−σ₂)² + (σ₂−σ₃)² + (σ₃−σ₁)²)]; S<sub>sy</sub> = 0.577S<sub>y</sub></td><td>Ductile, most accurate; ellipse</td></tr>
+<tr><td>Max principal strain (St. Venant)</td><td>σ₁ − ν(σ₂ + σ₃) = S<sub>y</sub>/N</td><td>Rarely used</td></tr>
+<tr><td>Max strain energy (Haigh)</td><td>σ₁² + σ₂² − 2νσ₁σ₂ = (S<sub>y</sub>/N)²</td><td>Ductile (less used)</td></tr>
+<tr><td>Coulomb–Mohr</td><td>σ₁/S<sub>t</sub> − σ₃/S<sub>c</sub> = 1/N</td><td>Brittle with S<sub>c</sub> ≠ S<sub>t</sub></td></tr>
+</table>
+<ul>
+<li>Shaft under bending + torsion (Tresca): τ<sub>max</sub> = (16/πd³)√(M² + T²); (von Mises): σ<sub>eq</sub> = (32/πd³)√(M² + 0.75T²).</li>
+</ul>
+<h3>Fatigue strength and the S-N diagram</h3>
+<ul>
+<li>Fatigue: failure under fluctuating stress well below S<sub>u</sub>; crack initiation at stress raisers, propagation (beach marks), sudden final fracture.</li>
+<li><b>S-N (Wöhler) diagram:</b> log stress amplitude vs log cycles. Steels show an endurance limit S<sub>e</sub>′ ≈ 0.5S<sub>ut</sub> (for S<sub>ut</sub> ≤ 1400 MPa) at ~10⁶–10⁷ cycles; non-ferrous metals (aluminium) have no endurance limit. Low-cycle (&lt;10³) vs high-cycle fatigue; 10³ cycles ≈ 0.9S<sub>ut</sub>.</li>
+<li>Corrected endurance limit (Marin): S<sub>e</sub> = k<sub>a</sub>k<sub>b</sub>k<sub>c</sub>k<sub>d</sub>k<sub>e</sub>S<sub>e</sub>′ (surface, size, load, temperature, reliability factors). Fatigue stress concentration K<sub>f</sub> = 1 + q(K<sub>t</sub> − 1), notch sensitivity 0 ≤ q ≤ 1.</li>
+<li>Fluctuating stress: mean σ<sub>m</sub> = (σ<sub>max</sub> + σ<sub>min</sub>)/2; amplitude σ<sub>a</sub> = (σ<sub>max</sub> − σ<sub>min</sub>)/2; stress ratio R = σ<sub>min</sub>/σ<sub>max</sub> (fully reversed R = −1).</li>
+<li>Mean-stress criteria: <b>Soderberg</b> σ<sub>a</sub>/S<sub>e</sub> + σ<sub>m</sub>/S<sub>y</sub> = 1/N (most conservative); <b>Goodman</b> σ<sub>a</sub>/S<sub>e</sub> + σ<sub>m</sub>/S<sub>ut</sub> = 1/N; <b>Gerber</b> parabola Nσ<sub>a</sub>/S<sub>e</sub> + (Nσ<sub>m</sub>/S<sub>ut</sub>)² = 1.</li>
+<li>Cumulative damage — Miner's rule: Σnᵢ/Nᵢ = 1 at failure.</li>
+<li>Improve fatigue life: polish surfaces, shot peening (compressive residual stress), avoid sharp corners, nitriding/case hardening.</li>
+</ul>
+<h3>Bolted joints</h3>
+<ul>
+<li>Tensile stress area; σ = P/A<sub>t</sub>. Core diameter d<sub>c</sub> ≈ 0.84d. Shear of bolts in single/double shear: P = n·(π/4)d²·τ (×2 for double).</li>
+<li>Preload (initial tension) F<sub>i</sub>; external load P shared: bolt load F<sub>b</sub> = F<sub>i</sub> + C·P, C = k<sub>b</sub>/(k<sub>b</sub> + k<sub>m</sub>) (joint stiffness constant); joint separates when (1 − C)P = F<sub>i</sub>. Tightening torque T ≈ 0.2F<sub>i</sub>d.</li>
+<li><b>Eccentrically loaded bolted joints:</b> primary (direct) shear P/n on each bolt + secondary shear from moment ∝ distance from the centroid of the bolt group: F″ᵢ = P·e·rᵢ/Σr²; combine vectorially. For a moment in the plane perpendicular to bolts (bracket), tensile load ∝ distance from the tilting edge: Fᵢ = P·e·lᵢ/Σl².</li>
+<li>Power screws: torque to raise T = W(d<sub>m</sub>/2)tan(φ + α) (square thread); self-locking if φ &gt; α; efficiency η = tan α/tan(α + φ) &lt; 50% if self-locking.</li>
+</ul>
+<h3>Riveted joints</h3>
+<ul>
+<li>Lap and butt joints (single/double strap). Failure modes per pitch length: tearing of plate P<sub>t</sub> = (p − d)tσ<sub>t</sub>; shearing of rivets P<sub>s</sub> = n(π/4)d²τ (×2 for double shear; IBR: ×1.875); crushing P<sub>c</sub> = n·d·t·σ<sub>c</sub>.</li>
+<li>Efficiency η = min(P<sub>t</sub>, P<sub>s</sub>, P<sub>c</sub>)/(p·t·σ<sub>t</sub>). Unwin's formula d = 6√t (mm). Caulking and fullering for leak-proof boiler joints.</li>
+</ul>
+<h3>Welded joints</h3>
+<ul>
+<li>Butt weld: P = σ<sub>t</sub>·t·l. Fillet weld throat t = 0.707s (leg size s). Transverse fillet: P = 0.707s·l·σ<sub>t</sub>; parallel (longitudinal) fillet: P = 0.707s·l·τ (failure in shear along the throat).</li>
+<li>Eccentric loading: primary shear P/A plus secondary shear τ₂ = M·r/J (J = polar moment of the weld throat area, using unit-weld properties J<sub>u</sub> × 0.707s); combine vectorially. Bending: σ<sub>b</sub> = M/Z of the weld.</li>
+<li>Stress concentration factors for welds in fatigue (reinforced butt weld 1.2, toe of transverse fillet 1.5, end of parallel fillet 2.7).</li>
+</ul>
+<h3>Shafts, keys and couplings</h3>
+<ul>
+<li>Shaft design by strength: ASME code d³ = (16/πτ<sub>allow</sub>)√[(K<sub>b</sub>M)² + (K<sub>t</sub>T)²] (shock/fatigue factors). By rigidity: torsional θ = TL/(GJ) limit (e.g. 0.25°/m) and lateral deflection limits.</li>
+<li>Hollow vs solid: same weight hollow shaft is stronger and stiffer.</li>
+<li>Keys: sunk (rectangular/square), saddle, feather, Woodruff, splines. Square key checked for shear (τ = 2T/(d·w·l)) and crushing (σ<sub>c</sub> = 4T/(d·h·l)); square key equally strong in both when σ<sub>c</sub> = 2τ.</li>
+<li>Couplings: rigid (sleeve, flange) and flexible (bushed-pin, Oldham, universal/Hooke's joint). Hooke's joint: speed ratio ω₂/ω₁ = cos α/(1 − cos²θ sin²α); varies between cos α and 1/cos α; double Hooke's joint gives constant velocity if arranged correctly.</li>
+</ul>
+<h3>Rolling contact bearings</h3>
+<ul>
+<li>Types: deep-groove ball (radial + some axial), angular contact, cylindrical roller (high radial), tapered roller (combined), spherical roller (self-aligning), thrust bearings, needle.</li>
+<li><b>Life:</b> L₁₀ = (C/P)ᵏ million revolutions (k = 3 ball, 10/3 roller); C = basic dynamic load rating (90% reliability). L<sub>h</sub> = L₁₀ × 10⁶/(60N) hours.</li>
+<li>Equivalent dynamic load P = XVF<sub>r</sub> + YF<sub>a</sub> (V = 1 inner race rotating). Reliability adjustment via Weibull: L/L₁₀ = [ln(1/R)/ln(1/0.9)]<sup>1/b</sup>, b ≈ 1.17 (bearing-life Weibull slope; 1.5 in some texts).</li>
+<li>Variable load: P<sub>e</sub> = [Σ(Pᵢᵏnᵢ)/Σnᵢ]<sup>1/k</sup>. Static load rating C₀ for stationary/slow bearings.</li>
+</ul>
+<h3>Sliding contact (journal) bearings</h3>
+<ul>
+<li>Hydrodynamic lubrication: wedge-shaped oil film builds pressure due to rotation (Petroff, Reynolds equation). Lubrication regimes: boundary, mixed, hydrodynamic (Stribeck curve: friction vs ZN/p).</li>
+<li><b>Sommerfeld number</b> S = (r/c)²·μN/p (p = W/(l·d), N in rev/s); design charts (Raimondi–Boyd) give friction coefficient, minimum film thickness, flow, temperature rise. Bearing characteristic number ZN/p must exceed the minimum (≈ 3× critical).</li>
+<li>Petroff's equation: f = 2π²(μN/p)(r/c). Hydrostatic bearings: external pump supplies pressure (work at zero speed).</li>
+<li>Bearing materials: babbitt (white metal), bronze, aluminium alloys, PTFE, porous self-lubricating.</li>
+</ul>
+<h3>Brakes</h3>
+<ul>
+<li><b>Block (shoe) brake:</b> F<sub>braking</sub> = μR<sub>n</sub>; torque T = μR<sub>n</sub>r. Self-energizing if friction moment assists the applied force; self-locking if the required actuating force ≤ 0. Long shoe: equivalent μ′ = 4μ sin θ/(2θ + sin 2θ).</li>
+<li><b>Band brake:</b> T₁/T₂ = e<sup>μθ</sup>; torque (T₁ − T₂)r. Simple, differential (can be self-locking) and band-and-block types.</li>
+<li><b>Disc brakes, internal expanding shoe brakes</b> (automobiles). Energy absorbed: KE + PE; temperature rise ΔT = E/(m·c).</li>
+<li>Dynamometers (absorption: Prony brake, rope brake; transmission types) measure power.</li>
+</ul>
+<h3>Clutches</h3>
+<ul>
+<li>Friction plate clutch torque T = nμWR<sub>m</sub> (n = number of friction surfaces).</li>
+<li><b>Uniform pressure</b> (new clutch): R<sub>m</sub> = (2/3)(R₀³ − Rᵢ³)/(R₀² − Rᵢ²). <b>Uniform wear</b> (worn clutch, pr = constant): R<sub>m</sub> = (R₀ + Rᵢ)/2. Uniform wear gives lower torque → safer design assumption. Optimum Rᵢ/R₀ ≈ 0.577 (uniform wear).</li>
+<li>Cone clutch: T = μW R<sub>m</sub>/sin α. Centrifugal clutch: (F<sub>c</sub> − F<sub>s</sub>)μ r n. Multi-plate clutches for compact, high torque.</li>
+</ul>
+<h3>Springs</h3>
+<ul>
+<li>Helical compression spring: spring index C = D/d (4–12); Wahl factor K = (4C − 1)/(4C − 4) + 0.615/C (curvature + direct shear); τ = K·8PD/(πd³); deflection δ = 8PD³N/(Gd⁴); stiffness k = Gd⁴/(8D³N).</li>
+<li>Energy stored U = ½Pδ. Solid length = N<sub>t</sub>·d; free length = solid length + max deflection + clearance. Buckling if free length/D is too large. Surge: natural frequency should exceed operating frequency (~15–20×).</li>
+<li>Leaf (laminated) springs: treat each half as a cantilever of length L carrying W: σ = 6WL/(nbt²), δ = 6WL³/(nEbt³) (n leaves, width b, thickness t); nipping (pre-stressing) equalizes stresses in full-length and graduated leaves. Torsion springs, Belleville (disc) springs, spiral springs.</li>
+</ul>
+<h3>CAD / CAM and integration</h3>
+<ul>
+<li><b>CAD:</b> geometric modelling — wireframe (edges only, ambiguous), surface (Bezier, B-spline, NURBS; Bezier curves: degree = control points − 1, global control; B-splines: local control), solid (B-rep and CSG). Parametric and feature-based modelling with constraints; assemblies; drafting; FEA (analysis) and CAE.</li>
+<li>Transformations: homogeneous 2D/3D matrices for translation, rotation, scaling, reflection, shear; composite = matrix product (order matters). Projections: orthographic, isometric, perspective.</li>
+<li>Curve representations: explicit, implicit, parametric (preferred). Hermite cubic: needs end points and tangents. Continuity C⁰, C¹, C² and G¹.</li>
+<li><b>CAM:</b> generating tool paths and NC code from CAD geometry; post-processors convert to machine-specific G-code. CAPP, NC verification/simulation, robot offline programming.</li>
+<li><b>Integration tools/standards:</b> data exchange formats IGES, STEP (ISO 10303, product data), STL (triangulated surface for 3D printing), DXF (2D), Parasolid/ACIS kernels. PDM/PLM systems manage product data and revisions. CAD/CAM integration → CIM with MRP/ERP, FMS, DNC.</li>
+<li>Group technology (part families, Opitz/MICLASS coding), FMS (flexible manufacturing systems: workstations + automated handling + central computer).</li>
+</ul>
+<h3>Additive manufacturing (3D printing)</h3>
+<ul>
+<li>Workflow: CAD model → STL (tessellation) → orientation and support generation → slicing into layers → layer-by-layer build → post-processing (support removal, curing, sintering, machining).</li>
+<li>ASTM/ISO 52900 categories:
+<ul>
+<li><b>Material extrusion</b> — FDM/FFF (thermoplastic filament: PLA, ABS, nylon).</li>
+<li><b>Vat photopolymerization</b> — SLA (laser), DLP (projector); liquid resin cured by UV; high resolution.</li>
+<li><b>Powder bed fusion</b> — SLS (polymers), SLM/DMLS (metals, laser), EBM (electron beam, vacuum).</li>
+<li><b>Material jetting</b> — PolyJet (multi-material, colour).</li>
+<li><b>Binder jetting</b> — binder into powder (sand moulds, metals, then sintered).</li>
+<li><b>Directed energy deposition</b> — LENS, wire-arc AM (repair, large metal parts).</li>
+<li><b>Sheet lamination</b> — LOM, ultrasonic AM.</li>
+</ul></li>
+<li>Advantages: complex geometries (lattices, internal channels), no tooling, customization, rapid prototyping, part consolidation. Limitations: slow for mass production, anisotropy, surface finish (stair-stepping proportional to layer thickness), size limits, support structures.</li>
+<li>Applications: prototypes, jigs and fixtures, robot grippers and custom end-effectors, medical implants, aerospace parts, tooling (conformal cooling channels).</li>
+</ul>

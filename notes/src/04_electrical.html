@@ -1,0 +1,276 @@
+<h1 id="b1">Part B1 — Electrical Engineering</h1>
+
+<h2>B1.1 Analog Circuits and Embedded Systems</h2>
+<h3>Analog filters</h3>
+<ul>
+<li><b>Low-pass:</b> passes f &lt; f<sub>c</sub>. First-order RC: H(s) = 1/(1 + sRC), f<sub>c</sub> = 1/(2πRC); −20 dB/decade roll-off per order; −3 dB and −45° at f<sub>c</sub>.</li>
+<li><b>High-pass:</b> H(s) = sRC/(1 + sRC). <b>Band-pass:</b> passes f₁ &lt; f &lt; f₂; centre f₀ = √(f₁f₂), Q = f₀/BW. <b>Band-reject (notch):</b> rejects a band (e.g. 50 Hz hum; twin-T).</li>
+<li>Second-order standard form: LP H = ω₀²/(s² + (ω₀/Q)s + ω₀²); −40 dB/decade.</li>
+<li>Passive (RLC, no gain, loading problems) vs active (op-amp; gain, buffering, no inductors). Sallen–Key and multiple-feedback topologies.</li>
+<li>Approximations: Butterworth (maximally flat passband), Chebyshev (ripple, sharper roll-off), Bessel (linear phase), Elliptic (sharpest, ripple in both bands). Order n → roll-off 20n dB/decade.</li>
+</ul>
+<h3>Amplifiers: biasing, equivalent circuit, frequency response</h3>
+<ul>
+<li><b>BJT:</b> I<sub>C</sub> = βI<sub>B</sub>, I<sub>E</sub> = I<sub>C</sub> + I<sub>B</sub>, α = β/(β + 1). Active region: BE forward, BC reverse. V<sub>BE</sub> ≈ 0.7 V (Si). Thermal voltage V<sub>T</sub> ≈ 25 mV at room temperature.</li>
+<li><b>Biasing:</b> fixed bias (unstable), collector-feedback, <b>voltage-divider bias</b> (most stable; Thevenin: V<sub>BB</sub> = V<sub>CC</sub>R₂/(R₁+R₂), I<sub>E</sub> ≈ (V<sub>BB</sub> − V<sub>BE</sub>)/R<sub>E</sub> when βR<sub>E</sub> ≫ R<sub>B</sub>). Stability factor S = ∂I<sub>C</sub>/∂I<sub>CO</sub>; Q-point on the DC load line, middle for maximum symmetric swing.</li>
+<li><b>Small-signal (hybrid-π):</b> g<sub>m</sub> = I<sub>C</sub>/V<sub>T</sub>; r<sub>π</sub> = β/g<sub>m</sub>; r<sub>o</sub> = V<sub>A</sub>/I<sub>C</sub>. h-parameters: h<sub>ie</sub> ≈ r<sub>π</sub>, h<sub>fe</sub> ≈ β.</li>
+<li>CE: A<sub>v</sub> ≈ −g<sub>m</sub>(R<sub>C</sub>∥R<sub>L</sub>), inverting, medium R<sub>in</sub>. With unbypassed R<sub>E</sub>: A<sub>v</sub> ≈ −R<sub>C</sub>/R<sub>E</sub>. CB: non-inverting, low R<sub>in</sub>, current gain ≈ 1. CC (emitter follower): A<sub>v</sub> ≈ 1, high R<sub>in</sub>, low R<sub>out</sub> (buffer).</li>
+<li><b>MOSFET:</b> saturation I<sub>D</sub> = ½k(V<sub>GS</sub> − V<sub>t</sub>)²; g<sub>m</sub> = 2I<sub>D</sub>/(V<sub>GS</sub> − V<sub>t</sub>) = √(2kI<sub>D</sub>). Saturation if V<sub>DS</sub> ≥ V<sub>GS</sub> − V<sub>t</sub>. CS ≈ CE, CG ≈ CB, CD (source follower) ≈ CC.</li>
+<li><b>Frequency response:</b> low-frequency cut-off from coupling/bypass capacitors; high-frequency from junction/parasitic capacitances. <b>Miller effect:</b> C<sub>in</sub> = C<sub>μ</sub>(1 − A<sub>v</sub>) — large for high-gain inverting stages. Gain–bandwidth product is roughly constant.</li>
+<li>Multistage: overall gain = product; overall bandwidth shrinks. Power amplifier classes: A (η ≤ 25%/50%), B (78.5%, crossover distortion), AB, C (tuned).</li>
+</ul>
+<h3>Feedback amplifiers</h3>
+<ul>
+<li>Closed-loop gain A<sub>f</sub> = A/(1 + Aβ) (negative feedback). Desensitivity D = 1 + Aβ: gain sensitivity reduced by D, bandwidth increased by D, distortion and noise reduced.</li>
+<li>Topologies (sampling–mixing): voltage-series (series–shunt): R<sub>in</sub> × D, R<sub>out</sub> ÷ D — ideal voltage amplifier. Current-series: R<sub>in</sub> × D, R<sub>out</sub> × D (transconductance). Voltage-shunt: R<sub>in</sub> ÷ D, R<sub>out</sub> ÷ D (transresistance). Current-shunt: R<sub>in</sub> ÷ D, R<sub>out</sub> × D (current amplifier). Rule: series mixing raises R<sub>in</sub>, shunt lowers; voltage sampling lowers R<sub>out</sub>, current sampling raises.</li>
+</ul>
+<h3>Operational amplifiers</h3>
+<ul>
+<li><b>Ideal:</b> infinite open-loop gain, R<sub>in</sub> = ∞, R<sub>out</sub> = 0, infinite bandwidth, CMRR = ∞. With negative feedback: virtual short (V₊ = V₋) and no input current.</li>
+<li><b>Non-ideal parameters:</b> input offset voltage/current, bias current, CMRR = A<sub>d</sub>/A<sub>cm</sub>, slew rate (max dV<sub>o</sub>/dt; full-power bandwidth f<sub>max</sub> = SR/(2πV<sub>m</sub>)), gain–bandwidth product (unity-gain frequency f<sub>T</sub>: closed-loop BW = f<sub>T</sub>/A<sub>CL</sub>), output saturation.</li>
+</ul>
+<table>
+<tr><th>Circuit</th><th>Output</th></tr>
+<tr><td>Inverting</td><td>V<sub>o</sub> = −(R<sub>f</sub>/R₁)V<sub>i</sub>; R<sub>in</sub> = R₁</td></tr>
+<tr><td>Non-inverting</td><td>V<sub>o</sub> = (1 + R<sub>f</sub>/R₁)V<sub>i</sub>; R<sub>in</sub> ≈ ∞</td></tr>
+<tr><td>Voltage follower</td><td>V<sub>o</sub> = V<sub>i</sub> (buffer)</td></tr>
+<tr><td>Summing (inverting)</td><td>V<sub>o</sub> = −R<sub>f</sub>(V₁/R₁ + V₂/R₂ + …)</td></tr>
+<tr><td>Difference</td><td>V<sub>o</sub> = (R₂/R₁)(V₂ − V₁) with matched resistors</td></tr>
+<tr><td>Integrator</td><td>V<sub>o</sub> = −(1/RC)∫V<sub>i</sub>dt (add R across C to limit DC gain)</td></tr>
+<tr><td>Differentiator</td><td>V<sub>o</sub> = −RC dV<sub>i</sub>/dt (noisy at high frequency)</td></tr>
+<tr><td>Instrumentation amp (3 op-amp)</td><td>V<sub>o</sub> = (1 + 2R/R<sub>G</sub>)(R₃/R₂)(V₂ − V₁); high CMRR and input impedance</td></tr>
+<tr><td>Log / antilog</td><td>Diode/BJT in feedback; V<sub>o</sub> ∝ −V<sub>T</sub>ln(V<sub>i</sub>/RI<sub>s</sub>)</td></tr>
+<tr><td>Precision rectifier</td><td>Diode inside feedback loop removes the 0.7 V drop</td></tr>
+<tr><td>Comparator</td><td>Open loop; output ±V<sub>sat</sub> depending on sign of V₊ − V₋</td></tr>
+</table>
+<h3>Oscillators</h3>
+<ul>
+<li><b>Barkhausen criterion:</b> loop gain |Aβ| = 1 and total phase shift = 0° (or 360°). In practice |Aβ| slightly &gt; 1 at start-up.</li>
+<li><b>RC phase-shift:</b> three RC sections give 180°; f = 1/(2πRC√6); amplifier gain ≥ 29.</li>
+<li><b>Wien bridge:</b> f = 1/(2πRC); β = 1/3 at f₀, so non-inverting gain ≥ 3 (R<sub>f</sub> = 2R₁).</li>
+<li>LC: <b>Colpitts</b> f = 1/(2π√(L C<sub>eq</sub>)), C<sub>eq</sub> = C₁C₂/(C₁ + C₂). <b>Hartley</b> f = 1/(2π√(L<sub>eq</sub>C)), L<sub>eq</sub> = L₁ + L₂ + 2M. <b>Crystal:</b> very stable frequency (high Q), series and parallel resonance.</li>
+<li>Relaxation oscillators (square/triangular): op-amp astable, T = 2RC ln[(1 + β)/(1 − β)], β = R₂/(R₁ + R₂).</li>
+</ul>
+<h3>VCOs and timers</h3>
+<ul>
+<li><b>VCO:</b> output frequency proportional to control voltage (e.g. 566). Used in PLLs (phase detector + loop filter + VCO), FM, frequency synthesis.</li>
+<li><b>555 timer:</b> two comparators (thresholds 2/3 V<sub>CC</sub> and 1/3 V<sub>CC</sub>), SR flip-flop, discharge transistor.</li>
+<li>Monostable: pulse width T = 1.1RC.</li>
+<li>Astable: t<sub>H</sub> = 0.693(R<sub>A</sub> + R<sub>B</sub>)C; t<sub>L</sub> = 0.693R<sub>B</sub>C; f = 1.44/[(R<sub>A</sub> + 2R<sub>B</sub>)C]; duty cycle = (R<sub>A</sub> + R<sub>B</sub>)/(R<sub>A</sub> + 2R<sub>B</sub>) &gt; 50% (add a diode across R<sub>B</sub> for ≤ 50%).</li>
+</ul>
+<h3>Schmitt trigger</h3>
+<ul>
+<li>Comparator with positive feedback → two thresholds (hysteresis), giving noise immunity and squaring slow signals.</li>
+<li>Inverting Schmitt (feedback divider R₁ to ground, R₂ to output): V<sub>UT</sub> = +V<sub>sat</sub>R₁/(R₁ + R₂), V<sub>LT</sub> = −V<sub>sat</sub>R₁/(R₁ + R₂); hysteresis width V<sub>H</sub> = V<sub>UT</sub> − V<sub>LT</sub>.</li>
+</ul>
+<h3>Sample-and-hold</h3>
+<ul>
+<li>Switch (MOSFET) + hold capacitor + buffer op-amps. Samples input during sample mode and holds constant during ADC conversion.</li>
+<li>Specs: acquisition time, aperture time/jitter, droop rate (dV/dt = I<sub>leak</sub>/C), feedthrough. Larger C: less droop but slower acquisition.</li>
+</ul>
+<h3>A/D and D/A converters</h3>
+<ul>
+<li><b>Resolution:</b> LSB = V<sub>FS</sub>/2ⁿ (some texts use V<sub>FS</sub>/(2ⁿ − 1)). Quantization error ±½ LSB; SQNR ≈ 6.02n + 1.76 dB.</li>
+<li><b>DAC:</b> weighted-resistor (needs wide resistor range: R, 2R, 4R … 2ⁿ⁻¹R) and <b>R-2R ladder</b> (only two resistor values; V<sub>o</sub> = −V<sub>ref</sub>(R<sub>f</sub>/R)·Σbᵢ2ⁱ/2ⁿ). Specs: settling time, monotonicity, linearity (INL/DNL).</li>
+</ul>
+<table>
+<tr><th>ADC type</th><th>Conversion time</th><th>Notes</th></tr>
+<tr><td>Flash (parallel)</td><td>1 clock</td><td>Fastest; needs 2ⁿ − 1 comparators</td></tr>
+<tr><td>Successive approximation (SAR)</td><td>n clocks</td><td>Binary search; common in microcontrollers</td></tr>
+<tr><td>Counter (digital ramp)</td><td>Up to 2ⁿ clocks</td><td>Slow, variable time</td></tr>
+<tr><td>Tracking</td><td>Fast once locked</td><td>Up/down counter follows the input</td></tr>
+<tr><td>Dual-slope (integrating)</td><td>Up to 2ⁿ⁺¹ clocks</td><td>Slow, very accurate, rejects noise (DMMs); result independent of RC</td></tr>
+<tr><td>Sigma-delta</td><td>Oversampling</td><td>High resolution, audio/instrumentation</td></tr>
+</table>
+<h3>Switched-mode power supplies (SMPS)</h3>
+<ul>
+<li>Transistor switched at high frequency with duty cycle D, energy stored in L/C. Efficiency 80–95% (vs linear regulators, η ≈ V<sub>o</sub>/V<sub>i</sub>). Smaller magnetics at higher frequency; more EMI and ripple.</li>
+<li>Continuous conduction mode (CCM) steady-state ratios: <b>Buck</b> V<sub>o</sub> = D·V<sub>i</sub>; <b>Boost</b> V<sub>o</sub> = V<sub>i</sub>/(1 − D); <b>Buck-boost</b> V<sub>o</sub> = −D·V<sub>i</sub>/(1 − D) (inverted); <b>Flyback</b> (isolated buck-boost) V<sub>o</sub> = V<sub>i</sub>(N₂/N₁)·D/(1 − D); forward converter (isolated buck).</li>
+<li>Derivation: volt-second balance on the inductor (average inductor voltage = 0) and charge balance on the capacitor.</li>
+<li>Buck ripple: ΔI<sub>L</sub> = (V<sub>i</sub> − V<sub>o</sub>)D/(fL); ΔV<sub>o</sub> = ΔI<sub>L</sub>/(8fC).</li>
+</ul>
+<h3>Microprocessors and microcontrollers</h3>
+<ul>
+<li><b>Microprocessor:</b> CPU only on chip (ALU, registers, control unit); memory and I/O external — general-purpose computing. <b>Microcontroller:</b> CPU + RAM + ROM/Flash + I/O ports + timers + ADC + serial interfaces on one chip — embedded control.</li>
+<li>Architectures: Von Neumann (shared bus for code and data) vs Harvard (separate; most MCUs). CISC (8085/8051, x86) vs RISC (ARM, AVR, PIC).</li>
+<li><b>CPU:</b> ALU, accumulator, general registers, program counter (address of next instruction), stack pointer, instruction register, flags (carry, zero, sign, parity, auxiliary carry, overflow). Fetch–decode–execute cycle; machine cycles and T-states.</li>
+<li><b>Memory:</b> ROM/EPROM/EEPROM/Flash (non-volatile program), SRAM (fast, no refresh) and DRAM (refresh). Address lines n → 2ⁿ locations (e.g. 16 lines → 64 KB). Memory map; address decoding with decoders/logic.</li>
+<li><b>I/O ports:</b> parallel GPIO with direction registers; 8051 has four 8-bit ports (P0–P3). Serial: UART (asynchronous, start/stop bits, baud rate), SPI (full duplex, master/slave, MOSI/MISO/SCK/SS), I²C (two-wire SDA/SCL, addressed, multi-master), CAN (vehicles/industrial).</li>
+<li><b>Timers/counters:</b> count internal clock pulses (timer) or external events (counter). 8051 timer modes 0–3 (13-bit, 16-bit, 8-bit auto-reload, split). Delay = count × machine-cycle time (8051: 12 clock periods per machine cycle). Used for PWM, input capture, baud-rate generation, watchdog.</li>
+</ul>
+<h3>Interrupt handling</h3>
+<ul>
+<li>Interrupt: external/internal event suspends the main program; CPU finishes the current instruction, pushes PC (and status) onto the stack, jumps to the ISR via the vector table, then returns (RETI/IRET) and restores context.</li>
+<li>Polling vs interrupts (interrupts give faster response and free the CPU). Maskable vs non-maskable (NMI, e.g. 8085 TRAP). Vectored vs non-vectored. Edge vs level triggering. Priority and nesting.</li>
+<li>8085 interrupts priority: TRAP &gt; RST 7.5 &gt; RST 6.5 &gt; RST 5.5 &gt; INTR. 8051: five sources (INT0, TF0, INT1, TF1, serial) with IE and IP registers.</li>
+<li>Good ISR practice: short, no blocking calls, mark shared variables volatile, disable interrupts around critical sections.</li>
+</ul>
+<h3>Memory and I/O interfacing</h3>
+<ul>
+<li>Memory-mapped I/O (I/O shares memory address space; all memory instructions usable) vs I/O-mapped / isolated I/O (separate IN/OUT instructions, 8085: 256 ports).</li>
+<li>Address decoding: full vs partial (partial causes aliasing/foldback). Chip select from address decoder (e.g. 74LS138).</li>
+<li>Data transfer: programmed I/O, interrupt-driven, DMA (direct memory access; CPU releases buses via HOLD/HLDA for block transfers).</li>
+<li>Peripheral chips: 8255 PPI, 8253/8254 timer, 8259 interrupt controller, 8251 USART, 8237 DMA controller. Interfacing keypads, 7-segment/LCD displays, ADC/DAC, motors (through drivers, H-bridge, opto-isolation).</li>
+</ul>
+<h3>Data acquisition systems</h3>
+<ul>
+<li>Chain: sensor → signal conditioning (amplify, filter, isolate) → anti-aliasing low-pass filter → analog multiplexer (multiple channels) → sample-and-hold → ADC → microcontroller/computer → storage/display.</li>
+<li>Sampling rate ≥ 2 × highest frequency (Nyquist); in practice 5–10×. Aliasing if undersampled. Throughput for N multiplexed channels: per-channel rate = total rate / N.</li>
+<li>Specs: number of channels, resolution, sampling rate, input range, accuracy, isolation. Single-ended vs differential inputs (differential rejects common-mode noise).</li>
+</ul>
+
+<h2>B1.2 Signals and Systems</h2>
+<h3>Signals</h3>
+<ul>
+<li>Continuous-time x(t) and discrete-time x[n]. Periodic: x(t + T) = x(t). Sum of periodic signals is periodic if the ratio of periods is rational; period = LCM. x[n] = cos(ω₀n) is periodic only if ω₀/2π is rational.</li>
+<li>Even/odd decomposition: x<sub>e</sub> = ½[x(t) + x(−t)], x<sub>o</sub> = ½[x(t) − x(−t)].</li>
+<li>Energy E = ∫|x|²dt (finite ⇒ energy signal, P = 0); power P = lim (1/T)∫|x|²dt (finite non-zero ⇒ power signal, E = ∞).</li>
+<li>Standard signals: unit step u(t), impulse δ(t) (∫δ = 1, sifting ∫x(t)δ(t − t₀)dt = x(t₀), δ(at) = δ(t)/|a|), ramp r(t) = t u(t), rect, sinc(x) = sin(πx)/(πx), complex exponential e<sup>st</sup>.</li>
+</ul>
+<h3>Shifting and scaling</h3>
+<ul>
+<li>x(t − t₀): delay (shift right) by t₀. x(at): compress if |a| &gt; 1, expand if |a| &lt; 1. x(−t): time reversal.</li>
+<li>For y(t) = x(at − b): shift first by b, then scale by a (i.e. x(a(t − b/a))). Check with key points.</li>
+<li>Discrete: x[2n] (decimation) loses samples; x[n/2] (interpolation) defined only for even n.</li>
+</ul>
+<h3>System properties</h3>
+<ul>
+<li><b>Linear:</b> additivity + homogeneity (superposition). y = ax + b with b ≠ 0 is not linear (incrementally linear).</li>
+<li><b>Time-invariant:</b> a delayed input gives the same delayed output. y(t) = x(2t) or y(t) = t x(t) are time-variant.</li>
+<li><b>Causal:</b> output depends only on present and past inputs; LTI causal ⇔ h(t) = 0 for t &lt; 0.</li>
+<li><b>Memoryless (static):</b> output depends only on the present input; LTI ⇔ h(t) = kδ(t).</li>
+<li><b>BIBO stable:</b> bounded input → bounded output; LTI ⇔ ∫|h(t)|dt &lt; ∞ (Σ|h[n]| &lt; ∞).</li>
+<li><b>Invertible:</b> distinct inputs → distinct outputs.</li>
+<li>LTI output: convolution y(t) = x(t) * h(t) = ∫x(τ)h(t − τ)dτ; y[n] = Σx[k]h[n − k]. Commutative, associative, distributive. Cascade: h₁ * h₂; parallel: h₁ + h₂. Length of discrete linear convolution = N + M − 1. Eigenfunction: e<sup>st</sup> → H(s)e<sup>st</sup>.</li>
+</ul>
+<h3>Fourier series</h3>
+<ul>
+<li>CT periodic: x(t) = Σ c<sub>k</sub> e<sup>jkω₀t</sup>, c<sub>k</sub> = (1/T)∫<sub>T</sub> x(t) e<sup>−jkω₀t</sup>dt. Real x ⇒ c₋ₖ = c<sub>k</sub>*. Trigonometric form: a₀ + Σ(a<sub>k</sub>cos + b<sub>k</sub>sin).</li>
+<li>Symmetry: even → cosine terms only; odd → sine terms only; half-wave symmetry x(t ± T/2) = −x(t) → odd harmonics only.</li>
+<li>Parseval: P = Σ|c<sub>k</sub>|². Square wave has odd harmonics decaying as 1/k; triangle wave as 1/k². Gibbs phenomenon: ~9% overshoot at discontinuities.</li>
+<li>DT Fourier series: x[n] periodic with N; coefficients are also periodic with N (only N distinct).</li>
+</ul>
+<h3>Sampling theorem (Shannon)</h3>
+<ul>
+<li>A band-limited signal with maximum frequency f<sub>m</sub> can be perfectly recovered from samples if f<sub>s</sub> ≥ 2f<sub>m</sub> (Nyquist rate = 2f<sub>m</sub>; Nyquist interval = 1/2f<sub>m</sub>). Reconstruct with an ideal low-pass filter (sinc interpolation), cut-off between f<sub>m</sub> and f<sub>s</sub> − f<sub>m</sub>.</li>
+<li>Sampled spectrum: copies of X(f) repeated every f<sub>s</sub>. If f<sub>s</sub> &lt; 2f<sub>m</sub> → aliasing: a tone at f appears at |f − k f<sub>s</sub>| folded into [0, f<sub>s</sub>/2].</li>
+<li>For a product of signals, bandwidths add; for x²(t), bandwidth doubles. Band-pass sampling: f<sub>s</sub> = 2f<sub>H</sub>/k.</li>
+</ul>
+<h3>Fourier transform</h3>
+<ul>
+<li>X(ω) = ∫x(t)e<sup>−jωt</sup>dt; x(t) = (1/2π)∫X(ω)e<sup>jωt</sup>dω.</li>
+<li>Properties: linearity; time shift x(t − t₀) ↔ e<sup>−jωt₀</sup>X; frequency shift e<sup>jω₀t</sup>x ↔ X(ω − ω₀); scaling x(at) ↔ (1/|a|)X(ω/a); duality; differentiation ↔ jωX; integration ↔ X/jω + πX(0)δ(ω); convolution ↔ product; product ↔ (1/2π) convolution; modulation x cos ω₀t ↔ ½[X(ω − ω₀) + X(ω + ω₀)]; Parseval ∫|x|²dt = (1/2π)∫|X|²dω.</li>
+<li>Real and even x ⇒ X real and even; real and odd ⇒ X imaginary and odd. X(0) = ∫x dt; x(0) = (1/2π)∫X dω.</li>
+<li>Pairs: δ ↔ 1; 1 ↔ 2πδ(ω); e<sup>−at</sup>u(t) ↔ 1/(a + jω); rect(t/T) ↔ T sinc(ωT/2π); sinc ↔ rect; e<sup>−a|t|</sup> ↔ 2a/(a² + ω²); Gaussian ↔ Gaussian; u(t) ↔ πδ(ω) + 1/jω; sgn ↔ 2/jω.</li>
+<li>DTFT X(e<sup>jω</sup>) = Σx[n]e<sup>−jωn</sup> is periodic in ω with period 2π. DFT: N-point sampled DTFT; FFT computes it in O(N log N).</li>
+</ul>
+<h3>Laplace transform</h3>
+<ul>
+<li>X(s) = ∫x(t)e<sup>−st</sup>dt with region of convergence (ROC). Right-sided signals: ROC to the right of the rightmost pole; left-sided: left of the leftmost pole; two-sided: strip.</li>
+<li>LTI system H(s): causal ⇒ ROC is a right half-plane; stable ⇒ ROC includes the jω-axis; causal and stable ⇒ all poles in the LHP.</li>
+<li>Fourier transform = Laplace on s = jω (if ROC includes jω-axis). Properties as in the mathematics section (shift, derivative, convolution, initial/final value theorems).</li>
+</ul>
+<h3>Z-transform</h3>
+<ul>
+<li>X(z) = Σx[n]z<sup>−n</sup>. Pairs: δ[n] ↔ 1; u[n] ↔ z/(z − 1), |z| &gt; 1; aⁿu[n] ↔ z/(z − a), |z| &gt; |a|; −aⁿu[−n − 1] ↔ z/(z − a), |z| &lt; |a|; n aⁿu[n] ↔ az/(z − a)².</li>
+<li>Properties: shift x[n − k] ↔ z<sup>−k</sup>X; aⁿx ↔ X(z/a); n x ↔ −z dX/dz; convolution ↔ product; initial value x[0] = lim<sub>z→∞</sub>X; final value x[∞] = lim<sub>z→1</sub>(z − 1)X.</li>
+<li>ROC: no poles inside; causal ⇒ outside the outermost pole; stable ⇒ contains the unit circle; causal and stable ⇒ all poles inside the unit circle. DTFT = X(z) on |z| = 1. s-plane to z-plane: z = e<sup>sT</sup>.</li>
+<li>Difference equation y[n] − a y[n − 1] = x[n] → H(z) = 1/(1 − az⁻¹). FIR (no feedback, always stable, can be linear phase) vs IIR (feedback poles).</li>
+</ul>
+<h3>RMS and average values</h3>
+<table>
+<tr><th>Waveform (peak V<sub>m</sub>)</th><th>Average</th><th>RMS</th><th>Form factor (RMS/avg)</th></tr>
+<tr><td>Sine (full cycle)</td><td>0</td><td>V<sub>m</sub>/√2</td><td>—</td></tr>
+<tr><td>Full-wave rectified sine</td><td>2V<sub>m</sub>/π</td><td>V<sub>m</sub>/√2</td><td>1.11</td></tr>
+<tr><td>Half-wave rectified sine</td><td>V<sub>m</sub>/π</td><td>V<sub>m</sub>/2</td><td>1.57</td></tr>
+<tr><td>Square (±V<sub>m</sub>)</td><td>0</td><td>V<sub>m</sub></td><td>1 (half-cycle avg)</td></tr>
+<tr><td>Triangle / sawtooth</td><td>0 (or V<sub>m</sub>/2 if 0..V<sub>m</sub>)</td><td>V<sub>m</sub>/√3</td><td>1.155</td></tr>
+<tr><td>Pulse train, duty D, 0..V<sub>m</sub></td><td>D·V<sub>m</sub></td><td>√D·V<sub>m</sub></td><td>1/√D</td></tr>
+</table>
+<ul>
+<li>General: V<sub>avg</sub> = (1/T)∫v dt; V<sub>rms</sub> = √[(1/T)∫v²dt]. For a sum of a DC and harmonics: V<sub>rms</sub> = √(V<sub>dc</sub>² + V₁,<sub>rms</sub>² + V₂,<sub>rms</sub>² + …). Crest factor = peak/RMS (√2 for a sine).</li>
+</ul>
+
+<h2>B1.3 Control Systems</h2>
+<h3>Modelling and representation</h3>
+<ul>
+<li>Mechanical translational: F = M ẍ + B ẋ + K x. Rotational: T = J θ̈ + B θ̇ + K θ. Electrical RLC.</li>
+<li>Analogies: force–voltage (M ↔ L, B ↔ R, K ↔ 1/C, x ↔ q) and force–current (M ↔ C, B ↔ 1/R, K ↔ 1/L).</li>
+<li>Gear trains: θ₁/θ₂ = N₂/N₁; T₂/T₁ = N₂/N₁; load inertia reflected to the motor side: J<sub>eq</sub> = J<sub>m</sub> + J<sub>L</sub>(N₁/N₂)².</li>
+<li>State space: ẋ = Ax + Bu, y = Cx + Du; G(s) = C(sI − A)⁻¹B + D. Eigenvalues of A = poles. State transition matrix Φ(t) = e<sup>At</sup> = L⁻¹{(sI − A)⁻¹}. Controllability: rank[B AB … Aⁿ⁻¹B] = n; observability: rank[C; CA; …; CAⁿ⁻¹] = n.</li>
+</ul>
+<h3>Feedback principle and transfer function</h3>
+<ul>
+<li>Transfer function = L{output}/L{input} with zero initial conditions; = Laplace transform of the impulse response. Poles: roots of denominator; zeros: roots of numerator. Order = highest power of s in the denominator.</li>
+<li>Closed loop (negative feedback): T(s) = G/(1 + GH). Characteristic equation: 1 + G(s)H(s) = 0.</li>
+<li>Feedback reduces sensitivity to parameter changes (S<sup>T</sup><sub>G</sub> = 1/(1 + GH)), rejects disturbances, can improve speed and stabilize, but can also destabilize and adds cost/complexity; it reduces overall gain.</li>
+<li>Open-loop: simple, no stability issue, but cannot correct disturbances.</li>
+</ul>
+<h3>Block diagrams and signal flow graphs</h3>
+<ul>
+<li>Series: G₁G₂. Parallel: G₁ ± G₂. Feedback loop: G/(1 ± GH). Moving a summing point ahead of a block: divide by G; behind: multiply by G. Moving a take-off point ahead: multiply by G; behind: divide by G.</li>
+<li><b>Mason's gain formula:</b> T = (1/Δ)ΣP<sub>k</sub>Δ<sub>k</sub>. Δ = 1 − (sum of individual loop gains) + (sum of products of two non-touching loops) − (three non-touching) + … Δ<sub>k</sub> = Δ with the loops touching the k-th forward path removed.</li>
+</ul>
+<h3>Transient response</h3>
+<ul>
+<li>First order G = K/(τs + 1): step response K(1 − e<sup>−t/τ</sup>); 63.2% at t = τ; settling time ≈ 4τ (2%); rise time (10–90%) = 2.2τ.</li>
+<li>Second order: G = ωₙ²/(s² + 2ζωₙs + ωₙ²); poles −ζωₙ ± jωₙ√(1 − ζ²). ζ = 0 undamped, 0 &lt; ζ &lt; 1 underdamped, 1 critical, &gt; 1 overdamped.</li>
+<li>Underdamped step specs: damped frequency ω<sub>d</sub> = ωₙ√(1 − ζ²); peak time t<sub>p</sub> = π/ω<sub>d</sub>; percent overshoot M<sub>p</sub> = e<sup>−πζ/√(1−ζ²)</sup> × 100%; settling time t<sub>s</sub> = 4/(ζωₙ) (2%) or 3/(ζωₙ) (5%); rise time t<sub>r</sub> = (π − θ)/ω<sub>d</sub>, θ = cos⁻¹ζ. Number of oscillations ≈ t<sub>s</sub>/(2π/ω<sub>d</sub>).</li>
+<li>Dominant poles: poles closest to the jω-axis dominate; poles &gt; 5× further left can be neglected.</li>
+</ul>
+<h3>Steady-state error</h3>
+<ul>
+<li>Unity feedback: e<sub>ss</sub> = lim<sub>s→0</sub> sR(s)/(1 + G(s)). Type = number of poles of G(s)H(s) at the origin.</li>
+<li>Error constants: K<sub>p</sub> = lim G(s); K<sub>v</sub> = lim sG(s); K<sub>a</sub> = lim s²G(s) (as s → 0).</li>
+</ul>
+<table>
+<tr><th>Input</th><th>Type 0</th><th>Type 1</th><th>Type 2</th></tr>
+<tr><td>Step A</td><td>A/(1 + K<sub>p</sub>)</td><td>0</td><td>0</td></tr>
+<tr><td>Ramp A t</td><td>∞</td><td>A/K<sub>v</sub></td><td>0</td></tr>
+<tr><td>Parabola A t²/2</td><td>∞</td><td>∞</td><td>A/K<sub>a</sub></td></tr>
+</table>
+<h3>Routh–Hurwitz criterion</h3>
+<ul>
+<li>Necessary: all coefficients of the characteristic polynomial present and of the same sign.</li>
+<li>Build the Routh array; number of sign changes in the first column = number of roots in the RHP. Stable iff no sign changes.</li>
+<li>Special cases: zero in first column (replace with ε → 0⁺); entire row zero (auxiliary polynomial A(s) from the row above, use dA/ds; indicates symmetric roots, e.g. on the jω-axis → marginal stability; roots of A(s) give the oscillation frequency).</li>
+<li>Second order: stable iff all coefficients &gt; 0. Third order a₀s³ + a₁s² + a₂s + a₃: stable iff all &gt; 0 and a₁a₂ &gt; a₀a₃. Use to find K range for stability and K<sub>marginal</sub>.</li>
+</ul>
+<h3>Nyquist criterion</h3>
+<ul>
+<li>Plot G(jω)H(jω) for ω from −∞ to ∞ (go around RHP poles/zeros on the jω-axis with small semicircles).</li>
+<li><b>Z = P − N</b> (N = counter-clockwise encirclements of −1 + j0; P = open-loop RHP poles; Z = closed-loop RHP poles). Stable iff Z = 0, i.e. N = P. (With clockwise counting: Z = P + N.)</li>
+<li>Open-loop stable (P = 0) ⇒ stable iff no encirclement of −1.</li>
+<li><b>Gain margin</b> GM = 1/|GH(jω<sub>pc</sub>)| at the phase-crossover frequency (phase = −180°); in dB: −20 log|GH(jω<sub>pc</sub>)|. <b>Phase margin</b> PM = 180° + ∠GH(jω<sub>gc</sub>) at the gain-crossover frequency (|GH| = 1). Stable (minimum-phase) when both positive. PM ≈ 100ζ for ζ &lt; 0.7.</li>
+</ul>
+<h3>Bode plots</h3>
+<ul>
+<li>Magnitude in dB (20 log|G|) and phase versus log ω.</li>
+<li>Gain K: flat 20 log K, 0° (180° if negative). Pole at origin 1/s: −20 dB/dec through 0 dB at ω = 1, −90°. Zero at origin: +20 dB/dec, +90°.</li>
+<li>Simple pole 1/(1 + s/a): 0 dB until ω = a then −20 dB/dec (actual −3 dB at the corner); phase 0 → −90° (−45° at a). Simple zero: +20 dB/dec, 0 → +90°.</li>
+<li>Quadratic pole: −40 dB/dec after ωₙ, phase 0 → −180°; resonant peak M<sub>r</sub> = 1/(2ζ√(1 − ζ²)) at ω<sub>r</sub> = ωₙ√(1 − 2ζ²) (for ζ &lt; 0.707).</li>
+<li>Initial slope reveals the system type (−20 × type dB/dec). Final slope = −20 × (poles − zeros). Non-minimum phase (RHP zero) shows extra phase lag for the same magnitude. Transport delay e<sup>−sT</sup>: magnitude 1, phase −ωT.</li>
+<li>Bandwidth of a second-order system: ω<sub>b</sub> = ωₙ√[(1 − 2ζ²) + √(4ζ⁴ − 4ζ² + 2)].</li>
+</ul>
+<h3>Root locus</h3>
+<ul>
+<li>Locus of closed-loop poles as K varies 0 → ∞, from 1 + KG(s)H(s) = 0. Angle condition: ∠GH = ±180°(2q + 1); magnitude condition: |KGH| = 1 (gives K at a point).</li>
+<li>Rules: starts at open-loop poles (K = 0), ends at zeros (K = ∞) or infinity. Number of branches = number of poles. Symmetric about the real axis. Real-axis segment is on the locus if an odd number of poles + zeros lie to its right.</li>
+<li>Asymptotes: n − m of them, angles (2q + 1)180°/(n − m); centroid σ = (Σpoles − Σzeros)/(n − m).</li>
+<li>Break-away/break-in points: dK/ds = 0. jω-axis crossings: Routh array. Angle of departure from a complex pole: 180° − Σ(angles from other poles) + Σ(angles from zeros); arrival at a complex zero analogously.</li>
+<li>Adding a pole pushes the locus right (less stable); adding a zero pulls it left (more stable).</li>
+</ul>
+<h3>Compensators</h3>
+<ul>
+<li><b>Lead</b> G<sub>c</sub> = (1 + aTs)/(1 + Ts), a &gt; 1 (zero closer to origin than the pole). Adds phase lead: φ<sub>max</sub> = sin⁻¹[(a − 1)/(a + 1)] at ω<sub>m</sub> = 1/(T√a). Improves PM, transient response and bandwidth (high-pass, amplifies noise). Approximates PD.</li>
+<li><b>Lag</b> G<sub>c</sub> = (1 + aTs)/(1 + Ts), a &lt; 1 (pole closer to origin). Increases low-frequency gain → reduces steady-state error; place well below crossover to avoid phase loss; reduces bandwidth (slower). Approximates PI.</li>
+<li><b>Lead–lag:</b> combines both — lead for transient response, lag for steady-state accuracy.</li>
+</ul>
+<h3>P, PI, PID controllers</h3>
+<ul>
+<li>u(t) = K<sub>p</sub>e + K<sub>i</sub>∫e dt + K<sub>d</sub> de/dt; G<sub>c</sub>(s) = K<sub>p</sub> + K<sub>i</sub>/s + K<sub>d</sub>s.</li>
+<li><b>P:</b> faster response, reduces but does not eliminate steady-state error; high gain → overshoot/instability.</li>
+<li><b>I (PI):</b> adds a pole at the origin → raises system type by 1 → eliminates steady-state error to a step; can increase overshoot and reduce stability; integral wind-up (use anti-windup).</li>
+<li><b>D (PD):</b> adds a zero → anticipates error, adds damping, reduces overshoot and settling time, improves stability; amplifies noise (use a filtered derivative); no effect on steady-state error.</li>
+<li><b>PID:</b> combines all three. Ziegler–Nichols (ultimate-gain method): K<sub>p</sub> = 0.6K<sub>u</sub>, T<sub>i</sub> = P<sub>u</sub>/2, T<sub>d</sub> = P<sub>u</sub>/8; P only: 0.5K<sub>u</sub>; PI: 0.45K<sub>u</sub>, T<sub>i</sub> = P<sub>u</sub>/1.2.</li>
+</ul>

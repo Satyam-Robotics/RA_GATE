@@ -1,0 +1,207 @@
+<h1 id="a1">Part A.1 — Engineering Mathematics</h1>
+
+<h2>1. Linear Algebra</h2>
+<h3>Matrix basics</h3>
+<ul>
+<li><b>Transpose:</b> (Aᵀ)ᵢⱼ = Aⱼᵢ; (AB)ᵀ = BᵀAᵀ; (A⁻¹)ᵀ = (Aᵀ)⁻¹.</li>
+<li><b>Symmetric:</b> Aᵀ = A. <b>Skew-symmetric:</b> Aᵀ = −A (diagonal = 0; odd order ⇒ det = 0). Any A = ½(A+Aᵀ) + ½(A−Aᵀ).</li>
+<li><b>Orthogonal:</b> AᵀA = I ⇒ A⁻¹ = Aᵀ, det = ±1, columns orthonormal. Rotation matrices are orthogonal with det = +1.</li>
+<li><b>Trace:</b> sum of diagonal = sum of eigenvalues; tr(AB) = tr(BA).</li>
+<li><b>Adjoint:</b> adj(A) = transpose of cofactor matrix. A·adj(A) = det(A)·I ⇒ A⁻¹ = adj(A)/det(A). det(adj A) = (det A)ⁿ⁻¹ for n×n. adj(adj A) = (det A)ⁿ⁻²·A.</li>
+</ul>
+<h3>Determinant</h3>
+<ul>
+<li>det(AB) = det A·det B; det(Aᵀ) = det A; det(kA) = kⁿ det A; det(A⁻¹) = 1/det A.</li>
+<li>Swapping two rows changes sign; adding a multiple of one row to another leaves det unchanged; two equal/proportional rows ⇒ det = 0.</li>
+<li>Triangular matrix: det = product of diagonal. det = product of eigenvalues.</li>
+</ul>
+<h3>Rank</h3>
+<ul>
+<li>Rank = number of linearly independent rows (= columns) = number of non-zero rows in row-echelon form = order of largest non-zero minor.</li>
+<li>rank(AB) ≤ min(rank A, rank B). rank(A) = rank(Aᵀ). Rank–nullity: rank + nullity = n (number of columns).</li>
+</ul>
+<h3>Systems of linear equations Ax = b (n unknowns)</h3>
+<table>
+<tr><th>Condition</th><th>Result</th></tr>
+<tr><td>rank(A) ≠ rank([A|b])</td><td>Inconsistent — no solution</td></tr>
+<tr><td>rank(A) = rank([A|b]) = n</td><td>Unique solution</td></tr>
+<tr><td>rank(A) = rank([A|b]) = r &lt; n</td><td>Infinitely many solutions; n − r free parameters</td></tr>
+</table>
+<ul>
+<li>Homogeneous Ax = 0 is always consistent; non-trivial solution exists iff rank &lt; n (for square A, iff det A = 0).</li>
+<li>Methods: Gaussian elimination, Gauss–Jordan, Cramer's rule (xᵢ = det Aᵢ / det A), LU decomposition.</li>
+</ul>
+<h3>Eigenvalues and eigenvectors</h3>
+<ul>
+<li>Ax = λx, x ≠ 0. Characteristic equation: det(A − λI) = 0.</li>
+<li>Σλᵢ = trace, Πλᵢ = det. Eigenvalues of triangular/diagonal matrix = diagonal entries.</li>
+<li>Eigenvalues of A⁻¹: 1/λ; Aᵏ: λᵏ; A + kI: λ + k; kA: kλ; Aᵀ: same λ. Eigenvectors stay the same (except for Aᵀ).</li>
+<li>Real symmetric ⇒ real eigenvalues, orthogonal eigenvectors. Skew-symmetric ⇒ zero or purely imaginary. Orthogonal ⇒ |λ| = 1.</li>
+<li>Distinct eigenvalues ⇒ linearly independent eigenvectors ⇒ diagonalizable: A = PDP⁻¹.</li>
+<li><b>Cayley–Hamilton:</b> every matrix satisfies its own characteristic equation (useful to find A⁻¹ and powers).</li>
+<li>Algebraic multiplicity ≥ geometric multiplicity (= n − rank(A − λI)).</li>
+</ul>
+
+<h2>2. Calculus</h2>
+<h3>Limits, continuity, differentiability</h3>
+<ul>
+<li>Limit exists iff LHL = RHL. Continuous at a iff lim<sub>x→a</sub> f(x) = f(a).</li>
+<li>Differentiable ⇒ continuous (not conversely; e.g. |x| at 0).</li>
+<li>Standard limits: sin x/x → 1; (1 + x)<sup>1/x</sup> → e; (eˣ − 1)/x → 1; (aˣ − 1)/x → ln a; (1 + 1/x)ˣ → e as x→∞.</li>
+</ul>
+<h3>Mean value theorems</h3>
+<ul>
+<li><b>Rolle:</b> f continuous on [a,b], differentiable on (a,b), f(a) = f(b) ⇒ ∃ c: f′(c) = 0.</li>
+<li><b>Lagrange (MVT):</b> ∃ c ∈ (a,b): f′(c) = [f(b) − f(a)]/(b − a).</li>
+<li><b>Cauchy:</b> [f(b) − f(a)]/[g(b) − g(a)] = f′(c)/g′(c).</li>
+</ul>
+<h3>Indeterminate forms</h3>
+<ul>
+<li>0/0, ∞/∞ → L'Hôpital: lim f/g = lim f′/g′.</li>
+<li>0·∞ → rewrite as 0/0. ∞ − ∞ → combine into one fraction. 1^∞, 0⁰, ∞⁰ → take log: L = e<sup>lim g·ln f</sup>. For 1^∞: L = e<sup>lim g(f − 1)</sup>.</li>
+</ul>
+<h3>Integrals</h3>
+<ul>
+<li>∫₀ᵃ f(x)dx = ∫₀ᵃ f(a − x)dx. ∫₋ₐᵃ f dx = 2∫₀ᵃ f (even) or 0 (odd).</li>
+<li>Wallis: ∫₀^{π/2} sinⁿx dx = [(n−1)(n−3).../n(n−2)...] × (π/2 if n even, 1 if n odd).</li>
+<li><b>Improper integrals:</b> infinite limits or unbounded integrand; evaluate as a limit. ∫₁^∞ 1/xᵖ dx converges iff p &gt; 1; ∫₀¹ 1/xᵖ dx converges iff p &lt; 1.</li>
+<li>Gamma: Γ(n) = ∫₀^∞ e⁻ˣxⁿ⁻¹dx, Γ(n+1) = nΓ(n) = n!, Γ(½) = √π. ∫₀^∞ e^{−x²}dx = √π/2.</li>
+</ul>
+<h3>Double and triple integrals</h3>
+<ul>
+<li>Change order of integration by redrawing the region. Polar: dx dy = r dr dθ. Cylindrical: r dr dθ dz. Spherical: r² sin φ dr dθ dφ.</li>
+<li>Area = ∬ dx dy; volume = ∭ dV; general change of variables uses the Jacobian |∂(x,y)/∂(u,v)|.</li>
+</ul>
+<h3>Partial and total derivatives</h3>
+<ul>
+<li>Total differential: du = (∂u/∂x)dx + (∂u/∂y)dy. Chain rule: du/dt = u<sub>x</sub>·dx/dt + u<sub>y</sub>·dy/dt.</li>
+<li><b>Euler's theorem</b> (u homogeneous of degree n): x u<sub>x</sub> + y u<sub>y</sub> = n u; second order: x²u<sub>xx</sub> + 2xy u<sub>xy</sub> + y²u<sub>yy</sub> = n(n−1)u.</li>
+<li>Implicit: dy/dx = −f<sub>x</sub>/f<sub>y</sub>.</li>
+</ul>
+<h3>Taylor series</h3>
+<ul>
+<li>One variable: f(a+h) = f(a) + h f′(a) + h²/2! f″(a) + … Maclaurin at a = 0.</li>
+<li>Key series: eˣ = Σxⁿ/n!; sin x = x − x³/3! + x⁵/5! − …; cos x = 1 − x²/2! + x⁴/4! − …; ln(1+x) = x − x²/2 + x³/3 − …; 1/(1−x) = 1 + x + x² + … (|x| &lt; 1).</li>
+<li>Two variables: f(a+h, b+k) = f + (h f<sub>x</sub> + k f<sub>y</sub>) + (1/2!)(h² f<sub>xx</sub> + 2hk f<sub>xy</sub> + k² f<sub>yy</sub>) + …</li>
+</ul>
+<h3>Maxima and minima</h3>
+<ul>
+<li>One variable: f′ = 0; f″ &lt; 0 ⇒ max, f″ &gt; 0 ⇒ min, f″ = 0 ⇒ check higher derivatives.</li>
+<li>Two variables: f<sub>x</sub> = f<sub>y</sub> = 0. r = f<sub>xx</sub>, s = f<sub>xy</sub>, t = f<sub>yy</sub>. rt − s² &gt; 0 and r &lt; 0 ⇒ max; rt − s² &gt; 0 and r &gt; 0 ⇒ min; rt − s² &lt; 0 ⇒ saddle; = 0 ⇒ inconclusive.</li>
+<li>Constrained: Lagrange multipliers, ∇f = λ∇g.</li>
+</ul>
+<h3>Vector calculus</h3>
+<ul>
+<li><b>Gradient</b> ∇φ: vector normal to level surface; directional derivative = ∇φ·â; maximum rate = |∇φ|.</li>
+<li><b>Divergence</b> ∇·F = ∂F₁/∂x + ∂F₂/∂y + ∂F₃/∂z (scalar). ∇·F = 0 ⇒ solenoidal.</li>
+<li><b>Curl</b> ∇×F (vector). ∇×F = 0 ⇒ irrotational (conservative, F = ∇φ).</li>
+<li>Identities: ∇×(∇φ) = 0; ∇·(∇×F) = 0; ∇·(φF) = φ∇·F + F·∇φ; ∇×(φF) = φ∇×F + ∇φ×F; ∇×(∇×F) = ∇(∇·F) − ∇²F; ∇·r = 3, ∇×r = 0, ∇rⁿ = n rⁿ⁻² r.</li>
+<li><b>Green:</b> ∮(M dx + N dy) = ∬(∂N/∂x − ∂M/∂y) dA. <b>Stokes:</b> ∮F·dr = ∬(∇×F)·n dS. <b>Gauss divergence:</b> ∯F·n dS = ∭∇·F dV.</li>
+</ul>
+
+<h2>3. Differential Equations</h2>
+<h3>First order</h3>
+<ul>
+<li><b>Variable separable:</b> f(x)dx = g(y)dy.</li>
+<li><b>Homogeneous</b> dy/dx = f(y/x): put y = vx.</li>
+<li><b>Exact:</b> M dx + N dy = 0 exact iff ∂M/∂y = ∂N/∂x. Solution: ∫M dx (y const) + ∫(terms of N without x) dy = c. Integrating factors: (M<sub>y</sub> − N<sub>x</sub>)/N = f(x) ⇒ IF = e<sup>∫f dx</sup>.</li>
+<li><b>Linear:</b> y′ + P(x)y = Q(x). IF = e<sup>∫P dx</sup>; y·IF = ∫Q·IF dx + c.</li>
+<li><b>Bernoulli</b> (nonlinear): y′ + Py = Qyⁿ; put z = y<sup>1−n</sup> to make it linear.</li>
+</ul>
+<h3>Higher order linear with constant coefficients</h3>
+<ul>
+<li>Solution y = C.F. + P.I. Auxiliary equation from D → m.</li>
+<li>C.F.: distinct real roots → Σcᵢe<sup>mᵢx</sup>; repeated root m → (c₁ + c₂x)e<sup>mx</sup>; complex α ± iβ → e<sup>αx</sup>(c₁cos βx + c₂sin βx).</li>
+<li>P.I.: e<sup>ax</sup> → e<sup>ax</sup>/f(a) (if f(a) = 0, multiply by x and differentiate f). sin ax, cos ax → replace D² by −a². xⁿ → expand [f(D)]⁻¹ as a power series. e<sup>ax</sup>V → e<sup>ax</sup>·[1/f(D+a)]V.</li>
+</ul>
+<h3>Euler–Cauchy equation</h3>
+<ul>
+<li>x²y″ + a x y′ + b y = R(x). Substitute x = eᵗ (xD = θ, x²D² = θ(θ−1)) → constant-coefficient ODE in t.</li>
+<li>Equivalently try y = xᵐ: m(m−1) + am + b = 0. Repeated root m ⇒ y = (c₁ + c₂ ln x)xᵐ.</li>
+</ul>
+<h3>IVP and BVP</h3>
+<ul>
+<li>IVP: conditions at one point (y(x₀), y′(x₀)). BVP: conditions at two points; may have no or infinitely many solutions.</li>
+</ul>
+<h3>Laplace transforms</h3>
+<table>
+<tr><th>f(t)</th><th>F(s)</th><th>f(t)</th><th>F(s)</th></tr>
+<tr><td>1</td><td>1/s</td><td>tⁿ</td><td>n!/sⁿ⁺¹</td></tr>
+<tr><td>e<sup>at</sup></td><td>1/(s−a)</td><td>sin at</td><td>a/(s²+a²)</td></tr>
+<tr><td>cos at</td><td>s/(s²+a²)</td><td>sinh at</td><td>a/(s²−a²)</td></tr>
+<tr><td>δ(t)</td><td>1</td><td>u(t−a)</td><td>e<sup>−as</sup>/s</td></tr>
+</table>
+<ul>
+<li>Shifting: L{e<sup>at</sup>f} = F(s−a); L{f(t−a)u(t−a)} = e<sup>−as</sup>F(s).</li>
+<li>Derivative: L{f′} = sF − f(0); L{f″} = s²F − s f(0) − f′(0). Integral: L{∫₀ᵗf} = F/s.</li>
+<li>L{t f} = −F′(s); L{f/t} = ∫ₛ^∞F ds. Convolution: L{f*g} = F·G.</li>
+<li>Initial value: f(0⁺) = lim<sub>s→∞</sub> sF(s). Final value: f(∞) = lim<sub>s→0</sub> sF(s) (if poles of sF in LHP).</li>
+</ul>
+<h3>PDEs: heat, wave, Laplace</h3>
+<ul>
+<li>Classification of A u<sub>xx</sub> + B u<sub>xy</sub> + C u<sub>yy</sub>: B² − 4AC &lt; 0 elliptic (Laplace), = 0 parabolic (heat), &gt; 0 hyperbolic (wave).</li>
+<li><b>Heat:</b> u<sub>t</sub> = c²u<sub>xx</sub>; with u(0,t) = u(L,t) = 0: u = Σ bₙ sin(nπx/L) e<sup>−c²n²π²t/L²</sup>.</li>
+<li><b>Wave:</b> u<sub>tt</sub> = c²u<sub>xx</sub>; fixed ends: u = Σ [Aₙ cos(nπct/L) + Bₙ sin(nπct/L)] sin(nπx/L). D'Alembert: u = ½[f(x+ct) + f(x−ct)] + (1/2c)∫g.</li>
+<li><b>Laplace:</b> u<sub>xx</sub> + u<sub>yy</sub> = 0 (steady-state heat). Method: separation of variables u = X(x)T(t).</li>
+</ul>
+<h3>Fourier series</h3>
+<ul>
+<li>Period 2L: f(x) = a₀/2 + Σ[aₙcos(nπx/L) + bₙsin(nπx/L)]; aₙ = (1/L)∫₋ₗᴸ f cos(nπx/L) dx, bₙ = (1/L)∫₋ₗᴸ f sin(nπx/L) dx.</li>
+<li>Even f ⇒ cosine series (bₙ = 0). Odd f ⇒ sine series (aₙ = 0).</li>
+<li>At a jump discontinuity the series converges to the average of left and right limits (Dirichlet).</li>
+<li>Parseval: (1/L)∫f² = a₀²/2 + Σ(aₙ² + bₙ²).</li>
+</ul>
+
+<h2>4. Probability and Statistics</h2>
+<ul>
+<li><b>Axioms:</b> P(A) ≥ 0; P(S) = 1; for disjoint events P(A∪B) = P(A) + P(B).</li>
+<li>P(A∪B) = P(A) + P(B) − P(A∩B). Independent ⇒ P(A∩B) = P(A)P(B).</li>
+<li><b>Conditional:</b> P(A|B) = P(A∩B)/P(B). <b>Total probability:</b> P(B) = ΣP(B|Aᵢ)P(Aᵢ). <b>Bayes:</b> P(Aᵢ|B) = P(B|Aᵢ)P(Aᵢ)/ΣP(B|Aⱼ)P(Aⱼ).</li>
+<li><b>Central tendency:</b> mean = Σx/n; median = middle value; mode = most frequent. Empirical: mode ≈ 3 median − 2 mean.</li>
+<li><b>Dispersion:</b> variance σ² = E[X²] − (E[X])²; SD = σ. Var(aX + b) = a²Var(X).</li>
+<li><b>Random variable:</b> discrete (PMF) or continuous (PDF). <b>PDF</b> f(x) ≥ 0, ∫f = 1, P(a&lt;X&lt;b) = ∫ₐᵇ f. <b>CDF</b> F(x) = P(X ≤ x), non-decreasing, F(−∞) = 0, F(∞) = 1, f = F′.</li>
+<li>E[X] = Σx p(x) or ∫x f(x) dx; E[aX + bY] = aE[X] + bE[Y].</li>
+</ul>
+<table>
+<tr><th>Distribution</th><th>PMF / PDF</th><th>Mean</th><th>Variance</th></tr>
+<tr><td>Binomial (n, p)</td><td>ⁿCₓ pˣ qⁿ⁻ˣ</td><td>np</td><td>npq</td></tr>
+<tr><td>Poisson (λ)</td><td>e<sup>−λ</sup>λˣ/x!</td><td>λ</td><td>λ</td></tr>
+<tr><td>Uniform (a, b)</td><td>1/(b−a)</td><td>(a+b)/2</td><td>(b−a)²/12</td></tr>
+<tr><td>Exponential (λ)</td><td>λe<sup>−λx</sup></td><td>1/λ</td><td>1/λ²</td></tr>
+<tr><td>Normal (μ, σ²)</td><td>(1/σ√2π) e<sup>−(x−μ)²/2σ²</sup></td><td>μ</td><td>σ²</td></tr>
+</table>
+<ul>
+<li>Poisson approximates binomial when n large, p small, λ = np. Normal: z = (x − μ)/σ; 68–95–99.7 rule for ±1σ, ±2σ, ±3σ.</li>
+<li><b>Hypothesis testing:</b> H₀ (null) vs H₁. Type I error α = P(reject H₀ | H₀ true); Type II β = P(accept H₀ | H₀ false); power = 1 − β.</li>
+<li>z-test (σ known, large n): z = (x̄ − μ)/(σ/√n). t-test (σ unknown, small n): t = (x̄ − μ)/(s/√n), n−1 dof. χ² test for goodness of fit/variance. Reject H₀ if |statistic| &gt; critical value (or p-value &lt; α).</li>
+</ul>
+
+<h2>5. Numerical Methods</h2>
+<h3>Algebraic and transcendental equations</h3>
+<ul>
+<li><b>Bisection:</b> f(a)f(b) &lt; 0, halve the interval; linear convergence; error after n steps ≤ (b−a)/2ⁿ.</li>
+<li><b>Regula falsi:</b> x = (a f(b) − b f(a))/(f(b) − f(a)).</li>
+<li><b>Newton–Raphson:</b> xₙ₊₁ = xₙ − f(xₙ)/f′(xₙ); quadratic convergence (order 2). Square root of N: xₙ₊₁ = ½(xₙ + N/xₙ).</li>
+<li><b>Secant:</b> order ≈ 1.618. <b>Fixed-point</b> x = g(x) converges if |g′(x)| &lt; 1.</li>
+<li>Linear systems: Gauss elimination (direct); Jacobi and Gauss–Seidel (iterative, converge if diagonally dominant; Gauss–Seidel faster).</li>
+</ul>
+<h3>Numerical integration (h = (b−a)/n)</h3>
+<table>
+<tr><th>Rule</th><th>Formula</th><th>Error order</th></tr>
+<tr><td>Trapezoidal</td><td>(h/2)[y₀ + 2(y₁+…+yₙ₋₁) + yₙ]</td><td>O(h²) global; exact for linear</td></tr>
+<tr><td>Simpson 1/3 (n even)</td><td>(h/3)[y₀ + 4(odd) + 2(even) + yₙ]</td><td>O(h⁴); exact up to cubic</td></tr>
+<tr><td>Simpson 3/8 (n multiple of 3)</td><td>(3h/8)[y₀ + 3y₁ + 3y₂ + 2y₃ + … + yₙ]</td><td>O(h⁴)</td></tr>
+</table>
+<h3>Finite differences</h3>
+<ul>
+<li>Forward Δy = y₁ − y₀; backward ∇y = y₁ − y₀ (at y₁); central δ. Shift E = 1 + Δ.</li>
+<li>f′(x) ≈ [f(x+h) − f(x)]/h (O(h)); central [f(x+h) − f(x−h)]/2h (O(h²)); f″ ≈ [f(x+h) − 2f(x) + f(x−h)]/h².</li>
+</ul>
+<h3>ODE solvers for y′ = f(x, y)</h3>
+<ul>
+<li><b>Explicit Euler:</b> yₙ₊₁ = yₙ + h f(xₙ, yₙ) — first order, local error O(h²), global O(h).</li>
+<li><b>Modified Euler / Heun:</b> predictor-corrector, second order.</li>
+<li><b>RK4:</b> k₁ = hf(x,y); k₂ = hf(x+h/2, y+k₁/2); k₃ = hf(x+h/2, y+k₂/2); k₄ = hf(x+h, y+k₃); yₙ₊₁ = yₙ + (k₁ + 2k₂ + 2k₃ + k₄)/6. Fourth order.</li>
+<li><b>Multi-step:</b> Adams–Bashforth (explicit), Adams–Moulton (implicit), Milne's predictor-corrector — use several previous points.</li>
+<li>Stability: explicit Euler for y′ = λy stable if |1 + hλ| ≤ 1.</li>
+</ul>

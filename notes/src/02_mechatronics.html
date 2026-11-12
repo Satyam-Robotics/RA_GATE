@@ -1,0 +1,227 @@
+<h1 id="a2">Part A.2 — Basics of Mechatronics</h1>
+
+<h2>1. Network Elements and Analysis</h2>
+<h3>Elements and sources</h3>
+<ul>
+<li><b>Ideal voltage source:</b> fixed V, zero internal resistance (practical: series R). <b>Ideal current source:</b> fixed I, infinite internal resistance (practical: parallel R).</li>
+<li><b>Dependent sources:</b> VCVS, VCCS, CCVS, CCCS. Do not switch them off when finding R<sub>th</sub>; use a test source instead.</li>
+<li><b>R:</b> v = iR, P = i²R. <b>L:</b> v = L di/dt, energy ½Li², current cannot change instantly, acts as a short at DC. <b>C:</b> i = C dv/dt, energy ½Cv², voltage cannot change instantly, acts as an open at DC.</li>
+<li>Series R add; parallel 1/R add. Inductors combine like R; capacitors combine the opposite way. <b>M (mutual inductance):</b> v₂ = M di₁/dt; M = k√(L₁L₂); series aiding L = L₁ + L₂ + 2M, opposing L₁ + L₂ − 2M.</li>
+<li>Voltage divider: Vₓ = V·Rₓ/ΣR. Current divider: I₁ = I·R₂/(R₁ + R₂).</li>
+<li>Star–delta: R<sub>Y</sub> = R<sub>ab</sub>R<sub>ac</sub>/ΣR<sub>Δ</sub>; balanced R<sub>Y</sub> = R<sub>Δ</sub>/3.</li>
+</ul>
+<h3>Kirchhoff's laws and solution methods</h3>
+<ul>
+<li><b>KCL:</b> Σ currents into a node = 0 (charge conservation). <b>KVL:</b> Σ voltages around a loop = 0 (energy conservation).</li>
+<li><b>Nodal analysis:</b> pick a reference node, write KCL at the other (n − 1) nodes in terms of node voltages. A voltage source between two non-reference nodes forms a supernode.</li>
+<li><b>Mesh analysis:</b> write KVL around b − n + 1 meshes (planar circuits). A current source shared by two meshes forms a supermesh.</li>
+</ul>
+<h3>Network theorems</h3>
+<ul>
+<li><b>Thevenin:</b> any linear two-terminal network = V<sub>th</sub> (open-circuit voltage) in series with R<sub>th</sub> (sources off: V → short, I → open).</li>
+<li><b>Norton:</b> I<sub>N</sub> (short-circuit current) in parallel with R<sub>N</sub> = R<sub>th</sub>. V<sub>th</sub> = I<sub>N</sub>R<sub>th</sub>.</li>
+<li><b>Superposition:</b> response = sum of responses to each independent source acting alone (linear circuits only; not valid for power).</li>
+<li><b>Maximum power transfer:</b> DC: R<sub>L</sub> = R<sub>th</sub>, P<sub>max</sub> = V<sub>th</sub>²/4R<sub>th</sub>, efficiency 50%. AC: Z<sub>L</sub> = Z<sub>th</sub>* (conjugate); if only |Z<sub>L</sub>| can vary, R<sub>L</sub> = |Z<sub>th</sub>|.</li>
+<li>Also know: reciprocity, Tellegen (Σvᵢiᵢ = 0), Millman.</li>
+</ul>
+<h3>Transient response</h3>
+<ul>
+<li>First order: x(t) = x(∞) + [x(0⁺) − x(∞)]e<sup>−t/τ</sup>. τ = RC or L/R (R = Thevenin resistance seen by C or L).</li>
+<li>After 5τ the response is &gt;99% settled. RC charging: v<sub>C</sub> = V(1 − e<sup>−t/RC</sup>).</li>
+<li>Second-order series RLC: s² + (R/L)s + 1/LC = 0. ω₀ = 1/√LC, ζ = (R/2)√(C/L). ζ &gt; 1 overdamped, = 1 critically damped, &lt; 1 underdamped (oscillatory with ω<sub>d</sub> = ω₀√(1−ζ²)).</li>
+<li>Parallel RLC: ζ = (1/2R)√(L/C).</li>
+</ul>
+<h3>Sinusoidal steady state</h3>
+<ul>
+<li>Phasor: v = V<sub>m</sub>cos(ωt + φ) → V∠φ. Impedances: Z<sub>R</sub> = R, Z<sub>L</sub> = jωL, Z<sub>C</sub> = 1/jωC.</li>
+<li>RMS of sinusoid = V<sub>m</sub>/√2. Current lags voltage in an inductive circuit, leads in a capacitive circuit.</li>
+<li><b>Complex power:</b> S = V I* = P + jQ. P = V<sub>rms</sub>I<sub>rms</sub>cos φ (W), Q = V<sub>rms</sub>I<sub>rms</sub>sin φ (VAR), |S| (VA). Power factor = cos φ = P/|S|. PF correction adds a shunt capacitor: Q<sub>C</sub> = P(tan φ₁ − tan φ₂).</li>
+</ul>
+<h3>Resonance</h3>
+<ul>
+<li><b>Series RLC:</b> ω₀ = 1/√LC; Z = R (minimum), current maximum, PF = 1. Q = ω₀L/R = (1/R)√(L/C). Bandwidth = R/L = ω₀/Q. Voltage across L or C = Q × supply voltage.</li>
+<li><b>Parallel RLC:</b> impedance maximum, current minimum. Q = R√(C/L). BW = 1/RC.</li>
+<li>Half-power frequencies: ω₁ω₂ = ω₀².</li>
+</ul>
+<h3>Two-port networks</h3>
+<table>
+<tr><th>Parameters</th><th>Equations</th><th>Reciprocal if</th><th>Symmetric if</th></tr>
+<tr><td>Z (open circuit)</td><td>V₁ = Z₁₁I₁ + Z₁₂I₂; V₂ = Z₂₁I₁ + Z₂₂I₂</td><td>Z₁₂ = Z₂₁</td><td>Z₁₁ = Z₂₂</td></tr>
+<tr><td>Y (short circuit)</td><td>I₁ = Y₁₁V₁ + Y₁₂V₂; I₂ = Y₂₁V₁ + Y₂₂V₂</td><td>Y₁₂ = Y₂₁</td><td>Y₁₁ = Y₂₂</td></tr>
+<tr><td>h (hybrid)</td><td>V₁ = h₁₁I₁ + h₁₂V₂; I₂ = h₂₁I₁ + h₂₂V₂</td><td>h₁₂ = −h₂₁</td><td>Δh = 1</td></tr>
+<tr><td>ABCD (transmission)</td><td>V₁ = AV₂ − BI₂; I₁ = CV₂ − DI₂</td><td>AD − BC = 1</td><td>A = D</td></tr>
+</table>
+<ul>
+<li>Cascade connection: multiply ABCD matrices. Series: add Z. Parallel: add Y.</li>
+</ul>
+<h3>Balanced three-phase circuits</h3>
+<ul>
+<li>Star (Y): V<sub>L</sub> = √3 V<sub>ph</sub> (leads by 30°), I<sub>L</sub> = I<sub>ph</sub>. Delta (Δ): V<sub>L</sub> = V<sub>ph</sub>, I<sub>L</sub> = √3 I<sub>ph</sub> (lags by 30°).</li>
+<li>Total power P = √3 V<sub>L</sub>I<sub>L</sub>cos φ = 3V<sub>ph</sub>I<sub>ph</sub>cos φ. Q = √3 V<sub>L</sub>I<sub>L</sub>sin φ.</li>
+<li><b>Two-wattmeter method:</b> P = W₁ + W₂; tan φ = √3(W₁ − W₂)/(W₁ + W₂). At PF 0.5 one wattmeter reads zero; below 0.5 one reads negative.</li>
+<li>Neutral current in a balanced star = 0.</li>
+</ul>
+
+<h2>2. Digital Circuits</h2>
+<h3>Boolean algebra</h3>
+<ul>
+<li>Laws: identity (A + 0 = A, A·1 = A), null (A + 1 = 1, A·0 = 0), idempotent, complement (A + A′ = 1), absorption (A + AB = A, A(A + B) = A), A + A′B = A + B.</li>
+<li><b>De Morgan:</b> (A + B)′ = A′B′; (AB)′ = A′ + B′. <b>Consensus:</b> AB + A′C + BC = AB + A′C.</li>
+<li>SOP (minterms Σm) and POS (maxterms ΠM). K-maps: group 1s in powers of 2 (adjacent wraps around); don't-cares can be used for larger groups.</li>
+<li>NAND and NOR are universal gates. XOR: A ⊕ B = A′B + AB′; XNOR is equality. A ⊕ A = 0, A ⊕ 1 = A′.</li>
+<li>Number systems: binary, octal, hex, BCD, Gray (gᵢ = bᵢ ⊕ bᵢ₊₁). 2's complement: invert and add 1; n-bit range −2ⁿ⁻¹ to 2ⁿ⁻¹ − 1.</li>
+</ul>
+<h3>Combinational circuits</h3>
+<ul>
+<li><b>Half adder:</b> S = A ⊕ B, C = AB. <b>Full adder:</b> S = A ⊕ B ⊕ Cᵢₙ, C = AB + Cᵢₙ(A ⊕ B).</li>
+<li><b>Multiplexer (2ⁿ:1):</b> n select lines choose one of 2ⁿ inputs. A 2ⁿ:1 MUX can implement any n-variable function (or n+1 variables using the last variable at data inputs).</li>
+<li><b>Demultiplexer:</b> one input to one of 2ⁿ outputs.</li>
+<li><b>Decoder (n → 2ⁿ):</b> activates one output per input code; decoder + OR gate implements any SOP.</li>
+<li><b>Encoder (2ⁿ → n):</b> inverse; <b>priority encoder</b> outputs the highest-priority active input.</li>
+<li>Comparators, code converters, parity generators.</li>
+</ul>
+<h3>Sequential circuits</h3>
+<table>
+<tr><th>Flip-flop</th><th>Characteristic equation</th><th>Notes</th></tr>
+<tr><td>SR</td><td>Q⁺ = S + R′Q (SR = 0)</td><td>S = R = 1 forbidden</td></tr>
+<tr><td>JK</td><td>Q⁺ = JQ′ + K′Q</td><td>J = K = 1 toggles; race-around in level-triggered → use master-slave/edge</td></tr>
+<tr><td>D</td><td>Q⁺ = D</td><td>Delay/data latch</td></tr>
+<tr><td>T</td><td>Q⁺ = T ⊕ Q</td><td>Toggles when T = 1</td></tr>
+</table>
+<ul>
+<li>Latches are level-triggered; flip-flops are edge-triggered. Setup and hold time must be met.</li>
+<li><b>Counters:</b> asynchronous (ripple): clock passes through FFs, delay = n·t<sub>pd</sub>. Synchronous: common clock, faster. n flip-flops → mod up to 2ⁿ.</li>
+<li><b>Ring counter:</b> n FFs → mod n. <b>Johnson (twisted ring):</b> n FFs → mod 2n.</li>
+<li>Shift registers: SISO, SIPO, PISO, PIPO. Mealy output depends on state and input; Moore depends on state only.</li>
+<li>Max clock frequency f<sub>max</sub> = 1/(t<sub>pd,FF</sub> + t<sub>comb</sub> + t<sub>setup</sub>).</li>
+</ul>
+
+<h2>3. Sensors and Signal Conditioning</h2>
+<ul>
+<li><b>Static characteristics:</b> accuracy, precision, resolution, sensitivity (Δoutput/Δinput), linearity, hysteresis, range/span, drift, dead zone. <b>Dynamic:</b> response time, time constant, bandwidth.</li>
+<li><b>Resistive:</b> potentiometer (displacement, V<sub>out</sub> = V·x/L; loading error when meter R is finite), strain gauge (gauge factor GF = (ΔR/R)/ε ≈ 2 for metals), RTD (R = R₀(1 + αT), platinum Pt100), thermistor (NTC, nonlinear, R = R₀e<sup>β(1/T − 1/T₀)</sup>), LDR.</li>
+<li><b>Capacitive:</b> C = εA/d. Vary d (nonlinear, high sensitivity), A (linear) or ε (level sensing). Differential arrangement improves linearity.</li>
+<li><b>Inductive:</b> variable reluctance, <b>LVDT</b> (primary + two secondaries in series opposition; output ∝ displacement, phase gives direction; null at centre; needs phase-sensitive demodulation). RVDT for angle.</li>
+<li><b>Piezoelectric:</b> charge q = d·F (d = charge sensitivity, C/N). Only for dynamic (not static) measurement because charge leaks. Needs a charge amplifier. Used in accelerometers, force/pressure sensors.</li>
+<li><b>Hall effect:</b> V<sub>H</sub> = BI/(n q t). Used for proximity, current, speed sensing, BLDC commutation.</li>
+<li><b>Thermocouple:</b> Seebeck effect, needs cold-junction compensation.</li>
+</ul>
+<h3>Signal conditioning</h3>
+<ul>
+<li><b>Wheatstone bridge:</b> balanced when R₁R₄ = R₂R₃. Quarter bridge (1 active gauge): V<sub>o</sub> ≈ V·GF·ε/4; half bridge ×2; full bridge (4 active): V·GF·ε. Dummy gauge for temperature compensation.</li>
+<li>Instrumentation amplifier (high CMRR, high input impedance), filtering, linearization, isolation, ADC, excitation, cold-junction compensation, demodulation.</li>
+</ul>
+<h3>Transducers for industrial instrumentation</h3>
+<table>
+<tr><th>Quantity</th><th>Transducers</th></tr>
+<tr><td>Linear displacement</td><td>Potentiometer, LVDT, capacitive, linear encoder, ultrasonic, laser triangulation</td></tr>
+<tr><td>Angular displacement</td><td>Rotary potentiometer, RVDT, resolver, synchro, incremental/absolute encoders (resolution = 360°/2ⁿ for n-bit absolute; incremental uses A/B quadrature, ×4 decoding)</td></tr>
+<tr><td>Velocity</td><td>Tachogenerator (DC: V = kω), encoder frequency, moving-coil/magnet, Doppler</td></tr>
+<tr><td>Acceleration</td><td>Seismic mass accelerometers (piezoelectric, piezoresistive, capacitive MEMS). Seismic instrument: accelerometer uses ω ≪ ωₙ; vibrometer (displacement) uses ω ≫ ωₙ</td></tr>
+<tr><td>Force</td><td>Load cells (strain gauge), piezoelectric, LVDT with spring, proving ring</td></tr>
+<tr><td>Torque</td><td>Strain gauges at 45° on a shaft, torsion bar with angle sensing, slip rings or telemetry</td></tr>
+<tr><td>Pressure</td><td>Bourdon tube, diaphragm, bellows, manometer, piezoresistive/capacitive/piezoelectric sensors</td></tr>
+</table>
+
+<h2>4. Actuators</h2>
+<h3>Hydraulic and pneumatic</h3>
+<ul>
+<li>Pascal's law: pressure transmitted equally; F = pA. Cylinder extend force = pA<sub>bore</sub>; retract force = p(A<sub>bore</sub> − A<sub>rod</sub>). Velocity = Q/A. Power = pQ.</li>
+<li><b>Hydraulic:</b> incompressible oil, high force/power density, stiff, precise, but leaks and needs a pump and reservoir. Typical pressure 70–350 bar.</li>
+<li><b>Pneumatic:</b> compressed air (~6–8 bar), fast, clean, cheap, compliant; poor position control due to compressibility.</li>
+<li>Components: pumps (gear, vane, piston), cylinders (single/double acting), motors, directional control valves (e.g. 4/3, 5/2: ports/positions), pressure relief valve, flow control valve, check valve, servo and proportional valves, accumulator.</li>
+<li>Hydraulic motor torque T = pD/(2π) (D = displacement per rev); speed N = Q/D.</li>
+</ul>
+<h3>DC motors</h3>
+<ul>
+<li>Back-EMF E<sub>b</sub> = kφω; V = E<sub>b</sub> + I<sub>a</sub>R<sub>a</sub>; torque T = kφI<sub>a</sub>. Power: E<sub>b</sub>I<sub>a</sub> = Tω.</li>
+<li>Permanent magnet / separately excited: ω = V/kφ − R<sub>a</sub>T/(kφ)² — linear drooping torque-speed line. Stall torque at ω = 0; no-load speed at T = 0. Max power at half the no-load speed.</li>
+<li>Series motor: T ∝ I² (high starting torque, dangerous at no load). Shunt: nearly constant speed.</li>
+<li>Speed control: armature voltage (below base speed), field weakening (above base speed). PWM with an H-bridge for direction.</li>
+<li>Transfer function θ(s)/V(s) = K/[s(Js + b)(Ls + R) + K²] ≈ K<sub>m</sub>/[s(τ<sub>m</sub>s + 1)].</li>
+</ul>
+<h3>Stepper motors</h3>
+<ul>
+<li>Step angle = 360°/(2m·N<sub>r</sub>) for PM/hybrid (m = phases, N<sub>r</sub> = rotor teeth or pole pairs; e.g. 2-phase hybrid with 50 teeth → 1.8°); variable reluctance: (N<sub>s</sub> − N<sub>r</sub>)/(N<sub>s</sub>N<sub>r</sub>) × 360°.</li>
+<li>Steps/rev = 360°/step angle. Speed (rpm) = (step rate × step angle × 60)/360.</li>
+<li>Types: permanent magnet, variable reluctance, hybrid (typically 1.8°). Drive modes: full step, half step (doubles resolution), microstepping.</li>
+<li>Open-loop positioning; holding torque, detent torque, pull-in and pull-out torque curves; can lose steps or resonate.</li>
+</ul>
+<h3>Servo motors</h3>
+<ul>
+<li>Motor + feedback sensor (encoder/resolver/potentiometer) + controller in a closed loop. DC servo, AC servo (BLDC/PMSM), RC servo (PWM: 1–2 ms pulse every 20 ms sets angle).</li>
+<li>BLDC: electronic commutation using Hall sensors; high efficiency, no brush wear.</li>
+<li>AC induction motor: synchronous speed Nₛ = 120f/P; slip s = (Nₛ − N)/Nₛ.</li>
+</ul>
+
+<h2>5. Engineering Mechanics</h2>
+<h3>Free-body diagrams and equilibrium</h3>
+<ul>
+<li>FBD: isolate the body, show all external forces and moments (weights, reactions, friction, applied loads).</li>
+<li>2D equilibrium: ΣF<sub>x</sub> = 0, ΣF<sub>y</sub> = 0, ΣM = 0 (3 equations). 3D: 6 equations.</li>
+<li>Supports: roller (1 reaction), pin/hinge (2), fixed (3 incl. moment).</li>
+<li><b>Lami's theorem</b> (3 concurrent forces): F₁/sin α = F₂/sin β = F₃/sin γ (angle opposite each force). Two-force member: forces equal, opposite, collinear.</li>
+<li>Varignon: moment of resultant = sum of moments of components. Couple: moment independent of point.</li>
+<li>Virtual work: ΣF·δr = 0 for equilibrium.</li>
+</ul>
+<h3>Friction</h3>
+<ul>
+<li>Coulomb: F ≤ μ<sub>s</sub>N; sliding F = μ<sub>k</sub>N (μ<sub>k</sub> &lt; μ<sub>s</sub>). Angle of friction tan φ = μ = angle of repose.</li>
+<li>Block on incline: slides if tan θ &gt; μ. Force up the incline P = W(sin θ + μ cos θ); to prevent sliding down P = W(sin θ − μ cos θ).</li>
+<li>Wedges, screw jack: effort P = W tan(α + φ); self-locking if φ &gt; α; efficiency = tan α/tan(α + φ).</li>
+<li><b>Rolling friction:</b> resistance F = W·a/r (a = coefficient of rolling resistance, length units). Much smaller than sliding friction.</li>
+<li><b>Belt friction:</b> T₁/T₂ = e<sup>μθ</sup> (θ in radians, T₁ tight side). V-belt: e<sup>μθ/sin(β/2)</sup>. Power = (T₁ − T₂)v. With centrifugal tension T<sub>c</sub> = mv², max power when T<sub>c</sub> = T<sub>max</sub>/3. Open belt vs crossed belt lengths; crossed belt reverses direction.</li>
+</ul>
+<h3>Trusses and frames</h3>
+<ul>
+<li>Truss: two-force members joined by pins, loads at joints. Simple (perfect) plane truss: m = 2j − 3. m &lt; 2j − 3 → mechanism; m &gt; 2j − 3 → statically indeterminate.</li>
+<li><b>Method of joints:</b> equilibrium at each joint (2 equations, ≤2 unknowns). <b>Method of sections:</b> cut through ≤3 members, use 3 equations.</li>
+<li>Zero-force members: at an unloaded joint with two non-collinear members, both are zero; with three members where two are collinear, the third is zero.</li>
+<li>Frames/machines contain multi-force members; disassemble and apply equilibrium to each part.</li>
+</ul>
+<h3>Kinematics of rigid bodies (plane motion)</h3>
+<ul>
+<li>Particle: v = u + at; s = ut + ½at²; v² = u² + 2as. Projectile: range = u²sin 2θ/g; max height = u²sin²θ/2g; time = 2u sin θ/g.</li>
+<li>Circular: v = ωr; a<sub>t</sub> = αr; a<sub>n</sub> = ω²r = v²/r.</li>
+<li>Rigid body: v<sub>B</sub> = v<sub>A</sub> + ω × r<sub>B/A</sub>; a<sub>B</sub> = a<sub>A</sub> + α × r<sub>B/A</sub> − ω²r<sub>B/A</sub>.</li>
+<li><b>Instantaneous centre (IC):</b> point of zero velocity; v = ω × (distance from IC). Rolling without slipping: v<sub>centre</sub> = ωR, contact point at rest, top point 2v.</li>
+</ul>
+<h3>Dynamics of rigid bodies</h3>
+<ul>
+<li>ΣF = m a<sub>G</sub>; ΣM<sub>G</sub> = I<sub>G</sub>α. D'Alembert: add inertia force −ma and inertia torque −Iα, then treat as statics.</li>
+<li>Moments of inertia: rod about centre mL²/12, about end mL²/3; disc mR²/2; ring mR²; solid sphere 2mR²/5. Parallel axis I = I<sub>G</sub> + md².</li>
+<li>Work–energy: KE = ½mv<sub>G</sub>² + ½I<sub>G</sub>ω². Rolling down incline: a = g sin θ/(1 + k²/R²).</li>
+<li>Impulse–momentum: ∫F dt = Δ(mv); angular momentum H = Iω conserved if no external torque. Coefficient of restitution e = (v₂ − v₁)/(u₁ − u₂).</li>
+</ul>
+
+<h2>6. Programming (Python)</h2>
+<ul>
+<li><b>Flowcharts:</b> oval = start/end, rectangle = process, parallelogram = input/output, diamond = decision, arrows = flow. <b>Pseudocode:</b> structured plain-language steps (IF/ELSE, WHILE, FOR).</li>
+<li><b>Data types:</b> int (arbitrary precision), float, complex, bool, str (immutable), list (mutable), tuple (immutable), set (unique, unordered), dict (key → value; keys must be hashable), NoneType.</li>
+<li><b>Operators:</b> arithmetic + − * / (true division, always float) // (floor division) % (modulo; sign follows divisor: −7 % 3 = 2, −7 // 3 = −3) ** (power, right-associative: 2**3**2 = 512). Comparison, logical (and/or/not, short-circuit), bitwise (&amp; | ^ ~ &lt;&lt; &gt;&gt;; ~x = −x − 1), membership (in), identity (is).</li>
+<li>Precedence: ** &gt; unary − &gt; * / // % &gt; + − &gt; shifts &gt; &amp; &gt; ^ &gt; | &gt; comparisons &gt; not &gt; and &gt; or.</li>
+<li><b>Conditionals:</b> if / elif / else; ternary x if cond else y; match–case (Python 3.10+) is the "case" construct.</li>
+<li><b>Loops:</b> for x in iterable; while cond. range(start, stop, step) excludes stop. break exits the loop; continue skips to next iteration; a loop's else runs only if no break happened.</li>
+<li><b>Functions:</b> def f(a, b=2, *args, **kwargs). Default arguments are evaluated once (mutable default pitfall). Variables assigned inside a function are local unless declared global/nonlocal. Functions are first-class; lambda for small anonymous functions.</li>
+<li><b>Arrays/lists:</b> zero-indexed; negative index from end; slicing a[start:stop:step] (a[::-1] reverses). Lists are references: b = a aliases, b = a[:] or a.copy() makes a shallow copy. append O(1), insert/pop(0) O(n).</li>
+<li><b>Dictionaries:</b> d[k], d.get(k, default), d.keys()/values()/items(); insertion-ordered (3.7+); average O(1) lookup.</li>
+<li><b>Strings:</b> immutable; s[i], slicing, len, s.upper(), s.split(), ''.join(list), s.find(), s.replace(), f-strings. "ab" * 3 = "ababab".</li>
+<li><b>Recursion:</b> base case + recursive case. Factorial, Fibonacci (naive is O(2ⁿ)), Tower of Hanoi (2ⁿ − 1 moves). Default recursion limit ~1000. Trace by drawing the call tree.</li>
+</ul>
+
+<h2>7. Data Structures</h2>
+<table>
+<tr><th>Structure</th><th>Key idea</th><th>Operations / complexity</th></tr>
+<tr><td>Stack</td><td>LIFO</td><td>push/pop/peek O(1). Uses: recursion, expression evaluation, infix→postfix, balanced parentheses, undo</td></tr>
+<tr><td>Queue</td><td>FIFO</td><td>enqueue/dequeue O(1). Circular queue: full when (rear+1) % n == front. Deque, priority queue. Uses: BFS, scheduling</td></tr>
+<tr><td>Linked list</td><td>Nodes with pointers</td><td>Insert/delete at head O(1); search O(n); no random access. Singly, doubly, circular. Reverse in O(n); detect cycle with slow/fast pointers</td></tr>
+<tr><td>Binary search tree</td><td>left &lt; node &lt; right</td><td>Search/insert/delete O(h): O(log n) balanced, O(n) skewed. Inorder traversal gives sorted order. Delete with 2 children: replace by inorder successor/predecessor</td></tr>
+<tr><td>Binary heap</td><td>Complete tree; parent ≥ children (max-heap)</td><td>Array: children of i at 2i+1, 2i+2; parent ⌊(i−1)/2⌋. Insert/delete-max O(log n); peek O(1); build-heap O(n); heapsort O(n log n)</td></tr>
+<tr><td>Graph</td><td>G = (V, E)</td><td>Adjacency matrix O(V²) space; adjacency list O(V + E). BFS/DFS O(V + E). Dijkstra O((V+E) log V) with heap; topological sort for DAGs; MST via Prim/Kruskal</td></tr>
+</table>
+<ul>
+<li>Tree facts: binary tree of height h has at most 2^(h+1) − 1 nodes; n nodes → n − 1 edges; leaves = internal nodes with 2 children + 1.</li>
+<li>Traversals: preorder (NLR), inorder (LNR), postorder (LRN), level order (BFS). Inorder + preorder (or postorder) uniquely determines a binary tree.</li>
+<li>Number of distinct BSTs with n keys = Catalan number C(2n, n)/(n + 1).</li>
+<li>Undirected graph: Σdegree = 2|E|; complete graph has n(n−1)/2 edges; tree on n vertices has n − 1 edges.</li>
+</ul>
