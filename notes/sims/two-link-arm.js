@@ -13,7 +13,8 @@
 //   J = [[−L₁s₁ − L₂s₁₂, −L₂s₁₂], [L₁c₁ + L₂c₁₂, L₂c₁₂]] (tip velocity = J·[θ̇₁, θ̇₂]), det J = L₁L₂ sin θ₂.
 //   Singular when |sin θ₂| < 0.05: 'stretched' (cos θ₂ > 0) or 'folded' (cos θ₂ < 0).
 //   Model angles are radians; the UI and the state use degrees for θ₁, θ₂; rates in rad/s; lengths in m.
-//   Tip-velocity arrow scale: arrow = v × 0.4 s (1 m/s ↔ 0.4 m on the drawing); shortened at the frame edge.
+//   Tip-velocity arrow scale: arrow = v × 0.4 s (1 m/s ↔ 0.4 m on the drawing); when it would leave the frame it is
+//   shortened and labelled "v (shortened)" (it is then not to scale).
 //
 // STATE KEYS (getState / setState)
 //   L1, L2 (m), theta1, theta2 (degrees), elbow ('down' | 'up'), w1, w2 (rad/s),
@@ -165,9 +166,9 @@
       const tX = ui.stat(stats, { label: lab('x (m)'), key: 'x' });
       const tY = ui.stat(stats, { label: lab('y (m)'), key: 'y' });
       const tPhi = ui.stat(stats, { label: lab('φ = θ₁ + θ₂'), key: 'phi' });
-      const tR = ui.stat(stats, { label: lab('r = √(x² + y²) (m)'), key: 'r' });
+      const tR = ui.stat(stats, { label: lab('r (m)'), key: 'r' });
       const tDet = ui.stat(stats, { label: lab('det J (m²)'), key: 'detJ', title: 'det J = L₁L₂ sin θ₂' });
-      const tSpeed = ui.stat(stats, { label: lab('tip speed |v| (m/s)'), key: 'speed' });
+      const tSpeed = ui.stat(stats, { label: lab('tip speed (m/s)'), key: 'speed' });
       const tVx = ui.stat(stats, { label: lab('v<sub>x</sub> (m/s)'), key: 'vx' });
       const tVy = ui.stat(stats, { label: lab('v<sub>y</sub> (m/s)'), key: 'vy' });
       const tOther = ui.stat(stats, { label: lab('other IK solution (same tip)'), key: 'other' });
@@ -184,7 +185,11 @@
       // ---- helpers ----
       const rad = M.rad, deg = M.deg;
       function fmtDeg(d) { return fmt(Math.round(d * 10) / 10, 6); }          // degrees, at most 1 decimal
-      function angTxt(d) { const s = fmtDeg(d) + '°'; return d < 0 && s.charAt(0) === '−' ? '(' + s + ')' : ' ' + s; }
+      // formula lines: angles to at most 2 decimals and lengths in full, so that substituting the printed
+      // numbers reproduces the printed result to within one unit of its last digit (after a drag or a branch
+      // switch the angles are not whole degrees; 1 decimal could be off by 3 units in the 3rd decimal)
+      function fmtDegF(d) { return fmt(Math.round(d * 100) / 100, 7); }
+      function angTxt(d) { const s = fmtDegF(d) + '°'; return s.charAt(0) === '−' ? '(' + s + ')' : ' ' + s; }
       function followSign() {
         if (st.theta2 > 0) st.elbow = 'down'; else if (st.theta2 < 0) st.elbow = 'up';
         seg.set(st.elbow);
@@ -200,38 +205,73 @@
         }
       }
       function angDist(a, b) { return Math.abs(M.wrapPi(a - b)); }
-      // candidate direction (radians) farthest from every direction in `avoid`
-      function pickAngle(cands, avoid) {
-        let best = cands[0], bestScore = -1;
-        cands.forEach(function (c) {
-          let s = Infinity;
-          avoid.forEach(function (a) { s = Math.min(s, angDist(c, a)); });
-          if (s > bestScore + 1e-9) { bestScore = s; best = c; }
-        });
-        return best;
-      }
 
-      // Label of an angle arc at (cx, cy) (pixels) with radius r, from direction a0 sweeping `sweep` (radians,
-      // counter-clockwise positive, y up). Tries directions around the bisector and takes the one that needs the
-      // smallest distance for the label box to clear the arc and every ray in `rays` (lines leaving the vertex).
-      function angleLabel(ctx, cx, cy, r, a0, sweep, text, color, rays) {
-        ctx.font = '12px sans-serif';
-        const a = ctx.measureText(text).width / 2 + 4, b = 9;
-        const mid = a0 + sweep / 2;
-        let best = null;
-        for (let i = -9; i <= 9; i++) {
-          const u = mid + i * Math.PI / 12, ux = Math.cos(u), uy = Math.sin(u);
-          let d = r + 5 + a * Math.abs(ux) + b * Math.abs(uy);
-          rays.forEach(function (e) {
-            if (Math.cos(e) * ux + Math.sin(e) * uy <= 0) return;   // ray points away from the label side
-            const nx = -Math.sin(e), ny = Math.cos(e);
-            const sn = Math.abs(ux * nx + uy * ny);
-            d = Math.max(d, (a * Math.abs(nx) + b * Math.abs(ny) + 3) / Math.max(sn, 1e-3));
-          });
-          const score = d + 10 * Math.abs(i);
-          if (!best || score < best.score) best = { score: score, x: cx + d * ux, y: cy - d * uy };
+      // ---- label placement: obstacles are thick segments (circles = zero-length segments) and placed boxes ----
+      function segHitsRect(x1, y1, x2, y2, l, t, r, b) {   // Liang–Barsky
+        const dx = x2 - x1, dy = y2 - y1;
+        const P = [-dx, dx, -dy, dy], Q = [x1 - l, r - x1, y1 - t, b - y1];
+        let u0 = 0, u1 = 1;
+        for (let i = 0; i < 4; i++) {
+          if (P[i] === 0) { if (Q[i] < 0) return false; }
+          else {
+            const u = Q[i] / P[i];
+            if (P[i] < 0) { if (u > u1) return false; if (u > u0) u0 = u; }
+            else { if (u < u0) return false; if (u < u1) u1 = u; }
+          }
         }
-        D.text(ctx, text, best.x, best.y, { align: 'center', color: color, font: '12px sans-serif', bg: 'rgba(255,255,255,0.85)' });
+        return true;
+      }
+      function makeLayout(ctx, frame) {
+        const segs = [], boxes = [];
+        const L = {
+          seg: function (x1, y1, x2, y2, hw) { segs.push([x1, y1, x2, y2, hw]); },
+          dot: function (x, y, rr) { segs.push([x, y, x, y, rr]); },
+          arc: function (cx, cy, rr, a0, a1, hw) {   // polyline of an arc (radians, y up)
+            const n = 10;
+            for (let i = 0; i < n; i++) {
+              const p = a0 + (a1 - a0) * i / n, q = a0 + (a1 - a0) * (i + 1) / n;
+              segs.push([cx + rr * Math.cos(p), cy - rr * Math.sin(p), cx + rr * Math.cos(q), cy - rr * Math.sin(q), hw]);
+            }
+          },
+          hits: function (bx) {
+            let n = 0;
+            segs.forEach(function (s) { if (segHitsRect(s[0], s[1], s[2], s[3], bx.l - s[4], bx.t - s[4], bx.r + s[4], bx.b + s[4])) n++; });
+            boxes.forEach(function (o) { if (bx.l < o.r + 2 && bx.r > o.l - 2 && bx.t < o.b + 2 && bx.b > o.t - 2) n += 2; });
+            return n;
+          },
+          // cands: [{ x, y, cost }] label centres; picks the cheapest, collisions weigh most; returns the box
+          place: function (text, font, color, cands) {
+            ctx.font = font;
+            const a = ctx.measureText(text).width / 2 + 3, b = 8;
+            let best = null;
+            cands.forEach(function (c) {
+              const bx = { l: c.x - a, r: c.x + a, t: c.y - b, b: c.y + b };
+              let cost = c.cost + 1000 * L.hits(bx);
+              if (bx.l < frame.x + 1 || bx.r > frame.x + frame.w - 1 || bx.t < frame.y + 1 || bx.b > frame.y + frame.h - 1) cost += 5000;
+              if (!best || cost < best.cost) best = { cost: cost, c: c, bx: bx };
+            });
+            boxes.push(best.bx);
+            return { x: best.c.x, y: best.c.y, text: text, font: font, color: color, box: best.bx };
+          },
+          // label centres around (cx, cy) at directions mid + i·step, just clear of radius r
+          around: function (cx, cy, r, mid, step, n, text, font) {
+            ctx.font = font;
+            const a = ctx.measureText(text).width / 2 + 3, b = 8;
+            const out = [];
+            for (let i = 0; i <= n; i++) {
+              [i, -i].forEach(function (j, s) {
+                if (i === 0 && s) return;
+                const u = mid + j * step, ux = Math.cos(u), uy = Math.sin(u);
+                [0, 10, 22, 38].forEach(function (extra, ring) {
+                  const d = r + 4 + a * Math.abs(ux) + b * Math.abs(uy) + extra;
+                  out.push({ x: cx + d * ux, y: cy - d * uy, cost: 6 * i + 9 * ring });
+                });
+              });
+            }
+            return out;
+          }
+        };
+        return L;
       }
 
       // ---- geometry shared by draw and drag ----
@@ -257,19 +297,24 @@
         const fo = model.fk(L1, L2, oth.t1, oth.t2);
         const v = model.tipVelocity(L1, L2, t1, t2, st.w1, st.w2);
         const showGhost = st.showOther && !sing;
-        const bx = p.X(0), by = p.Y(0);
         const r = p.rect;
-        const tipAng = Math.atan2(f.y, f.x);
-        const velAng = Math.atan2(v.vy, v.vx);
-        const LBG = 'rgba(255,255,255,0.85)';
-        const F12 = '12px sans-serif';
+        const bx = p.X(0), by = p.Y(0);
+        const ex = p.X(f.ex), ey = p.Y(f.ey), tx = p.X(f.x), ty = p.Y(f.y);
+        const gex = p.X(fo.ex), gey = p.Y(fo.ey);
+        const F12 = '12px sans-serif', B12 = 'bold 12px sans-serif';
+        const LBG = 'rgba(255,255,255,0.88)';
+        const lay = makeLayout(ctx, r);
+        const L1px = L1 * k, L2px = L2 * k;
+        const r1 = M.clamp(0.42 * L1px, 14, 34);
+        const r2 = M.clamp(0.36 * Math.min(L1px, L2px), 12, 30);
+        const extLen = r2 + 16;
 
         ctx.save();
         ctx.beginPath(); ctx.rect(r.x, r.y, r.w, r.h); ctx.clip();
 
-        // workspace annulus
+        // 1. workspace annulus
+        const Ro = ws.rMax * k, Ri = ws.rMin * k;
         if (st.showWorkspace) {
-          const Ro = ws.rMax * k, Ri = ws.rMin * k;
           ctx.beginPath();
           ctx.arc(bx, by, Ro, 0, 2 * Math.PI, false);
           if (Ri > 0.5) { ctx.moveTo(bx + Ri, by); ctx.arc(bx, by, Ri, 0, 2 * Math.PI, true); }
@@ -279,92 +324,72 @@
           ctx.beginPath(); ctx.arc(bx, by, Ro, 0, 2 * Math.PI); ctx.stroke();
           if (Ri > 0.5) { ctx.beginPath(); ctx.arc(bx, by, Ri, 0, 2 * Math.PI); ctx.stroke(); }
           ctx.setLineDash([]);
-          // radius labels, placed away from the arm
-          const avoidOut = [tipAng, t1, velAng];
-          if (showGhost) avoidOut.push(oth.t1);
-          const deg45 = Math.PI / 4;
-          const cands = [-1, -3, 1, 3, -2, 2, 0, 4].map(function (i) { return i * deg45 + (i % 2 ? 0.1 * Math.sign(i) : 0); });
-          const aOut = pickAngle(cands, avoidOut);
-          const sOut = 'L₁+L₂ = ' + fmt(ws.rMax, 3) + ' m';
-          ctx.font = F12;
-          let tw = ctx.measureText(sOut).width;
-          let d = 10 + Math.abs(Math.cos(aOut)) * tw / 2 + Math.abs(Math.sin(aOut)) * 8;
-          D.text(ctx, sOut, bx + (Ro - d) * Math.cos(aOut), by - (Ro - d) * Math.sin(aOut), { align: 'center', color: C.teal, font: F12, bg: LBG });
-          const avoidIn = [t1, t1 / 2, -Math.PI / 2, 0, Math.PI, aOut];
-          if (showGhost) avoidIn.push(oth.t1);
-          const aIn = pickAngle(cands, avoidIn);
-          const sIn = '|L₁−L₂| = ' + fmt(ws.rMin, 3) + ' m';
-          tw = ctx.measureText(sIn).width;
-          d = Math.max(Ri, 34) + 6 + Math.abs(Math.cos(aIn)) * tw / 2 + Math.abs(Math.sin(aIn)) * 8;
-          if (Ri > 0.5) {
-            ctx.strokeStyle = C.teal; ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(bx + Ri * Math.cos(aIn), by - Ri * Math.sin(aIn));
-            ctx.lineTo(bx + (d - Math.abs(Math.cos(aIn)) * tw / 2 - 4) * Math.cos(aIn), by - (d - Math.abs(Math.cos(aIn)) * tw / 2 - 4) * Math.sin(aIn));
-            ctx.stroke();
-          }
-          D.text(ctx, sIn, bx + d * Math.cos(aIn), by - d * Math.sin(aIn), { align: 'center', color: C.teal, font: F12, bg: LBG });
         }
 
-        // other IK solution (ghost)
+        // 2. other IK solution (ghost)
         if (showGhost) {
           ctx.strokeStyle = C.muted; ctx.lineWidth = 3; ctx.setLineDash([7, 5]); ctx.lineCap = 'butt';
-          ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(p.X(fo.ex), p.Y(fo.ey)); ctx.lineTo(p.X(fo.x), p.Y(fo.y)); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(gex, gey); ctx.lineTo(tx, ty); ctx.stroke();
           ctx.setLineDash([]);
           ctx.fillStyle = '#ffffff'; ctx.lineWidth = 1.5;
-          ctx.beginPath(); ctx.arc(p.X(fo.ex), p.Y(fo.ey), 4.5, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+          ctx.beginPath(); ctx.arc(gex, gey, 4.5, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+          lay.seg(bx, by, gex, gey, 3); lay.seg(gex, gey, tx, ty, 3);
         }
 
         // target marker while dragging outside the workspace
-        const ex = p.X(f.ex), ey = p.Y(f.ey), tx = p.X(f.x), ty = p.Y(f.y);
-        if (drag && drag.outside) {
-          const gx = p.X(drag.tx), gy = p.Y(drag.ty);
+        let gx = 0, gy = 0;
+        const outside = !!(drag && drag.outside);
+        if (outside) {
+          gx = p.X(drag.tx); gy = p.Y(drag.ty);
           ctx.strokeStyle = C.red; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
           ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(gx, gy); ctx.stroke();
           ctx.setLineDash([]); ctx.lineWidth = 2;
           ctx.beginPath(); ctx.moveTo(gx - 6, gy - 6); ctx.lineTo(gx + 6, gy + 6); ctx.moveTo(gx - 6, gy + 6); ctx.lineTo(gx + 6, gy - 6); ctx.stroke();
-          D.text(ctx, 'target', gx + 9, gy - 10, { color: C.red, font: F12, bg: LBG });
+          lay.seg(tx, ty, gx, gy, 2); lay.dot(gx, gy, 8);
         }
 
-        // links, joints, ground
+        // 3. links, ground symbol, joints
         ctx.lineCap = 'round';
         ctx.strokeStyle = C.blue; ctx.lineWidth = 7;
         ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(ex, ey); ctx.stroke();
         ctx.strokeStyle = C.maroon; ctx.lineWidth = 6;
         ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(tx, ty); ctx.stroke();
         ctx.lineCap = 'butt';
-        // ground symbol under the base
+        lay.seg(bx, by, ex, ey, 5); lay.seg(ex, ey, tx, ty, 5);
         ctx.fillStyle = C.fill; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx - 9, by + 14); ctx.lineTo(bx + 9, by + 14); ctx.closePath(); ctx.fill(); ctx.stroke();
         D.hatch(ctx, bx - 13, by + 14, bx + 13, by + 14, { side: 1, length: 6, spacing: 6, color: C.ink });
+        lay.seg(bx - 13, by + 17, bx + 13, by + 17, 5); lay.seg(bx, by, bx, by + 12, 8);
         [[bx, by], [ex, ey]].forEach(function (q) {
           ctx.fillStyle = '#ffffff'; ctx.strokeStyle = C.ink; ctx.lineWidth = 2;
           ctx.beginPath(); ctx.arc(q[0], q[1], 5.5, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+          lay.dot(q[0], q[1], 7);
         });
 
-        // θ₁ arc from +x to link 1
-        const L1px = L1 * k, L2px = L2 * k;
-        const r1 = M.clamp(0.42 * L1px, 14, 34);
+        // 4. θ₁ arc from +x to link 1 (reference: dashed +x ray)
         ctx.strokeStyle = C.faint; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
         ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + r1 + 14, by); ctx.stroke(); ctx.setLineDash([]);
-        if (Math.abs(st.theta1) > 0.05) D.angleArc(ctx, bx, by, r1, 0, t1, { ccw: t1 >= 0, color: C.blue, width: 1.5 });
-        const rays1 = [0, t1, -Math.PI / 2];
-        if (showGhost) rays1.push(oth.t1);
-        angleLabel(ctx, bx, by, r1, 0, t1, 'θ₁ = ' + fmtDeg(st.theta1) + '°', C.blue, rays1);
+        if (Math.abs(st.theta1) > 0.05) {
+          D.angleArc(ctx, bx, by, r1, 0, t1, { ccw: t1 >= 0, color: C.blue, width: 1.5 });
+          lay.arc(bx, by, r1, 0, t1, 2);
+        }
+        lay.seg(bx, by, bx + r1 + 14, by, 1);
 
-        // dashed extension of link 1 and θ₂ arc
-        const r2 = M.clamp(0.36 * Math.min(L1px, L2px), 12, 30);
-        const extLen = r2 + 16;
+        // 5. dashed extension of link 1 and θ₂ arc from it to link 2
+        const xe = ex + extLen * Math.cos(t1), ye = ey - extLen * Math.sin(t1);
         ctx.strokeStyle = C.blue; ctx.globalAlpha = 0.6; ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]);
-        ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ex + extLen * Math.cos(t1), ey - extLen * Math.sin(t1)); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(xe, ye); ctx.stroke();
         ctx.setLineDash([]); ctx.globalAlpha = 1;
-        if (Math.abs(st.theta2) > 0.05) D.angleArc(ctx, ex, ey, r2, t1, t1 + t2, { ccw: t2 >= 0, color: C.maroon, width: 1.5 });
-        angleLabel(ctx, ex, ey, r2, t1, t2, 'θ₂ = ' + fmtDeg(st.theta2) + '°', C.maroon, [t1, t1 + t2, t1 + Math.PI]);
+        lay.seg(ex, ey, xe, ye, 2);
+        if (Math.abs(st.theta2) > 0.05) {
+          D.angleArc(ctx, ex, ey, r2, t1, t1 + t2, { ccw: t2 >= 0, color: C.maroon, width: 1.5 });
+          lay.arc(ex, ey, r2, t1, t1 + t2, 2);
+        }
 
-        // tip velocity arrow (drawn before the handle so the handle stays on top)
-        let velEnd = null;
+        // 6. tip velocity arrow, shortened at the frame edge so the head stays visible
+        let vEnd = null, vShort = false;
         if (st.showVelocity && v.speed > 1e-9) {
           let dx = v.vx * VEL_T * k, dy = -v.vy * VEL_T * k;
-          // shorten at the frame edge so the head stays visible
           let s = 1;
           const pad = 4;
           if (tx + dx > r.x + r.w - pad) s = Math.min(s, (r.x + r.w - pad - tx) / dx);
@@ -372,40 +397,86 @@
           if (ty + dy > r.y + r.h - pad) s = Math.min(s, (r.y + r.h - pad - ty) / dy);
           if (ty + dy < r.y + pad) s = Math.min(s, (r.y + pad - ty) / dy);
           s = Math.max(0, s);
+          vShort = s < 0.98;              // drawn shorter than the stated scale: say so on the arrow
           dx *= s; dy *= s;
-          velEnd = [tx + dx, ty + dy];
-          D.arrow(ctx, tx, ty, tx + dx, ty + dy, { color: C.orange, width: 3, head: 11 });
-          const vl = Math.hypot(dx, dy);
-          if (vl > 18) D.text(ctx, 'v', tx + dx + 8 * dx / vl - 5 * dy / vl, ty + dy + 8 * dy / vl + 5 * dx / vl, { align: 'center', color: C.orange, font: 'bold 13px sans-serif', bg: LBG });
+          vEnd = [tx + dx, ty + dy];
+          D.arrow(ctx, tx, ty, vEnd[0], vEnd[1], { color: C.orange, width: 3, head: 11 });
+          lay.seg(tx, ty, vEnd[0], vEnd[1], 4);
         }
 
-        // tip handle
+        // 7. tip handle
         ctx.fillStyle = '#ffffff'; ctx.strokeStyle = C.orange; ctx.lineWidth = 2.5;
         ctx.beginPath(); ctx.arc(tx, ty, 9, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
         ctx.fillStyle = C.maroon;
         ctx.beginPath(); ctx.arc(tx, ty, 4, 0, 2 * Math.PI); ctx.fill();
+        lay.dot(tx, ty, 11);
 
-        // (x, y) label at the tip, away from link 2, the velocity arrow and the ghost
-        const sXY = '(' + fmtFixed(f.x, 3) + ', ' + fmtFixed(f.y, 3) + ')';
-        ctx.font = F12;
-        const twXY = ctx.measureText(sXY).width;
-        const avoidTip = [f.phi + Math.PI];
-        if (velEnd) avoidTip.push(Math.atan2(-(velEnd[1] - ty), velEnd[0] - tx));
-        if (showGhost) avoidTip.push(fo.phi + Math.PI);
-        const candTip = [];
-        for (let i = 0; i < 16; i++) candTip.push(i * Math.PI / 8);
-        // drop candidates that would put the label outside the frame
-        const okTip = candTip.filter(function (a) {
-          const c = labelCentre(a);
-          return c[0] - twXY / 2 >= r.x + 2 && c[0] + twXY / 2 <= r.x + r.w - 2 && c[1] - 8 >= r.y + 2 && c[1] + 8 <= r.y + r.h - 2;
-        });
-        function labelCentre(a) {
-          const dd = 16 + Math.abs(Math.cos(a)) * twXY / 2 + Math.abs(Math.sin(a)) * 4;
-          return [tx + dd * Math.cos(a), ty - dd * Math.sin(a)];
+        // 8. labels, placed so that they avoid the drawing and each other (most important first)
+        const labels = [], leaders = [];
+        // a label that ended up away from what it names gets a thin leader line to it
+        function leader(lb, ax, ay, gap) {
+          const b = lb.box;
+          const nx = M.clamp(ax, b.l, b.r), ny = M.clamp(ay, b.t, b.b);
+          const d = Math.hypot(nx - ax, ny - ay);
+          if (d > gap + 10) leaders.push([ax + (nx - ax) * gap / d, ay + (ny - ay) * gap / d, nx, ny, lb.color]);
         }
-        const aTip = pickAngle(okTip.length ? okTip : candTip, avoidTip);
-        const cXY = labelCentre(aTip);
-        D.text(ctx, sXY, cXY[0], cXY[1], { align: 'center', color: C.ink, font: 'bold 12px sans-serif', bg: LBG });
+        const sXY = '(' + fmtFixed(f.x, 3) + ', ' + fmtFixed(f.y, 3) + ')';
+        const lXY = lay.place(sXY, B12, C.ink, lay.around(tx, ty, 9, f.phi, Math.PI / 8, 8, sXY, B12));
+        labels.push(lXY); leader(lXY, tx, ty, 11);
+        if (vEnd) {
+          const va = Math.atan2(-(vEnd[1] - ty), vEnd[0] - tx);
+          const sv = vShort ? 'v (shortened)' : 'v', fv = vShort ? 'bold 12px sans-serif' : 'bold 13px sans-serif';
+          const lv = lay.place(sv, fv, C.orange, lay.around(vEnd[0], vEnd[1], 2, va, Math.PI / 6, 6, sv, fv));
+          labels.push(lv); leader(lv, vEnd[0], vEnd[1], 3);
+        }
+        const s2 = 'θ₂ = ' + fmtDeg(st.theta2) + '°';
+        const l2 = lay.place(s2, F12, C.maroon, lay.around(ex, ey, r2, t1 + t2 / 2, Math.PI / 12, 12, s2, F12));
+        labels.push(l2);
+        if (Math.abs(st.theta2) > 0.05) leader(l2, ex + r2 * Math.cos(t1 + t2 / 2), ey - r2 * Math.sin(t1 + t2 / 2), 0);
+        else leader(l2, ex, ey, 7);
+        const s1 = 'θ₁ = ' + fmtDeg(st.theta1) + '°';
+        const l1 = lay.place(s1, F12, C.blue, lay.around(bx, by, r1, t1 / 2, Math.PI / 12, 12, s1, F12));
+        labels.push(l1);
+        if (Math.abs(st.theta1) > 0.05) leader(l1, bx + r1 * Math.cos(t1 / 2), by - r1 * Math.sin(t1 / 2), 0);
+        if (outside) labels.push(lay.place('target', F12, C.red, lay.around(gx, gy, 8, Math.PI / 4, Math.PI / 4, 4, 'target', F12)));
+        if (st.showWorkspace) {
+          const sOut = 'L₁+L₂ = ' + fmt(ws.rMax, 3) + ' m';
+          ctx.font = F12;
+          let a = ctx.measureText(sOut).width / 2 + 3;
+          const cOut = [];
+          for (let i = 0; i < 24; i++) {
+            const u = -Math.PI / 2 + i * Math.PI / 12, ux = Math.cos(u), uy = Math.sin(u);
+            const d = Ro - 6 - a * Math.abs(ux) - 8 * Math.abs(uy);
+            cOut.push({ x: bx + d * ux, y: by - d * uy, cost: 4 * angDist(u, -Math.PI / 3) * 12 / Math.PI });
+          }
+          labels.push(lay.place(sOut, F12, C.teal, cOut));
+          if (Ri > 0.5) {
+            const sIn = '|L₁−L₂| = ' + fmt(ws.rMin, 3) + ' m';
+            a = ctx.measureText(sIn).width / 2 + 3;
+            const cIn = [];
+            for (let i = 0; i < 24; i++) {
+              const u = -Math.PI / 2 + i * Math.PI / 12, ux = Math.cos(u), uy = Math.sin(u);
+              [0, 12, 26].forEach(function (extra, ring) {
+                const d = Ri + 6 + a * Math.abs(ux) + 8 * Math.abs(uy) + extra;
+                cIn.push({ x: bx + d * ux, y: by - d * uy, cost: 4 * angDist(u, -2 * Math.PI / 3) * 12 / Math.PI + 10 * ring });
+              });
+            }
+            const li = lay.place(sIn, F12, C.teal, cIn);
+            // leader from the inner circle to the label
+            const ux = li.x - bx, uy = li.y - by, ul = Math.hypot(ux, uy);
+            if (ul > Ri + 4) {
+              ctx.strokeStyle = C.teal; ctx.lineWidth = 1;
+              ctx.beginPath(); ctx.moveTo(bx + Ri * ux / ul, by + Ri * uy / ul); ctx.lineTo(li.x, li.y); ctx.stroke();
+            }
+            labels.push(li);
+          }
+        }
+        ctx.lineWidth = 1; ctx.setLineDash([]);
+        leaders.forEach(function (q) {
+          ctx.strokeStyle = RASim.alpha(q[4], 0.7);
+          ctx.beginPath(); ctx.moveTo(q[0], q[1]); ctx.lineTo(q[2], q[3]); ctx.stroke();
+        });
+        labels.forEach(function (lb) { D.text(ctx, lb.text, lb.x, lb.y, { align: 'center', color: lb.color, font: lb.font, bg: LBG }); });
 
         ctx.restore();
       };
@@ -465,8 +536,9 @@
         }
 
         const sum = st.theta1 + st.theta2;
-        fX.innerHTML = 'x = L₁cos θ₁ + L₂cos(θ₁+θ₂) = ' + fmt(L1, 3) + '·cos' + angTxt(st.theta1) + ' + ' + fmt(L2, 3) + '·cos' + angTxt(sum) + ' = <b>' + fmtFixed(f.x, 3) + '</b>';
-        fY.innerHTML = 'y = L₁sin θ₁ + L₂sin(θ₁+θ₂) = ' + fmt(L1, 3) + '·sin' + angTxt(st.theta1) + ' + ' + fmt(L2, 3) + '·sin' + angTxt(sum) + ' = <b>' + fmtFixed(f.y, 3) + '</b>';
+        const sL1 = fmt(L1, 6), sL2 = fmt(L2, 6);
+        fX.innerHTML = 'x = L₁cos θ₁ + L₂cos(θ₁+θ₂) = ' + sL1 + '·cos' + angTxt(st.theta1) + ' + ' + sL2 + '·cos' + angTxt(sum) + ' = <b>' + fmtFixed(f.x, 3) + '</b>';
+        fY.innerHTML = 'y = L₁sin θ₁ + L₂sin(θ₁+θ₂) = ' + sL1 + '·sin' + angTxt(st.theta1) + ' + ' + sL2 + '·sin' + angTxt(sum) + ' = <b>' + fmtFixed(f.y, 3) + '</b>';
         cv.redraw();
       }
 

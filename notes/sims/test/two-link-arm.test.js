@@ -270,5 +270,83 @@ group('invariant: unreachable targets are projected radially onto the nearest bo
   return N + ' samples, ' + n + ' unreachable';
 });
 
-if (failures) { console.log(failures + ' group(s) FAILED'); process.exit(1); }
-console.log('all groups passed');
+// ---------------------------------------------------------------------------------------------
+// Browser regression tests (need Playwright; skipped with a message when it is not available or
+// when run with --no-browser). They guard display bugs found in verification.
+// ---------------------------------------------------------------------------------------------
+async function agroup(name, fn) {
+  try { await fn(); console.log('ok   ' + name); }
+  catch (e) { failures++; console.log('FAIL ' + name + ': ' + (e && e.message || e)); }
+}
+async function browserTests() {
+  let playwrightOk = true;
+  try { require.resolve('playwright'); } catch (e) { playwrightOk = false; }
+  if (!playwrightOk || process.argv.indexOf('--no-browser') >= 0) { console.log('skip browser regression tests'); return; }
+  const path = require('path'), os = require('os');
+  const { openSim } = require('./harness.js');
+  const outDir = path.join(os.tmpdir(), 'rasim-two-link-arm-test');
+  const s = await openSim('two-link-arm', { width: 1100, outDir: outDir });
+  const page = s.page;
+  const num = t => Number(String(t).replace(/−/g, '-').replace(/[()°\s]/g, ''));
+  async function frames() { await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))); }
+  async function setS(st) { await page.evaluate(st => RASim.instances['two-link-arm'].setState(st), st); await frames(); }
+  // "x = L₁cos θ₁ + L₂cos(θ₁+θ₂) = a·cos A + b·cos B = r": substituting the printed a, A, b, B must give the printed r
+  async function formulaConsistent(what) {
+    const lines = await page.evaluate(() => ['formulaX', 'formulaY'].map(k => document.querySelector('[data-key="' + k + '"]').textContent));
+    lines.forEach(function (line, i) {
+      const parts = line.split(' = ');
+      const m = parts[2].match(/^(\S+)·(cos|sin) ?(\(?\S+?°\)?) \+ (\S+)·(cos|sin) ?(\(?\S+?°\)?)$/);
+      assert.ok(m, what + ': formula format: ' + line);
+      const f = m[2] === 'cos' ? Math.cos : Math.sin;
+      const sub = num(m[1]) * f(num(m[3]) * D) + num(m[4]) * f(num(m[6]) * D);
+      const shown = num(parts[3]);
+      assert.ok(Math.abs(sub - shown) <= 1e-3, what + ': ' + line + ' — substituting gives ' + sub.toFixed(5));
+    });
+  }
+  try {
+    await agroup('browser: formula lines are self-consistent for non-integer angles (regression)', async function () {
+      await setS({ L1: 2, L2: 2, theta1: 10.05, theta2: 20, w1: 1, w2: 0.5 });   // as left by a drag
+      await formulaConsistent('θ₁ = 10.05°');
+      await setS({ L1: 1, L2: 0.8, theta1: 30, theta2: 60, elbow: 'down' });
+      await page.click('[data-control="elbow"] button[data-value="up"]'); await frames();   // θ₁ = 82.66°
+      await formulaConsistent('after Elbow up');
+      const st = await page.evaluate(() => RASim.instances['two-link-arm'].getState());
+      near(st.theta2, -60, 1e-12, 'branch switch θ₂'); near(st.theta1, 30 + 2 * Math.atan2(0.8 * Math.sin(PI / 3), 1.4) / D, 1e-9, 'branch switch θ₁');
+      await setS({ L1: 1.234, L2: 0.8, theta1: 30, theta2: 60, elbow: 'down' });     // typed (unsnapped) length
+      const fx = await page.textContent('[data-key="formulaX"]');
+      assert.ok(fx.indexOf('= 1.234·cos 30°') > 0, 'typed L₁ shown in full: ' + fx);
+      await formulaConsistent('L₁ = 1.234');
+    });
+    await agroup('browser: a shortened velocity arrow is labelled (regression)', async function () {
+      await page.evaluate(() => {
+        window.__txt = [];
+        const orig = CanvasRenderingContext2D.prototype.fillText;
+        CanvasRenderingContext2D.prototype.fillText = function (t, x, y, w) { window.__txt.push(String(t)); return orig.apply(this, arguments); };
+      });
+      await setS({ L1: 2, L2: 2, theta1: 45, theta2: 0, w1: 2, w2: 2, showVelocity: true });   // |v| = 12 m/s: 4.8 m arrow
+      let t = await page.evaluate(() => window.__txt.splice(0));
+      assert.ok(t.indexOf('v (shortened)') >= 0, 'label "v (shortened)" drawn: ' + t.join(' | '));
+      await setS({ L1: 1, L2: 0.8, theta1: 30, theta2: 60, w1: 1, w2: 0.5 });
+      t = await page.evaluate(() => window.__txt.splice(0));
+      assert.ok(t.indexOf('v') >= 0 && t.indexOf('v (shortened)') < 0, 'default arrow to scale: ' + t.join(' | '));
+    });
+    await agroup('browser: read-outs equal the model (default and θ₂ = −120°)', async function () {
+      for (const st of [{ L1: 1, L2: 0.8, theta1: 30, theta2: 60, w1: 1, w2: 0.5 }, { L1: 1, L2: 0.8, theta1: 30, theta2: -120, w1: -1.3, w2: 2 }]) {
+        await setS(st);
+        const r = await page.evaluate(() => { const o = {}; document.querySelectorAll('[data-stat]').forEach(e => { o[e.getAttribute('data-stat')] = e.querySelector('.sim-stat-value').textContent; }); return o; });
+        const t1 = st.theta1 * D, t2 = st.theta2 * D, f = m.fk(st.L1, st.L2, t1, t2), v = m.tipVelocity(st.L1, st.L2, t1, t2, st.w1, st.w2);
+        assert.strictEqual(r.x, RASim.fmtFixed(f.x, 3)); assert.strictEqual(r.y, RASim.fmtFixed(f.y, 3));
+        assert.strictEqual(r.detJ, RASim.fmtFixed(m.detJ(st.L1, st.L2, t2), 3));
+        assert.strictEqual(r.vx, RASim.fmtFixed(v.vx, 3)); assert.strictEqual(r.vy, RASim.fmtFixed(v.vy, 3));
+        assert.strictEqual(r.speed, RASim.fmtFixed(v.speed, 3));
+      }
+    });
+    assert.ok(s.errors.length === 0 && s.warnings.length === 0, 'console: ' + s.errors.concat(s.warnings).join('; '));
+  } finally { await s.browser.close(); }
+}
+
+(async function () {
+  try { await browserTests(); } catch (e) { failures++; console.log('FAIL browser: ' + (e && e.message || e)); }
+  if (failures) { console.log(failures + ' group(s) FAILED'); process.exit(1); }
+  console.log('all groups passed');
+})();
